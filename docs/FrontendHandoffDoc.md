@@ -265,29 +265,45 @@ export interface GiftCard {
 
 // --- Customer Reviews ---
 export interface ProductReview {
-  id: string;
-  productId: string;
+  reviewId: string;
   userId: string;
-  customerName: string;
+  userName: string;
   rating: number; // 1 to 5
-  headline: string;
+  headline?: string;
   comment: string;
   isVerifiedPurchase: boolean;
-  helpfulCount: number;
+  helpfulVotesCount: number;
   imageUrls: string[];
-  createdAtUtc: string;
+  createdOn: string;
+}
+
+export interface CreateProductReviewRequest {
+  rating: number;
+  comment: string;
+  headline?: string;
+  imageUrls?: string[];
 }
 
 // --- Notification Preferences ---
 export interface NotificationPreferences {
   userId: string;
-  emailOrderUpdates: boolean;
-  emailPromotions: boolean;
-  smsOrderUpdates: boolean;
-  smsPromotions: boolean;
-  pushOrderUpdates: boolean;
-  pushPriceDropAlerts: boolean;
-  pushBackInStockAlerts: boolean;
+  emailEnabled: boolean;
+  smsEnabled: boolean;
+  pushEnabled: boolean;
+  orderUpdates: boolean;
+  promotions: boolean;
+  priceAlerts: boolean;
+  restockAlerts: boolean;
+}
+
+export interface UpdateNotificationPreferencesRequest {
+  emailEnabled: boolean;
+  smsEnabled: boolean;
+  pushEnabled: boolean;
+  orderUpdates: boolean;
+  promotions: boolean;
+  priceAlerts: boolean;
+  restockAlerts: boolean;
 }
 ```
 
