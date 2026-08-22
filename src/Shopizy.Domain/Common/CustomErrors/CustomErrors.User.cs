@@ -14,7 +14,7 @@ public static partial class CustomErrors
         public static DomainError UserNotFoundWhileLogin =>
             DomainError.Unauthorized(
                 code: "User.UserNotFound",
-                description: "User is not found with this phone & password."
+                description: "User is not found with this email & password."
             );
         public static DomainError UserNotFound =>
             DomainError.NotFound(code: "User.UserNotFound", description: "User is not found.");

@@ -1,5 +1,6 @@
-﻿using ErrorOr;
+using ErrorOr;
 using Shopizy.Domain.Categories;
+using Shopizy.SharedKernel.Application.Caching;
 using Shopizy.SharedKernel.Application.Messaging;
 
 namespace Shopizy.Application.Categories.Commands.CreateCategory;
@@ -11,4 +12,9 @@ namespace Shopizy.Application.Categories.Commands.CreateCategory;
 /// <param name="Name">The category name.</param>
 /// <param name="ParentId">The parent category ID (null for root categories).</param>
 public record CreateCategoryCommand(Guid UserId, string Name, Guid? ParentId)
-    : ICommand<ErrorOr<Category>>;
+    : ICommand<ErrorOr<Category>>,
+        IInvalidateCache
+{
+    public IReadOnlyCollection<string> CacheKeysToInvalidate =>
+        ["categories-tree", "categories-all"];
+}

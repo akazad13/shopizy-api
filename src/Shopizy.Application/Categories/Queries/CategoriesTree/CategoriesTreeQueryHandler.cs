@@ -16,32 +16,30 @@ public class CategoriesTreeQueryHandler(ICategoryRepository categoryRepository)
     {
         var categories = await _categoryRepository.GetCategoriesAsync();
 
-        var categoriesTree = BuildCategoryTree([
-            .. categories
-                .AsQueryable()
-                .Select(category => new CategoryTree()
-                {
-                    Id = category.Id.Value,
-                    Name = category.Name,
-                    ParentId = category.ParentId,
-                }),
-        ]);
+        var allCategoryNodes = categories
+            .Select(category => new CategoryTree()
+            {
+                Id = category.Id.Value,
+                Name = category.Name,
+                ParentId = category.ParentId,
+            })
+            .ToList();
 
-        return categoriesTree;
+        var categoriesLookup = allCategoryNodes.ToLookup(c => c.ParentId);
+
+        return BuildCategoryTree(categoriesLookup);
     }
 
     private static List<CategoryTree> BuildCategoryTree(
-        List<CategoryTree> allCategories,
+        ILookup<Guid?, CategoryTree> categoriesLookup,
         Guid? parentId = null
     )
     {
-        // Get all categories with the given parentId
-        var subCategories = allCategories.Where(c => c.ParentId == parentId).ToList();
+        var subCategories = categoriesLookup[parentId].ToList();
 
-        // Recursively build the tree by adding children to each category
         foreach (var category in subCategories)
         {
-            category.Children = BuildCategoryTree(allCategories, category.Id);
+            category.Children = BuildCategoryTree(categoriesLookup, category.Id);
         }
 
         return subCategories;

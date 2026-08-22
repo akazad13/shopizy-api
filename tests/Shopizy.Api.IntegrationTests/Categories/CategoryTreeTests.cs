@@ -215,4 +215,41 @@ public class CategoryTreeTests(IntegrationTestWebAppFactory factory) : BaseInteg
         child.ShouldNotBeNull();
         child.ParentId.ShouldBe(parent.Id);
     }
+
+    [Fact]
+    public async Task GetCategoryTree_ReflectsNewCategory_ImmediatelyAfterCreation()
+    {
+        // Arrange — fetch tree first to populate cache
+        ClearAuthToken();
+        var initialTreeResp = await HttpClient.GetAsync(
+            "/api/v1.0/categories/tree",
+            TestContext.Current.CancellationToken
+        );
+        initialTreeResp.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        // Act — create a new root category as admin
+        await AuthenticateAsAdminAsync();
+        var newCatName = $"CacheInvalidationTest_{Guid.NewGuid().ToString()[..4]}";
+        var createResp = await HttpClient.PostAsJsonAsync(
+            "/api/v1.0/admin/categories",
+            new CreateCategoryRequest(newCatName, null),
+            TestContext.Current.CancellationToken
+        );
+        createResp.EnsureSuccessStatusCode();
+
+        // Act — fetch tree again as anonymous
+        ClearAuthToken();
+        var updatedTreeResp = await HttpClient.GetAsync(
+            "/api/v1.0/categories/tree",
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert — tree cache should have been invalidated and reflect the newly created category
+        updatedTreeResp.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var tree = await updatedTreeResp.Content.ReadFromJsonAsync<List<CategoryTreeResponse>>(
+            TestContext.Current.CancellationToken
+        );
+        tree.ShouldNotBeNull();
+        tree.ShouldContain(c => c.Name == newCatName);
+    }
 }

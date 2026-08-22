@@ -1,3 +1,4 @@
+using ErrorOr;
 using Microsoft.Extensions.Logging;
 using Shopizy.SharedKernel.Application.Caching;
 using Shopizy.SharedKernel.Application.Messaging;
@@ -29,7 +30,15 @@ public class CachingQueryHandlerDecorator<TQuery, TResponse>(
 
         logger.LogCacheMiss(typeof(TQuery).Name, cachableRequest.CacheKey);
         var response = await innerHandler.Handle(query, cancellationToken);
-        await cacheHelper.SetAsync(cachableRequest.CacheKey, response, cachableRequest.Expiration);
+
+        if (response is not IErrorOr errorOr || !errorOr.IsError)
+        {
+            await cacheHelper.SetAsync(
+                cachableRequest.CacheKey,
+                response,
+                cachableRequest.Expiration
+            );
+        }
 
         return response;
     }
