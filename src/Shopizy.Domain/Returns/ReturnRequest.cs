@@ -11,7 +11,6 @@ namespace Shopizy.Domain.Returns;
 
 public sealed class ReturnRequest : AggregateRoot<ReturnRequestId, Guid>, IAuditable
 {
-    [JsonInclude]
     private List<ReturnItem> _items = new();
 
     public OrderId OrderId { get; private set; } = null!;

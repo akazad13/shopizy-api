@@ -15,13 +15,8 @@ namespace Shopizy.Domain.Products;
 /// </summary>
 public sealed class Product : AggregateRoot<ProductId, Guid>, IAuditable
 {
-    [JsonInclude]
     private List<ProductImage> _productImages = [];
-
-    [JsonInclude]
     private List<ProductReview> _productReviews = [];
-
-    [JsonInclude]
     private List<ProductVariant> _productVariants = [];
 
     /// <summary>

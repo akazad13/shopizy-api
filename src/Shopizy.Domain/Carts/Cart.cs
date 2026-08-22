@@ -11,18 +11,17 @@ namespace Shopizy.Domain.Carts;
 /// </summary>
 public sealed class Cart : AggregateRoot<CartId, Guid>, IAuditable
 {
-    [JsonInclude]
     private List<CartItem> _cartItems = [];
 
     /// <summary>
     /// Gets the user ID who owns this cart.
     /// </summary>
-    public UserId UserId { get; }
+    public UserId UserId { get; private set; } = null!;
 
     /// <summary>
     /// Gets the date and time when the cart was created.
     /// </summary>
-    public DateTime CreatedOn { get; }
+    public DateTime CreatedOn { get; private set; }
 
     /// <summary>
     /// Gets the date and time when the cart was last modified.

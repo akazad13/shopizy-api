@@ -9,13 +9,12 @@ namespace Shopizy.Domain.Wishlists;
 
 public sealed class Wishlist : AggregateRoot<WishlistId, Guid>, IAuditable
 {
-    [JsonInclude]
     private List<WishlistItem> _wishlistItems = [];
 
-    public UserId UserId { get; } = null!;
+    public UserId UserId { get; private set; } = null!;
     public string? Name { get; private set; }
     public bool IsPublic { get; private set; }
-    public DateTime CreatedOn { get; }
+    public DateTime CreatedOn { get; private set; }
     public DateTime? ModifiedOn { get; private set; }
     public IReadOnlyList<WishlistItem> WishlistItems => (_wishlistItems ?? []).AsReadOnly();
 

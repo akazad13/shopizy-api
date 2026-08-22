@@ -18,6 +18,7 @@ public class RedisCacheHelper(
     private static readonly JsonSerializerOptions _jsonOptions = new()
     {
         Converters = { new ErrorOrConverterFactory() },
+        TypeInfoResolver = new PrivateSetterContractResolver(),
     };
 
     private readonly IConnectionMultiplexer _connectionMultiplexer = connectionMultiplexer;

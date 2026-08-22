@@ -8,7 +8,7 @@ namespace Shopizy.Infrastructure.Common.Caching;
 /// JSON converter factory that handles ErrorOr&lt;T&gt; serialization for Redis caching.
 /// Only the inner value is serialized; error results should not be cached.
 /// </summary>
-internal sealed class ErrorOrConverterFactory : JsonConverterFactory
+public sealed class ErrorOrConverterFactory : JsonConverterFactory
 {
     public override bool CanConvert(Type typeToConvert) =>
         typeToConvert.IsGenericType
@@ -25,7 +25,7 @@ internal sealed class ErrorOrConverterFactory : JsonConverterFactory
     }
 }
 
-internal sealed class ErrorOrConverter<T> : JsonConverter<ErrorOr<T>>
+public sealed class ErrorOrConverter<T> : JsonConverter<ErrorOr<T>>
 {
     public override ErrorOr<T> Read(
         ref Utf8JsonReader reader,

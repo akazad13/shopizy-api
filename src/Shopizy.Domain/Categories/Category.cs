@@ -10,7 +10,6 @@ namespace Shopizy.Domain.Categories;
 /// </summary>
 public class Category : AggregateRoot<CategoryId, Guid>
 {
-    [JsonInclude]
     private List<Product> _products = [];
 
     /// <summary>

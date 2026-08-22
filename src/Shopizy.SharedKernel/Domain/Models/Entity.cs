@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Shopizy.SharedKernel.Domain.Models;
 
 /// <summary>

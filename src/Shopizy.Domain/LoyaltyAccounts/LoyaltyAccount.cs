@@ -10,7 +10,6 @@ namespace Shopizy.Domain.LoyaltyAccounts;
 
 public sealed class LoyaltyAccount : AggregateRoot<LoyaltyAccountId, Guid>, IAuditable
 {
-    [JsonInclude]
     private List<LoyaltyTransaction> _transactions = [];
 
     public UserId UserId { get; private set; } = null!;

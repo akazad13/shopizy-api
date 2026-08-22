@@ -53,7 +53,6 @@ public sealed class ProductReview : AggregateRoot<ProductReviewId, Guid>, IAudit
     /// </summary>
     public int HelpfulVotesCount { get; private set; }
 
-    [JsonInclude]
     private List<string> _imageUrls = [];
 
     /// <summary>
