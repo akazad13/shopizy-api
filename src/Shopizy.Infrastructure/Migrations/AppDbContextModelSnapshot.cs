@@ -1695,11 +1695,69 @@ namespace Shopizy.Infrastructure.Migrations
                                 .HasForeignKey("UserId");
                         });
 
+                    b.OwnsOne("Shopizy.Domain.Users.Entities.NotificationPreference", "NotificationPreferences", b1 =>
+                        {
+                            b1.Property<Guid>("UserId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<bool>("EmailEnabled")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("bit")
+                                .HasDefaultValue(true)
+                                .HasColumnName("Notification_EmailEnabled");
+
+                            b1.Property<bool>("OrderUpdates")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("bit")
+                                .HasDefaultValue(true)
+                                .HasColumnName("Notification_OrderUpdates");
+
+                            b1.Property<bool>("PriceAlerts")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("bit")
+                                .HasDefaultValue(true)
+                                .HasColumnName("Notification_PriceAlerts");
+
+                            b1.Property<bool>("Promotions")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("bit")
+                                .HasDefaultValue(true)
+                                .HasColumnName("Notification_Promotions");
+
+                            b1.Property<bool>("PushEnabled")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("bit")
+                                .HasDefaultValue(true)
+                                .HasColumnName("Notification_PushEnabled");
+
+                            b1.Property<bool>("RestockAlerts")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("bit")
+                                .HasDefaultValue(true)
+                                .HasColumnName("Notification_RestockAlerts");
+
+                            b1.Property<bool>("SmsEnabled")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("bit")
+                                .HasDefaultValue(true)
+                                .HasColumnName("Notification_SmsEnabled");
+
+                            b1.HasKey("UserId");
+
+                            b1.ToTable("Users");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserId");
+                        });
+
                     b.Navigation("Address");
 
                     b.Navigation("Addresses");
 
                     b.Navigation("Credentials")
+                        .IsRequired();
+
+                    b.Navigation("NotificationPreferences")
                         .IsRequired();
 
                     b.Navigation("OrderIds");

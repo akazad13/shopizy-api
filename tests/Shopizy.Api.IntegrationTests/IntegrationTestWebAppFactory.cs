@@ -76,6 +76,15 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsy
                                 o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                             }
                         )
+                        .ConfigureWarnings(w =>
+                            w.Ignore(
+                                Microsoft
+                                    .EntityFrameworkCore
+                                    .Diagnostics
+                                    .RelationalEventId
+                                    .PendingModelChangesWarning
+                            )
+                        )
                         .AddInterceptors(interceptor);
                 }
             );

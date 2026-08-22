@@ -57,6 +57,15 @@ public static class PersistenceRegister
                             o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                         }
                     )
+                    .ConfigureWarnings(w =>
+                        w.Ignore(
+                            Microsoft
+                                .EntityFrameworkCore
+                                .Diagnostics
+                                .RelationalEventId
+                                .PendingModelChangesWarning
+                        )
+                    )
                     .AddInterceptors(interceptor);
             }
         );
