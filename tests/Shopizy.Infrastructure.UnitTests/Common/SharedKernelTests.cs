@@ -1,6 +1,6 @@
 using ErrorOr;
 using Moq;
-using Shopizy.Domain.Customers.ValueObjects;
+using Shopizy.Domain.Users.ValueObjects;
 using Shopizy.SharedKernel.Application.Logging;
 using Shopizy.SharedKernel.Domain.Models;
 using Shouldly;
@@ -10,9 +10,9 @@ namespace Shopizy.Infrastructure.UnitTests.Common;
 
 public class SharedKernelTests
 {
-    private class DummyEntity : Entity<CustomerId>
+    private class DummyEntity : Entity<UserId>
     {
-        public DummyEntity(CustomerId id)
+        public DummyEntity(UserId id)
             : base(id) { }
     }
 
@@ -37,8 +37,8 @@ public class SharedKernelTests
     [Fact]
     public void Entity_EqualityAndOperators_ShouldWork()
     {
-        var id1 = CustomerId.CreateUnique();
-        var id2 = CustomerId.CreateUnique();
+        var id1 = UserId.CreateUnique();
+        var id2 = UserId.CreateUnique();
 
         var e1 = new DummyEntity(id1);
         var e2 = new DummyEntity(id1);
@@ -47,7 +47,7 @@ public class SharedKernelTests
         (e1 == e2).ShouldBeTrue();
         (e1 != e3).ShouldBeTrue();
         e1.Equals((object)e2).ShouldBeTrue();
-        e1.Equals((Entity<CustomerId>?)null).ShouldBeFalse();
+        e1.Equals((Entity<UserId>?)null).ShouldBeFalse();
         e1.GetHashCode().ShouldBe(id1.GetHashCode());
 
         var mockDomainEvent = new Mock<IDomainEvent>();

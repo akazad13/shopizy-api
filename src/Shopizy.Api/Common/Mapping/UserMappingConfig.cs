@@ -74,5 +74,36 @@ public class UserMappingConfig : IRegister
             .Map(dest => dest.ZipCode, src => src.ZipCode)
             .Map(dest => dest.IsDefault, src => src.IsDefault)
             .Map(dest => dest.CreatedOn, src => src.CreatedOn);
+
+        config
+            .NewConfig<
+                (Guid UserId, UpdateNotificationPreferencesRequest request),
+                Shopizy.Application.Users.Commands.UpdateNotificationPreferences.UpdateNotificationPreferencesCommand
+            >()
+            .Map(dest => dest.UserId, src => src.UserId)
+            .Map(dest => dest.EmailEnabled, src => src.request.EmailEnabled)
+            .Map(dest => dest.SmsEnabled, src => src.request.SmsEnabled)
+            .Map(dest => dest.PushEnabled, src => src.request.PushEnabled)
+            .Map(dest => dest.OrderUpdates, src => src.request.OrderUpdates)
+            .Map(dest => dest.Promotions, src => src.request.Promotions)
+            .Map(dest => dest.PriceAlerts, src => src.request.PriceAlerts)
+            .Map(dest => dest.RestockAlerts, src => src.request.RestockAlerts);
+
+        config
+            .NewConfig<
+                (
+                    Guid UserId,
+                    Shopizy.Application.Common.Interfaces.Services.NotificationPreferencesDto dto
+                ),
+                NotificationPreferencesResponse
+            >()
+            .Map(dest => dest.UserId, src => src.UserId)
+            .Map(dest => dest.EmailEnabled, src => src.dto.EmailEnabled)
+            .Map(dest => dest.SmsEnabled, src => src.dto.SmsEnabled)
+            .Map(dest => dest.PushEnabled, src => src.dto.PushEnabled)
+            .Map(dest => dest.OrderUpdates, src => src.dto.OrderUpdates)
+            .Map(dest => dest.Promotions, src => src.dto.Promotions)
+            .Map(dest => dest.PriceAlerts, src => src.dto.PriceAlerts)
+            .Map(dest => dest.RestockAlerts, src => src.dto.RestockAlerts);
     }
 }

@@ -501,4 +501,28 @@ public static partial class LoggerMessages
         Message = "An error occurred while rejecting return request."
     )]
     public static partial void ReturnRejectionError(this ILogger logger, Exception ex);
+
+    [LoggerMessage(
+        EventId = 1061,
+        Level = LogLevel.Error,
+        Message = "An error occurred while upvoting product review."
+    )]
+    public static partial void ProductReviewUpvoteError(this ILogger logger, Exception ex);
+
+    [LoggerMessage(
+        EventId = 1062,
+        Level = LogLevel.Error,
+        Message = "An error occurred while fetching user notification preferences."
+    )]
+    public static partial void NotificationPreferencesFetchError(this ILogger logger, Exception ex);
+
+    [LoggerMessage(
+        EventId = 1063,
+        Level = LogLevel.Error,
+        Message = "An error occurred while updating user notification preferences."
+    )]
+    public static partial void NotificationPreferencesUpdateError(
+        this ILogger logger,
+        Exception ex
+    );
 }
