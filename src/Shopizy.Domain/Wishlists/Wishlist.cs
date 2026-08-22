@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Shopizy.Domain.Products.ValueObjects;
 using Shopizy.Domain.Users.ValueObjects;
 using Shopizy.Domain.Wishlists.Entities;
@@ -8,14 +9,15 @@ namespace Shopizy.Domain.Wishlists;
 
 public sealed class Wishlist : AggregateRoot<WishlistId, Guid>, IAuditable
 {
-    private readonly List<WishlistItem> _wishlistItems = [];
+    [JsonInclude]
+    private List<WishlistItem> _wishlistItems = [];
 
     public UserId UserId { get; } = null!;
     public string? Name { get; private set; }
     public bool IsPublic { get; private set; }
     public DateTime CreatedOn { get; }
     public DateTime? ModifiedOn { get; private set; }
-    public IReadOnlyList<WishlistItem> WishlistItems => _wishlistItems.AsReadOnly();
+    public IReadOnlyList<WishlistItem> WishlistItems => (_wishlistItems ?? []).AsReadOnly();
 
     public static Wishlist Create(UserId userId, string? name = null, bool isPublic = false) =>
         new(WishlistId.CreateUnique(), userId, name, isPublic);
@@ -45,5 +47,6 @@ public sealed class Wishlist : AggregateRoot<WishlistId, Guid>, IAuditable
         IsPublic = isPublic;
     }
 
+    [JsonConstructor]
     private Wishlist() { }
 }

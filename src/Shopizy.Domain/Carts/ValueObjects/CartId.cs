@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Shopizy.SharedKernel.Domain.Models;
 
 namespace Shopizy.Domain.Carts.ValueObjects;
@@ -6,6 +7,7 @@ public sealed class CartId : AggregateRootId<Guid>
 {
     public override Guid Value { get; protected set; }
 
+    [JsonConstructor]
     private CartId(Guid value)
     {
         Value = value;

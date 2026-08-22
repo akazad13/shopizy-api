@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Shopizy.Domain.Common.CustomErrors;
 using Shopizy.Domain.Orders.ValueObjects;
 using Shopizy.Domain.Returns.Entities;
@@ -10,7 +11,8 @@ namespace Shopizy.Domain.Returns;
 
 public sealed class ReturnRequest : AggregateRoot<ReturnRequestId, Guid>, IAuditable
 {
-    private readonly List<ReturnItem> _items = new();
+    [JsonInclude]
+    private List<ReturnItem> _items = new();
 
     public OrderId OrderId { get; private set; } = null!;
     public UserId UserId { get; private set; } = null!;
@@ -23,7 +25,7 @@ public sealed class ReturnRequest : AggregateRoot<ReturnRequestId, Guid>, IAudit
     public DateTime? ModifiedOn { get; set; }
     public string? ModifiedBy { get; set; }
 
-    public IReadOnlyList<ReturnItem> Items => _items.AsReadOnly();
+    public IReadOnlyList<ReturnItem> Items => (_items ?? []).AsReadOnly();
 
     public static ReturnRequest Create(
         OrderId orderId,
@@ -85,5 +87,6 @@ public sealed class ReturnRequest : AggregateRoot<ReturnRequestId, Guid>, IAudit
         return true;
     }
 
+    [JsonConstructor]
     private ReturnRequest() { } // For EF Core
 }

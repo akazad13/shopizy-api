@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Shopizy.Domain.Products.ValueObjects;
 using Shopizy.SharedKernel.Domain.Models;
 
@@ -20,5 +21,6 @@ public sealed class ProductImage : Entity<ProductImageId>
         PublicId = publicId;
     }
 
+    [JsonConstructor]
     private ProductImage() { }
 }

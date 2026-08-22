@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Shopizy.Domain.Common.CustomErrors;
 using Shopizy.Domain.LoyaltyAccounts.Entities;
 using Shopizy.Domain.LoyaltyAccounts.Enums;
@@ -9,12 +10,13 @@ namespace Shopizy.Domain.LoyaltyAccounts;
 
 public sealed class LoyaltyAccount : AggregateRoot<LoyaltyAccountId, Guid>, IAuditable
 {
-    private readonly List<LoyaltyTransaction> _transactions = [];
+    [JsonInclude]
+    private List<LoyaltyTransaction> _transactions = [];
 
-    public UserId UserId { get; } = null!;
+    public UserId UserId { get; private set; } = null!;
     public int TotalPoints { get; private set; }
-    public IReadOnlyList<LoyaltyTransaction> Transactions => _transactions.AsReadOnly();
-    public DateTime CreatedOn { get; }
+    public IReadOnlyList<LoyaltyTransaction> Transactions => (_transactions ?? []).AsReadOnly();
+    public DateTime CreatedOn { get; private set; }
     public DateTime? ModifiedOn { get; private set; }
 
     public static LoyaltyAccount Create(UserId userId) =>
@@ -71,5 +73,6 @@ public sealed class LoyaltyAccount : AggregateRoot<LoyaltyAccountId, Guid>, IAud
         CreatedOn = DateTime.UtcNow;
     }
 
+    [JsonConstructor]
     private LoyaltyAccount() { }
 }

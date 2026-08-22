@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Shopizy.SharedKernel.Domain.Models;
 
 namespace Shopizy.Domain.Brands.ValueObjects;
@@ -6,6 +7,7 @@ public sealed class BrandId : AggregateRootId<Guid>
 {
     public override Guid Value { get; protected set; }
 
+    [JsonConstructor]
     private BrandId(Guid value)
     {
         Value = value;

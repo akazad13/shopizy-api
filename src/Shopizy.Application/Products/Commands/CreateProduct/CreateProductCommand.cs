@@ -27,6 +27,7 @@ namespace Shopizy.Application.Products.Commands.CreateProduct;
 /// <param name="Tags"></param>
 /// <param name="Barcode"></param>
 /// <param name="SpecificationIds"></param>
+/// <param name="Highlights"></param>
 public record CreateProductCommand(
     Guid UserId,
     string Name,
@@ -42,5 +43,6 @@ public record CreateProductCommand(
     string Sizes,
     string Tags,
     string Barcode,
-    IList<Guid>? SpecificationIds
+    IList<Guid>? SpecificationIds,
+    string? Highlights = null
 ) : ICommand<ErrorOr<Product>>;

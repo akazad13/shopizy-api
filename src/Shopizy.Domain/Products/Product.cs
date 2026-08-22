@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Shopizy.Domain.Brands.ValueObjects;
 using Shopizy.Domain.Categories.ValueObjects;
 using Shopizy.Domain.Common.CustomErrors;
@@ -14,9 +15,14 @@ namespace Shopizy.Domain.Products;
 /// </summary>
 public sealed class Product : AggregateRoot<ProductId, Guid>, IAuditable
 {
-    private readonly List<ProductImage> _productImages = [];
-    private readonly List<ProductReview> _productReviews = [];
-    private readonly List<ProductVariant> _productVariants = [];
+    [JsonInclude]
+    private List<ProductImage> _productImages = [];
+
+    [JsonInclude]
+    private List<ProductReview> _productReviews = [];
+
+    [JsonInclude]
+    private List<ProductVariant> _productVariants = [];
 
     /// <summary>
     /// Gets the product name.
@@ -32,6 +38,11 @@ public sealed class Product : AggregateRoot<ProductId, Guid>, IAuditable
     /// Gets the detailed description of the product.
     /// </summary>
     public string Description { get; private set; } = null!;
+
+    /// <summary>
+    /// Gets key bullet-point highlights of the product.
+    /// </summary>
+    public string? Highlights { get; private set; }
 
     /// <summary>
     /// Gets the category ID this product belongs to.
@@ -91,7 +102,7 @@ public sealed class Product : AggregateRoot<ProductId, Guid>, IAuditable
     /// <summary>
     /// Gets the average rating of the product.
     /// </summary>
-    public AverageRating AverageRating { get; } = null!;
+    public AverageRating AverageRating { get; private set; } = null!;
 
     /// <summary>
     /// Gets whether the product is active.
@@ -101,27 +112,27 @@ public sealed class Product : AggregateRoot<ProductId, Guid>, IAuditable
     /// <summary>
     /// Gets the date and time when the product was created.
     /// </summary>
-    public DateTime CreatedOn { get; }
+    public DateTime CreatedOn { get; private set; }
 
     /// <summary>
     /// Gets the date and time when the product was last modified.
     /// </summary>
-    public DateTime? ModifiedOn { get; }
+    public DateTime? ModifiedOn { get; private set; }
 
     /// <summary>
     /// Gets the read-only list of product images.
     /// </summary>
-    public IReadOnlyList<ProductImage> ProductImages => _productImages.AsReadOnly();
+    public IReadOnlyList<ProductImage> ProductImages => (_productImages ?? []).AsReadOnly();
 
     /// <summary>
     /// Gets the read-only list of product reviews.
     /// </summary>
-    public IReadOnlyList<ProductReview> ProductReviews => _productReviews.AsReadOnly();
+    public IReadOnlyList<ProductReview> ProductReviews => (_productReviews ?? []).AsReadOnly();
 
     /// <summary>
     /// Gets the read-only list of product variants.
     /// </summary>
-    public IReadOnlyList<ProductVariant> ProductVariants => _productVariants.AsReadOnly();
+    public IReadOnlyList<ProductVariant> ProductVariants => (_productVariants ?? []).AsReadOnly();
 
     /// <summary>
     /// Creates a new product.
@@ -139,6 +150,7 @@ public sealed class Product : AggregateRoot<ProductId, Guid>, IAuditable
     /// <param name="colors">Available colors.</param>
     /// <param name="sizes">Available sizes.</param>
     /// <param name="tags">Product tags.</param>
+    /// <param name="highlights">Bullet-point product highlights.</param>
     /// <returns>A new <see cref="Product"/> instance.</returns>
     public static Product Create(
         string name,
@@ -153,7 +165,8 @@ public sealed class Product : AggregateRoot<ProductId, Guid>, IAuditable
         string barcode,
         string colors,
         string sizes,
-        string tags
+        string tags,
+        string? highlights = null
     )
     {
         var product = new Product(
@@ -171,7 +184,8 @@ public sealed class Product : AggregateRoot<ProductId, Guid>, IAuditable
             colors,
             sizes,
             tags,
-            AverageRating.CreateNew(0)
+            AverageRating.CreateNew(0),
+            highlights
         );
 
         product.AddDomainEvent(new Events.ProductCreatedDomainEvent(product));
@@ -195,6 +209,7 @@ public sealed class Product : AggregateRoot<ProductId, Guid>, IAuditable
     /// <param name="sizes">Available sizes.</param>
     /// <param name="tags">Product tags.</param>
     /// <param name="stockQuantity">Product stock quantity.</param>
+    /// <param name="highlights">Bullet-point product highlights.</param>
     public void Update(
         string name,
         string shortDescription,
@@ -208,7 +223,8 @@ public sealed class Product : AggregateRoot<ProductId, Guid>, IAuditable
         string colors,
         string sizes,
         string tags,
-        int stockQuantity
+        int stockQuantity,
+        string? highlights = null
     )
     {
         var previousEffectivePrice = UnitPrice.Amount * (1 - (Discount ?? 0) / 100m);
@@ -217,6 +233,7 @@ public sealed class Product : AggregateRoot<ProductId, Guid>, IAuditable
         Name = name;
         ShortDescription = shortDescription;
         Description = description;
+        Highlights = highlights;
         CategoryId = categoryId;
         SKU = sku;
         UnitPrice = unitPrice;
@@ -377,7 +394,8 @@ public sealed class Product : AggregateRoot<ProductId, Guid>, IAuditable
         string colors,
         string sizes,
         string tags,
-        AverageRating averageRating
+        AverageRating averageRating,
+        string? highlights = null
     )
         : base(productId)
     {
@@ -395,7 +413,9 @@ public sealed class Product : AggregateRoot<ProductId, Guid>, IAuditable
         Sizes = sizes;
         Tags = tags;
         AverageRating = averageRating;
+        Highlights = highlights;
     }
 
+    [JsonConstructor]
     private Product() { }
 }

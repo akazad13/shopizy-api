@@ -1,11 +1,13 @@
+using System.Text.Json.Serialization;
 using Shopizy.SharedKernel.Domain.Models;
 
 namespace Shopizy.Domain.Common.ValueObjects;
 
 public sealed class Rating : ValueObject
 {
-    public decimal Value { get; }
+    public decimal Value { get; private set; }
 
+    [JsonConstructor]
     private Rating(decimal value)
     {
         Value = value;

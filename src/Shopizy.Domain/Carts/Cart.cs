@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Shopizy.Domain.Carts.Entities;
 using Shopizy.Domain.Carts.ValueObjects;
 using Shopizy.Domain.Users.ValueObjects;
@@ -10,7 +11,8 @@ namespace Shopizy.Domain.Carts;
 /// </summary>
 public sealed class Cart : AggregateRoot<CartId, Guid>, IAuditable
 {
-    private readonly List<CartItem> _cartItems = [];
+    [JsonInclude]
+    private List<CartItem> _cartItems = [];
 
     /// <summary>
     /// Gets the user ID who owns this cart.
@@ -35,7 +37,7 @@ public sealed class Cart : AggregateRoot<CartId, Guid>, IAuditable
     /// <summary>
     /// Gets the read-only list of items in the cart.
     /// </summary>
-    public IReadOnlyList<CartItem> CartItems => _cartItems.AsReadOnly();
+    public IReadOnlyList<CartItem> CartItems => (_cartItems ?? []).AsReadOnly();
 
     /// <summary>
     /// Creates a new shopping cart for a user.
@@ -101,6 +103,7 @@ public sealed class Cart : AggregateRoot<CartId, Guid>, IAuditable
     }
 
 #pragma warning disable CS8618 // EF Core parameterless constructor
+    [JsonConstructor]
     private Cart() { }
 #pragma warning restore CS8618
 }

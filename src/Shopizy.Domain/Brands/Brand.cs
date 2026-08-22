@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Shopizy.Domain.Brands.ValueObjects;
 using Shopizy.SharedKernel.Domain.Models;
 
@@ -53,5 +54,6 @@ public sealed class Brand : AggregateRoot<BrandId, Guid>
         Country = country;
     }
 
+    [JsonConstructor]
     private Brand() { }
 }

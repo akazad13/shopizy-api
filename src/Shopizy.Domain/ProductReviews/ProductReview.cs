@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Shopizy.Domain.Common.ValueObjects;
 using Shopizy.Domain.ProductReviews.ValueObjects;
 using Shopizy.Domain.Products.ValueObjects;
@@ -52,12 +53,13 @@ public sealed class ProductReview : AggregateRoot<ProductReviewId, Guid>, IAudit
     /// </summary>
     public int HelpfulVotesCount { get; private set; }
 
-    private readonly List<string> _imageUrls = [];
+    [JsonInclude]
+    private List<string> _imageUrls = [];
 
     /// <summary>
     /// Gets the list of customer photos attached to this review.
     /// </summary>
-    public IReadOnlyList<string> ImageUrls => _imageUrls.AsReadOnly();
+    public IReadOnlyList<string> ImageUrls => (_imageUrls ?? []).AsReadOnly();
 
     /// <summary>
     /// Gets or sets the date and time when the review was created.
@@ -139,5 +141,6 @@ public sealed class ProductReview : AggregateRoot<ProductReviewId, Guid>, IAudit
         }
     }
 
+    [JsonConstructor]
     private ProductReview() { }
 }

@@ -43,7 +43,8 @@ public class UpdateProductCommandHandler(IProductRepository productRepository)
             colors: cmd.Colors,
             sizes: cmd.Sizes,
             tags: cmd.Tags,
-            stockQuantity: cmd.StockQuantity
+            stockQuantity: cmd.StockQuantity,
+            highlights: cmd.Highlights
         );
 
         return Result.Success;

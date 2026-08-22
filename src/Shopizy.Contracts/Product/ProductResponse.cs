@@ -32,6 +32,7 @@ public record ProductsPagedResponse(
 /// <param name="StockQuantity">The available stock quantity.</param>
 /// <param name="AverageRating">The average rating.</param>
 /// <param name="ProductImages">The list of product images.</param>
+/// <param name="Highlights">Bullet-point product highlights.</param>
 public record ProductResponse(
     Guid ProductId,
     string Name,
@@ -47,7 +48,8 @@ public record ProductResponse(
     string Barcode,
     int StockQuantity,
     AverageRating AverageRating,
-    IList<ProductImageResponse> ProductImages
+    IList<ProductImageResponse> ProductImages,
+    string? Highlights = null
 );
 
 /// <summary>
@@ -72,6 +74,7 @@ public record ProductResponse(
 /// <param name="Specifications">The list of specifications.</param>
 /// <param name="ProductImages">The list of product images.</param>
 /// <param name="ProductReviews">The list of product reviews.</param>
+/// <param name="Highlights">Bullet-point product highlights.</param>
 public record ProductDetailResponse(
     Guid ProductId,
     string Name,
@@ -91,7 +94,8 @@ public record ProductDetailResponse(
     int Favourites,
     IList<string>? Specifications,
     IList<ProductImageResponse> ProductImages,
-    IList<ProductDetailReviewResponse> ProductReviews
+    IList<ProductDetailReviewResponse> ProductReviews,
+    string? Highlights = null
 );
 
 /// <summary>

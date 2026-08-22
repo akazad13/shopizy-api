@@ -43,19 +43,30 @@ public class CartMappingConfig : IRegister
 
         config.NewConfig<Guid, GetCartQuery>().MapWith(userId => new GetCartQuery(userId));
 
+#pragma warning disable CS8625
         config
             .NewConfig<Cart, CartResponse>()
-            .Map(dest => dest.CartId, src => src.Id.Value)
-            .Map(dest => dest.UserId, src => src.UserId.Value)
+            .Map(dest => dest.CartId, src => (object?)src.Id != null ? src.Id.Value : Guid.Empty)
+            .Map(
+                dest => dest.UserId,
+                src => (object?)src.UserId != null ? src.UserId.Value : Guid.Empty
+            )
             .Map(dest => dest.CartItems, src => src.CartItems);
 
         config
             .NewConfig<CartItem, CartItemResponse>()
-            .Map(dest => dest.CartItemId, src => src.Id.Value)
-            .Map(dest => dest.ProductId, src => src.ProductId.Value)
+            .Map(
+                dest => dest.CartItemId,
+                src => (object?)src.Id != null ? src.Id.Value : Guid.Empty
+            )
+            .Map(
+                dest => dest.ProductId,
+                src => (object?)src.ProductId != null ? src.ProductId.Value : Guid.Empty
+            )
             .Map(dest => dest.Color, src => src.Color)
             .Map(dest => dest.Size, src => src.Size)
             .Map(dest => dest.Quantity, src => src.Quantity)
             .Ignore(dest => dest.Product);
+#pragma warning restore CS8625
     }
 }

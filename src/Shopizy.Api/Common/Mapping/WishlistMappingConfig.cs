@@ -50,17 +50,31 @@ public class WishlistMappingConfig : IRegister
             .Map(dest => dest.Name, src => src.request.Name)
             .Map(dest => dest.IsPublic, src => src.request.IsPublic);
 
+#pragma warning disable CS8625
         config
             .NewConfig<Wishlist, WishlistResponse>()
-            .Map(dest => dest.WishlistId, src => src.Id.Value)
-            .Map(dest => dest.UserId, src => src.UserId.Value)
+            .Map(
+                dest => dest.WishlistId,
+                src => (object?)src.Id != null ? src.Id.Value : Guid.Empty
+            )
+            .Map(
+                dest => dest.UserId,
+                src => (object?)src.UserId != null ? src.UserId.Value : Guid.Empty
+            )
             .Map(dest => dest.Name, src => src.Name)
             .Map(dest => dest.IsPublic, src => src.IsPublic)
             .Map(dest => dest.WishlistItems, src => src.WishlistItems);
 
         config
             .NewConfig<WishlistItem, WishlistItemResponse>()
-            .Map(dest => dest.WishlistItemId, src => src.Id.Value)
-            .Map(dest => dest.ProductId, src => src.ProductId.Value);
+            .Map(
+                dest => dest.WishlistItemId,
+                src => (object?)src.Id != null ? src.Id.Value : Guid.Empty
+            )
+            .Map(
+                dest => dest.ProductId,
+                src => (object?)src.ProductId != null ? src.ProductId.Value : Guid.Empty
+            );
+#pragma warning restore CS8625
     }
 }

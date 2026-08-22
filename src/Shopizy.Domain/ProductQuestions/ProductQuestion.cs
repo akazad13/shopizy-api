@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Shopizy.Domain.Common.CustomErrors;
 using Shopizy.Domain.ProductQuestions.Entities;
 using Shopizy.Domain.ProductQuestions.ValueObjects;
@@ -9,12 +10,12 @@ namespace Shopizy.Domain.ProductQuestions;
 
 public sealed class ProductQuestion : AggregateRoot<ProductQuestionId, Guid>, IAuditable
 {
-    public ProductId ProductId { get; } = null!;
-    public UserId AskedByUserId { get; } = null!;
-    public string Question { get; } = null!;
+    public ProductId ProductId { get; private set; } = null!;
+    public UserId AskedByUserId { get; private set; } = null!;
+    public string Question { get; private set; } = null!;
     public ProductAnswer? Answer { get; private set; }
     public bool IsAnswered { get; private set; }
-    public DateTime CreatedOn { get; }
+    public DateTime CreatedOn { get; private set; }
     public DateTime? ModifiedOn { get; private set; }
 
     public static ProductQuestion Create(
@@ -52,5 +53,6 @@ public sealed class ProductQuestion : AggregateRoot<ProductQuestionId, Guid>, IA
         CreatedOn = DateTime.UtcNow;
     }
 
+    [JsonConstructor]
     private ProductQuestion() { }
 }

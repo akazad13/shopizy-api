@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Shopizy.Domain.LoyaltyAccounts.Enums;
 using Shopizy.Domain.LoyaltyAccounts.ValueObjects;
 using Shopizy.SharedKernel.Domain.Models;
@@ -6,10 +7,10 @@ namespace Shopizy.Domain.LoyaltyAccounts.Entities;
 
 public sealed class LoyaltyTransaction : Entity<LoyaltyTransactionId>
 {
-    public int Points { get; }
-    public LoyaltyTransactionType Type { get; }
-    public string Description { get; } = null!;
-    public DateTime CreatedOn { get; }
+    public int Points { get; private set; }
+    public LoyaltyTransactionType Type { get; private set; }
+    public string Description { get; private set; } = null!;
+    public DateTime CreatedOn { get; private set; }
 
     public static LoyaltyTransaction Create(
         int points,
@@ -31,5 +32,6 @@ public sealed class LoyaltyTransaction : Entity<LoyaltyTransactionId>
         CreatedOn = DateTime.UtcNow;
     }
 
+    [JsonConstructor]
     private LoyaltyTransaction() { }
 }

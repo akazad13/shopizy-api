@@ -20,11 +20,16 @@ public class ProductVariantMappingConfig : IRegister
     {
         ArgumentNullException.ThrowIfNull(config);
 
+#pragma warning disable CS8625
         config
             .NewConfig<ProductVariant, ProductVariantResponse>()
-            .Map(dest => dest.VariantId, src => src.Id.Value)
-            .Map(dest => dest.UnitPrice, src => src.UnitPrice.Amount)
-            .Map(dest => dest.Currency, src => src.UnitPrice.Currency.ToString());
+            .Map(dest => dest.VariantId, src => (object?)src.Id != null ? src.Id.Value : Guid.Empty)
+            .Map(dest => dest.UnitPrice, src => src.UnitPrice != null ? src.UnitPrice.Amount : 0m)
+            .Map(
+                dest => dest.Currency,
+                src => src.UnitPrice != null ? src.UnitPrice.Currency.ToString() : "usd"
+            );
+#pragma warning restore CS8625
 
         config
             .NewConfig<(Guid ProductId, AddVariantRequest req), AddVariantCommand>()

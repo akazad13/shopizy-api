@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Shopizy.Domain.Orders.ValueObjects;
 using Shopizy.Domain.Returns.ValueObjects;
 using Shopizy.SharedKernel.Domain.Models;
@@ -22,5 +23,6 @@ public sealed class ReturnItem : Entity<ReturnItemId>
         Quantity = quantity;
     }
 
+    [JsonConstructor]
     private ReturnItem() { } // For EF Core
 }

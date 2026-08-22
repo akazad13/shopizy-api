@@ -32,7 +32,8 @@ public class CreateProductCommandHandler(IProductRepository productRepository)
             barcode: cmd.Barcode,
             colors: cmd.Colors,
             sizes: cmd.Sizes,
-            tags: cmd.Tags
+            tags: cmd.Tags,
+            highlights: cmd.Highlights
         );
 
         await _productRepository.AddAsync(product);

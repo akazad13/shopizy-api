@@ -20,11 +20,15 @@ public class CategoryMappingConfig : IRegister
     {
         ArgumentNullException.ThrowIfNull(config);
 
-        config.NewConfig<Category, CategoryResponse>().Map(dest => dest.Id, src => src.Id.Value);
+#pragma warning disable CS8625
+        config
+            .NewConfig<Category, CategoryResponse>()
+            .Map(dest => dest.Id, src => (object?)src.Id != null ? src.Id.Value : Guid.Empty);
 
         config
             .NewConfig<Category, CategoryTreeResponse>()
-            .Map(dest => dest.Id, src => src.Id.Value);
+            .Map(dest => dest.Id, src => (object?)src.Id != null ? src.Id.Value : Guid.Empty);
+#pragma warning restore CS8625
 
         config.NewConfig<CategoryTree, CategoryTreeResponse>();
 

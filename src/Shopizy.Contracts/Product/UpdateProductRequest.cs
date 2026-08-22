@@ -18,6 +18,7 @@ namespace Shopizy.Contracts.Product;
 /// <param name="Barcode">The barcode.</param>
 /// <param name="StockQuantity">The Stock Quantity</param>
 /// <param name="SpecificationIds">List of specification identifiers.</param>
+/// <param name="Highlights">Bullet-point product highlights.</param>
 public record UpdateProductRequest(
     string Name,
     string ShortDescription,
@@ -33,5 +34,6 @@ public record UpdateProductRequest(
     string Tags,
     string Barcode,
     int StockQuantity,
-    IList<Guid>? SpecificationIds
+    IList<Guid>? SpecificationIds,
+    string? Highlights = null
 );

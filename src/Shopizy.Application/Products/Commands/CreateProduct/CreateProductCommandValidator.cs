@@ -13,7 +13,9 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
 
         RuleFor(x => x.ShortDescription).MaximumLength(100);
 
-        RuleFor(x => x.Description).MaximumLength(200);
+        RuleFor(x => x.Description).MaximumLength(2000);
+
+        RuleFor(x => x.Highlights).MaximumLength(1000);
 
         RuleFor(x => x.CategoryId).NotNull();
 

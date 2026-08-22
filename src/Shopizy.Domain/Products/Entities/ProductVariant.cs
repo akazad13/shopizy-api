@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Shopizy.Domain.Common.ValueObjects;
 using Shopizy.Domain.Products.ValueObjects;
 using Shopizy.SharedKernel.Domain.Models;
@@ -45,5 +46,6 @@ public sealed class ProductVariant : Entity<ProductVariantId>
         IsActive = isActive;
     }
 
+    [JsonConstructor]
     private ProductVariant() { }
 }

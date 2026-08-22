@@ -1,9 +1,11 @@
+using System.Text.Json.Serialization;
 using Shopizy.SharedKernel.Domain.Models;
 
 namespace Shopizy.Domain.Common.ValueObjects;
 
 public sealed class AverageRating : ValueObject
 {
+    [JsonConstructor]
     private AverageRating(decimal value, int numRatings)
     {
         Value = value;

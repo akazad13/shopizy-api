@@ -29,7 +29,8 @@ public sealed class ProductConfigurations : IEntityTypeConfiguration<Product>
 
         builder.Property(p => p.Name).HasMaxLength(50).IsRequired();
         builder.Property(p => p.ShortDescription).HasMaxLength(100);
-        builder.Property(p => p.Description).HasMaxLength(200);
+        builder.Property(p => p.Description).HasMaxLength(2000);
+        builder.Property(p => p.Highlights).HasMaxLength(1000).IsRequired(false);
         builder.Property(p => p.SKU).HasMaxLength(50);
         builder.Property(p => p.StockQuantity);
         builder.Property(p => p.Discount).HasPrecision(18, 2).IsRequired(false);

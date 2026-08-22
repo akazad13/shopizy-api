@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Shopizy.Domain.Categories.ValueObjects;
 using Shopizy.Domain.Products;
 using Shopizy.SharedKernel.Domain.Models;
@@ -9,7 +10,8 @@ namespace Shopizy.Domain.Categories;
 /// </summary>
 public class Category : AggregateRoot<CategoryId, Guid>
 {
-    private readonly List<Product> _products = [];
+    [JsonInclude]
+    private List<Product> _products = [];
 
     /// <summary>
     /// Gets the category name.
@@ -24,7 +26,7 @@ public class Category : AggregateRoot<CategoryId, Guid>
     /// <summary>
     /// Gets the read-only list of products in this category.
     /// </summary>
-    public IReadOnlyList<Product> Products => _products.AsReadOnly();
+    public IReadOnlyList<Product> Products => (_products ?? []).AsReadOnly();
 
     /// <summary>
     /// Creates a new category.
@@ -60,5 +62,6 @@ public class Category : AggregateRoot<CategoryId, Guid>
         ParentId = parentId;
     }
 
+    [JsonConstructor]
     private Category() { }
 }

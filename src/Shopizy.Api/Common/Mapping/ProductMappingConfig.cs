@@ -67,7 +67,8 @@ public class ProductMappingConfig : IRegister
                 src.request.Sizes,
                 src.request.Tags,
                 src.request.Barcode,
-                src.request.SpecificationIds
+                src.request.SpecificationIds,
+                src.request.Highlights
             ));
 
         config
@@ -89,36 +90,60 @@ public class ProductMappingConfig : IRegister
 #pragma warning disable CS8625
         config
             .NewConfig<Product, ProductResponse>()
-            .Map(dest => dest.ProductId, src => src.Id.Value)
-            .Map(dest => dest.CategoryId, src => src.CategoryId.Value)
+            .Map(dest => dest.ProductId, src => (object?)src.Id != null ? src.Id.Value : Guid.Empty)
+            .Map(
+                dest => dest.CategoryId,
+                src => (object?)src.CategoryId != null ? src.CategoryId.Value : Guid.Empty
+            )
             .Map(
                 dest => dest.BrandId,
-                src => (object?)src.BrandId == null ? (Guid?)null : src.BrandId.Value
+                src => (object?)src.BrandId != null ? (Guid?)src.BrandId.Value : null
             )
-            .Map(dest => dest.Price, src => src.UnitPrice.Amount.ToString());
+            .Map(
+                dest => dest.Price,
+                src => src.UnitPrice != null ? src.UnitPrice.Amount.ToString() : "0"
+            );
 
         config
             .NewConfig<Product, ProductDetailResponse>()
-            .Map(dest => dest.ProductId, src => src.Id.Value)
-            .Map(dest => dest.CategoryId, src => src.CategoryId.Value)
+            .Map(dest => dest.ProductId, src => (object?)src.Id != null ? src.Id.Value : Guid.Empty)
+            .Map(
+                dest => dest.CategoryId,
+                src => (object?)src.CategoryId != null ? src.CategoryId.Value : Guid.Empty
+            )
             .Map(dest => dest.Sku, src => src.SKU)
             .Map(
                 dest => dest.BrandId,
-                src => (object?)src.BrandId == null ? (Guid?)null : src.BrandId.Value
+                src => (object?)src.BrandId != null ? (Guid?)src.BrandId.Value : null
             )
-            .Map(dest => dest.Price, src => src.UnitPrice.Amount.ToString());
-#pragma warning restore CS8625
+            .Map(
+                dest => dest.Price,
+                src => src.UnitPrice != null ? src.UnitPrice.Amount.ToString() : "0"
+            );
 
         config
             .NewConfig<ProductImage, ProductImageResponse>()
-            .Map(dest => dest.ProductImageId, src => src.Id.Value);
+            .Map(
+                dest => dest.ProductImageId,
+                src => (object?)src.Id != null ? src.Id.Value : Guid.Empty
+            );
 
         config
             .NewConfig<ProductReview, ProductDetailReviewResponse>()
-            .Map(dest => dest.ProductReviewId, src => src.Id.Value)
-            .Map(dest => dest.Rating, src => src.Rating.Value)
-            .Map(dest => dest.Reviewer, src => $"{src.User.FirstName} {src.User.LastName}")
-            .Map(dest => dest.ReviewerImageUrl, src => src.User.ProfileImageUrl);
+            .Map(
+                dest => dest.ProductReviewId,
+                src => (object?)src.Id != null ? src.Id.Value : Guid.Empty
+            )
+            .Map(dest => dest.Rating, src => src.Rating != null ? src.Rating.Value : 0m)
+            .Map(
+                dest => dest.Reviewer,
+                src => src.User != null ? $"{src.User.FirstName} {src.User.LastName}" : string.Empty
+            )
+            .Map(
+                dest => dest.ReviewerImageUrl,
+                src => src.User != null ? src.User.ProfileImageUrl : null
+            );
+#pragma warning restore CS8625
 
         config
             .NewConfig<(Guid UserId, Guid ProductId, Guid ImageId), DeleteProductImageCommand>()
