@@ -1,5 +1,6 @@
 using Shopizy.Application.Products.Commands.UpdateProduct;
 using Shopizy.Application.UnitTests.TestUtils.Constants;
+using Shopizy.Domain.Common.ValueObjects;
 
 namespace Shopizy.Application.UnitTests.Products.TestUtils;
 
@@ -12,12 +13,11 @@ public static class UpdateProductCommandUtils
             Constants.Product.Name,
             Constants.Product.ShortDescription,
             Constants.Product.Description,
-            Constants.Category.Id.Value,
-            Constants.Product.UnitPrice,
-            Constants.Product.Currency,
+            Constants.Category.Id,
+            Price.CreateNew(Constants.Product.UnitPrice, Constants.Product.Currency),
             Constants.Product.Discount,
             Constants.Product.Sku,
-            Constants.Product.BrandId.Value,
+            Constants.Product.BrandId,
             Constants.Product.Colors,
             Constants.Product.Sizes,
             Constants.Product.Tags,

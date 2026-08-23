@@ -1,6 +1,7 @@
 # 🧠 Shopizy — Workspace Repository Memory & AI Architecture Reference
 
 > **Purpose:** Workspace rule and memory file for AI agents working in Shopizy. Consult this memory file to understand codebase structure, entity graphs, handler conventions, message routing, security mechanisms, and data access patterns without re-scanning the workspace.  
+> **Last Updated:** August 2026  
 > **Framework:** .NET 10 (C# 13) | **Architecture:** Clean Architecture & Domain-Driven Design (DDD)
 
 ---
@@ -52,8 +53,9 @@ shopizy/
 
 ### 2.3 Data Access & EF Core Architecture
 - **Database Engine:** Microsoft SQL Server 2022 (canonical provider).
+- **CQRS Read-Side Readers (`IProductReader`, `IOrderReader`):** Dedicated read-only query abstractions (`ProductReader`, `OrderReader`) encapsulate reporting and aggregations, keeping repositories focused on aggregate persistence.
 - **Concurrency Tokens:** `RowVersion` (`byte[]`) shadow tokens on `Product`, `Cart`, `Order`, `User`. Writes collisions throw `DbUpdateConcurrencyException`, returning HTTP 409 Conflict.
-- **Value Object Converters:** Strongly-typed IDs (`ProductId`, `OrderId`, `UserId`, etc.) and `Price` structs mapped via `HasConversion` in EF Core configuration files.
+- **Value Object Converters & Command Boundaries:** Strongly-typed IDs (`ProductId`, `OrderId`, `UserId`, etc.) and `Price` structs mapped via `HasConversion`. Commands (`CreateProductCommand`, `UpdateProductCommand`) carry domain Value Objects directly; Mapster converts contract DTO primitives at API boundary.
 
 ---
 
@@ -80,8 +82,9 @@ shopizy/
 ## 4. Key Rules for Workspace Edits
 
 1. **Domain Isolation:** Never add external dependencies or infra frameworks to `Shopizy.Domain` or `Shopizy.SharedKernel`.
-2. **Commands & Primitives:** Pass strongly-typed value objects in commands where established (`Price`, `CategoryId`, `BrandId`), using Mapster configs at API boundary.
+2. **Commands & Value Objects:** Pass strongly-typed value objects in commands where established (`Price`, `CategoryId`, `BrandId`), using Mapster configs at API boundary.
 3. **Idempotency Header:** Mutation endpoints like `POST /users/{userId}/orders` require `X-Idempotency-Key` header.
 4. **Owner Authorization:** Always use `ClaimsPrincipalExtensions.AuthorizeOwner(userId)` on user-scoped endpoints.
 5. **LoggerMessage Usage:** Use source-generated `[LoggerMessage]` partial methods in `LoggerMessages.cs` instead of string-interpolated logger calls.
-6. **Tests:** Keep architecture invariants intact in `Shopizy.Architecture.Tests` when adding new projects or layers.
+6. **Password Policy:** Validate passwords using `PasswordRules.StrongPassword()` including complexity and dictionary checks.
+7. **Tests:** Keep architecture invariants intact in `Shopizy.Architecture.Tests` when adding new projects or layers.

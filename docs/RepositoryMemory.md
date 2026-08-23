@@ -60,10 +60,11 @@ shopizy/
   - Poison messages exceeding retry threshold route to `OutboxDeadLetters` and increment `shopizy.outbox.dead_lettered` OTel counters.
 - **Test Synchronizer (`IOutboxDrainer`):** Synchronously drains pending outbox messages in integration tests (`BaseIntegrationTest.DrainOutboxAsync()`).
 
-### 2.3 Data Access & EF Core Architecture
+### 2.3 Data Access, CQRS Readers & EF Core Architecture
 - **Database Engine:** Microsoft SQL Server 2022 (canonical provider).
+- **CQRS Read-Side Readers (`IProductReader`, `IOrderReader`):** Dedicated read-only query abstractions (`ProductReader`, `OrderReader`) encapsulate reporting, aggregations (`GetTotalRevenueAsync`, `GetTopProductsByRevenueAsync`), and read models, keeping repositories focused on aggregate persistence.
 - **Concurrency Tokens:** `RowVersion` (`byte[]`) shadow tokens on `Product`, `Cart`, `Order`, `User`. Unhandled write collisions raise `DbUpdateConcurrencyException`, caught and converted to HTTP 409 Conflict.
-- **Value Object Converters:** Strongly-typed IDs (`ProductId`, `OrderId`, `UserId`, etc.) and `Price` structs mapped via `HasConversion` in EF Core configuration files under `Shopizy.Infrastructure.*/Persistence/*Configurations.cs`.
+- **Value Object Converters & Command Boundaries:** Strongly-typed IDs (`ProductId`, `OrderId`, `UserId`, etc.) and `Price` structs mapped via `HasConversion`. Commands (`CreateProductCommand`, `UpdateProductCommand`) carry domain Value Objects directly; Mapster converts contract DTO primitives at API boundary.
 - **Encapsulation:** Private backing fields (e.g. `_orderItems`, `_imageUrls`) enforce aggregate invariants.
 
 ### 2.4 Caching, Idempotency & Distributed State
@@ -136,6 +137,7 @@ All endpoints follow Minimal API pattern (`IEndpoint` implementations registered
 3. **Security Headers (`SecurityHeadersMiddleware`):** Injects HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, COOP, and CORP headers.
 4. **Rate Limiting:** Auth endpoints capped at 5 req/min/IP; General API endpoints capped at 100 req/min/user.
 5. **Zero-Allocation Logging & PII Masking:** Compile-time `LoggerMessage` delegates with `LogSanitizer` regex masking for emails, credit cards, and tokens.
+6. **Password Policy & Dictionary Check:** `PasswordRules.StrongPassword()` enforces minimum length ($\ge 12$), uppercase, lowercase, digit, special character, and a compromised password dictionary check.
 
 ---
 

@@ -1,5 +1,7 @@
 using ErrorOr;
-using Shopizy.Domain.Common.Enums;
+using Shopizy.Domain.Brands.ValueObjects;
+using Shopizy.Domain.Categories.ValueObjects;
+using Shopizy.Domain.Common.ValueObjects;
 using Shopizy.SharedKernel.Application.Caching;
 using Shopizy.SharedKernel.Application.Messaging;
 
@@ -11,12 +13,11 @@ public record UpdateProductCommand(
     string Name,
     string ShortDescription,
     string Description,
-    Guid CategoryId,
-    decimal UnitPrice,
-    Currency Currency,
+    CategoryId CategoryId,
+    Price UnitPrice,
     decimal Discount,
     string Sku,
-    Guid? BrandId,
+    BrandId? BrandId,
     string Colors,
     string Sizes,
     string Tags,

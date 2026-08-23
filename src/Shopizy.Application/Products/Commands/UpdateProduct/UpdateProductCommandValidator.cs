@@ -19,11 +19,17 @@ public class UpdateProductCommandValidator : AbstractValidator<UpdateProductComm
 
         RuleFor(x => x.Highlights).MaximumLength(1000);
 
-        RuleFor(x => x.CategoryId).NotEmpty();
+        RuleFor(x => x.CategoryId)
+            .NotNull()
+            .Must(c => c is not null && c.Value != Guid.Empty)
+            .WithMessage("Category ID must not be empty.");
 
         RuleFor(x => x.Sku).NotEmpty().MaximumLength(50);
 
-        RuleFor(x => x.UnitPrice).GreaterThan(0);
+        RuleFor(x => x.UnitPrice)
+            .NotNull()
+            .Must(p => p is not null && p.Amount > 0)
+            .WithMessage("Unit price must be greater than zero.");
 
         RuleFor(x => x.Discount).GreaterThanOrEqualTo(0);
 

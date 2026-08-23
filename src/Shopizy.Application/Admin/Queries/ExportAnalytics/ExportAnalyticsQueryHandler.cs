@@ -6,12 +6,12 @@ using Shopizy.SharedKernel.Application.Messaging;
 namespace Shopizy.Application.Admin.Queries.ExportAnalytics;
 
 public class ExportAnalyticsQueryHandler(
-    IOrderRepository orderRepository,
+    IOrderReader orderReader,
     IUserRepository userRepository,
     IProductReader productReader
 ) : IQueryHandler<ExportAnalyticsQuery, ErrorOr<AnalyticsExportFile>>
 {
-    private readonly IOrderRepository _orderRepository = orderRepository;
+    private readonly IOrderReader _orderReader = orderReader;
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IProductReader _productReader = productReader;
 
@@ -20,8 +20,8 @@ public class ExportAnalyticsQueryHandler(
         CancellationToken cancellationToken
     )
     {
-        var totalRevenue = await _orderRepository.GetTotalRevenueAsync();
-        var totalOrders = await _orderRepository.GetTotalOrdersCountAsync();
+        var totalRevenue = await _orderReader.GetTotalRevenueAsync();
+        var totalOrders = await _orderReader.GetTotalOrdersCountAsync();
         var totalUsers = await _userRepository.GetTotalUsersCountAsync();
         var totalProducts = await _productReader.GetTotalCountAsync(cancellationToken);
         var lowStockProducts = await _productReader.GetLowStockAsync(5, cancellationToken);

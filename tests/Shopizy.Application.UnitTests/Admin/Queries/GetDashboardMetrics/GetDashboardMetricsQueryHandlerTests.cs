@@ -10,19 +10,19 @@ namespace Shopizy.Application.UnitTests.Admin.Queries.GetDashboardMetrics;
 
 public class GetDashboardMetricsQueryHandlerTests
 {
-    private readonly Mock<IOrderRepository> _mockOrderRepository;
+    private readonly Mock<IOrderReader> _mockOrderReader;
     private readonly Mock<IUserRepository> _mockUserRepository;
     private readonly Mock<IProductReader> _mockProductReader;
     private readonly GetDashboardMetricsQueryHandler _handler;
 
     public GetDashboardMetricsQueryHandlerTests()
     {
-        _mockOrderRepository = new Mock<IOrderRepository>();
+        _mockOrderReader = new Mock<IOrderReader>();
         _mockUserRepository = new Mock<IUserRepository>();
         _mockProductReader = new Mock<IProductReader>();
 
         _handler = new GetDashboardMetricsQueryHandler(
-            _mockOrderRepository.Object,
+            _mockOrderReader.Object,
             _mockUserRepository.Object,
             _mockProductReader.Object
         );
@@ -35,8 +35,8 @@ public class GetDashboardMetricsQueryHandlerTests
         var query = new GetDashboardMetricsQuery();
         var lowStockProduct = ProductFactory.CreateProduct();
 
-        _mockOrderRepository.Setup(r => r.GetTotalRevenueAsync()).ReturnsAsync(15000.50m);
-        _mockOrderRepository.Setup(r => r.GetTotalOrdersCountAsync()).ReturnsAsync(120);
+        _mockOrderReader.Setup(r => r.GetTotalRevenueAsync()).ReturnsAsync(15000.50m);
+        _mockOrderReader.Setup(r => r.GetTotalOrdersCountAsync()).ReturnsAsync(120);
         _mockUserRepository.Setup(r => r.GetTotalUsersCountAsync()).ReturnsAsync(45);
         _mockProductReader
             .Setup(r => r.GetTotalCountAsync(It.IsAny<CancellationToken>()))

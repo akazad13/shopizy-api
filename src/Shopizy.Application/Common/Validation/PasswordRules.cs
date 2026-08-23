@@ -19,5 +19,18 @@ public static class PasswordRules
             .Matches("[0-9]")
             .WithMessage("Password must contain at least one digit.")
             .Matches("[^a-zA-Z0-9]")
-            .WithMessage("Password must contain at least one special character.");
+            .WithMessage("Password must contain at least one special character.")
+            .Must(password =>
+                string.IsNullOrWhiteSpace(password) || !BannedPasswords.Contains(password)
+            )
+            .WithMessage("Password is too common or easily guessable.");
+
+    private static readonly HashSet<string> BannedPasswords = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Compromised1!",
+        "BannedPassword1!",
+        "SuperSecret1!",
+        "AdminPassword1!",
+        "DefaultPassword1!",
+    };
 }

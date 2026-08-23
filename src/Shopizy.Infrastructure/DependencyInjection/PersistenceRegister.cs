@@ -86,6 +86,7 @@ public static class PersistenceRegister
             .AddScoped<ICategoryRepository, CategoryRepository>()
             .AddScoped<ICartRepository, CartRepository>()
             .AddScoped<IOrderRepository, OrderRepository>()
+            .AddScoped<IOrderReader, OrderReader>()
             .AddScoped<IPaymentRepository, PaymentRepository>()
             .AddScoped<IProductReviewRepository, ProductReviewRepository>()
             .AddScoped<IProductRepository, ProductRepository>()

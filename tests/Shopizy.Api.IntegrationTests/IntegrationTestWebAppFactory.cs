@@ -109,6 +109,26 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsy
             services.RemoveAll(typeof(IRefreshTokenStore));
             services.AddSingleton<IRefreshTokenStore, InMemoryRefreshTokenStore>();
 
+            // Remove background DB workers (OutboxProcessor, PendingOrderExpirationWorker, AbandonedCartReminderWorker)
+            // to prevent background thread polling against test databases undergoing migrations or disposal.
+            var backgroundWorkerTypes = new HashSet<Type>
+            {
+                typeof(Shopizy.Infrastructure.Outbox.OutboxProcessor),
+                typeof(Shopizy.Infrastructure.Orders.Services.PendingOrderExpirationWorker),
+                typeof(Shopizy.Infrastructure.Carts.Services.AbandonedCartReminderWorker),
+            };
+            foreach (
+                var descriptor in services
+                    .Where(sd =>
+                        sd.ImplementationType != null
+                        && backgroundWorkerTypes.Contains(sd.ImplementationType)
+                    )
+                    .ToList()
+            )
+            {
+                services.Remove(descriptor);
+            }
+
             // Mock IPaymentService
             services.RemoveAll(typeof(IPaymentService));
             services.AddScoped<IPaymentService, MockPaymentService>();

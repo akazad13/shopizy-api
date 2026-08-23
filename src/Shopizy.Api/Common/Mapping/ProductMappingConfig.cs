@@ -76,9 +76,25 @@ public class ProductMappingConfig : IRegister
                 (Guid UserId, Guid ProductId, UpdateProductRequest request),
                 UpdateProductCommand
             >()
-            .Map(dest => dest.UserId, src => src.UserId)
-            .Map(dest => dest.ProductId, src => src.ProductId)
-            .Map(dest => dest, src => src.request);
+            .MapWith(src => new UpdateProductCommand(
+                src.UserId,
+                src.ProductId,
+                src.request.Name,
+                src.request.ShortDescription,
+                src.request.Description,
+                CategoryId.Create(src.request.CategoryId),
+                Price.CreateNew(src.request.UnitPrice, (Currency)src.request.Currency),
+                src.request.Discount,
+                src.request.Sku,
+                src.request.BrandId.HasValue ? BrandId.Create(src.request.BrandId.Value) : null,
+                src.request.Colors,
+                src.request.Sizes,
+                src.request.Tags,
+                src.request.Barcode,
+                src.request.StockQuantity,
+                src.request.SpecificationIds,
+                src.request.Highlights
+            ));
 
         config
             .NewConfig<(Guid UserId, Guid ProductId), DeleteProductCommand>()
