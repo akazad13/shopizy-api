@@ -1,6 +1,6 @@
 # Shopizy Project Structure Reference
 
-Last updated: 2026-04-26
+Last updated: 2026-08-23
 
 This document is a quick map of the repository to guide safe, targeted changes.
 Use it before editing to choose the right layer and keep boundaries clear.
@@ -119,11 +119,15 @@ Architecture/dependency-direction tests via `NetArchTest.Rules`, plus a Mapster 
 
 ## Existing Docs (`docs/`)
 
-- `Api.md`: Pointer to the live Swagger UI.
-- `Domain.md`: Domain-focused notes.
+- `RepositoryMemory.md`: High-density map of domain aggregates, messaging pipelines, security, and developer quick reference.
+- `Api.md`: Pointer to the live Swagger UI, OpenAPI spec, and contract versioning rules.
+- `Domain.md`: Aggregate map, state machines, domain events, and concurrency tokens.
 - `EventualConsistency.md`: Outbox / domain-event design and contributor rules.
-- `ImprovementScope.md`: 2026-04-26 audit and roadmap.
-- `ProjectStructure.md`: This structure guide.
+- `FeatureDocumentation.md`: End-to-end guide of all platform features, workflows, and business logic.
+- `FrontendHandoffDoc.md`: Frontend client specification, TypeScript interfaces, and SignalR WebSocket setup.
+- `ImprovementScope.md`: Full-solution architectural audit and completed roadmap.
+- `ProjectStructure.md`: This structure reference guide.
+- `TechnicalDocumentation.md`: Architectural patterns, DDD design, CQRS messaging, caching, and infrastructure.
 - `ThreatModel.md`: STRIDE-style review of the API surface.
 
 ## Change Routing Checklist

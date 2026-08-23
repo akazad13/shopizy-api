@@ -91,24 +91,32 @@ Once the API is running, you can explore the endpoints using Swagger UI.
 
 For detailed guides and architecture specifications, please refer to:
 
+*   **[Repository Memory & Architecture Reference](docs/RepositoryMemory.md)**: High-density map of domain aggregates, messaging pipelines, security, and developer quick reference.
 *   **[Feature Documentation](docs/FeatureDocumentation.md)**: End-to-end guide of all platform features, workflows, and business logic.
 *   **[Technical Documentation](docs/TechnicalDocumentation.md)**: Architectural patterns, DDD design, CQRS messaging, caching, and infrastructure references.
-*   **[API Documentation](docs/Api.md)**: Comprehensive details on API endpoints, requests, and responses.
+*   **[API Documentation](docs/Api.md)**: Details on API endpoints, OpenAPI/Swagger specifications, and contract versioning.
 *   **[Domain Models](docs/Domain.md)**: In-depth explanation of domain aggregates, entities, and value objects.
+*   **[Eventual Consistency & Outbox](docs/EventualConsistency.md)**: In-transaction domain event dispatching and outbox worker policies.
+*   **[Frontend Handoff Guide](docs/FrontendHandoffDoc.md)**: TypeScript interfaces, SignalR integration, and endpoint specifications for frontend developers.
+*   **[Project Structure Reference](docs/ProjectStructure.md)**: Detailed project file structure and layer dependency rules.
+*   **[Threat Model & Security Review](docs/ThreatModel.md)**: STRIDE analysis of identity, storage, and API surface.
+*   **[Improvement Scope & Roadmap](docs/ImprovementScope.md)**: Full-solution architectural audit and completed roadmap.
 
 ## 🏗️ Architecture
 
-The solution follows **Clean Architecture** principles:
+The solution follows **Clean Architecture** and **Domain-Driven Design (DDD)** principles:
 
-*   **Shopizy.Domain**: Contains enterprise logic and types (Entities, Value Objects, Enums). No dependencies.
+*   **Shopizy.Domain**: Contains enterprise logic and types (Aggregates, Entities, Value Objects, Enums, Domain Events). No dependencies.
+*   **Shopizy.SharedKernel**: Contains shared domain and application primitives (`Entity`, `AggregateRoot`, `ValueObject`, `IDispatcher`, `IUnitOfWork`, `ErrorOr`).
 *   **Shopizy.Application**: Contains business logic and use cases. Implements a custom CQRS pattern with Commands and Queries.
     *   **Custom Dispatcher**: A custom `IDispatcher` resolves and executes handlers using dependency injection.
-    *   **Decorator Pattern**: Uses Scrutor to apply cross-cutting concerns like Validation and Unit of Work via decorators, avoiding library-heavy pipeline behaviors.
-*   **Shopizy.Infrastructure**: Implements interfaces defined in Application (Data access, External services). Depends on Application.
-    *   **Multi-Database Support**: Dynamically configure between PostgreSQL (via Npgsql) and SQL Server using the `UsePostgreSql` flag in `appsettings.json`.
-*   **Shopizy.Api**: The entry point (Controllers, Middleware). Depends on Application and Infrastructure.
-    *   **Eventual Consistency**: Uses `EventualConsistencyMiddleware` to dispatch Domain Events asynchronously after database transactions are committed.
-*   **Shopizy.Contracts**: Shared DTOs (Data Transfer Objects).
+    *   **Decorator Pattern**: Uses Scrutor to apply cross-cutting concerns like Validation, Unit of Work, and Caching via decorators, avoiding library-heavy pipeline behaviors.
+*   **Shopizy.Infrastructure**: Implements interfaces defined in Application (Data access, External services, Redis, SignalR, Outbox Processor). Depends on Application.
+    *   **Database Engine**: Configured for Microsoft SQL Server 2022 using EF Core 10 migrations.
+    *   **Distributed State**: Redis-backed caching (`ICacheHelper`), sliding refresh tokens (`IRefreshTokenStore`), and idempotency store (`IIdempotencyStore`).
+*   **Shopizy.Api**: The entry point (Minimal APIs, Middleware, SignalR Hubs). Depends on Application and Infrastructure.
+    *   **Eventual Consistency**: Uses `EventualConsistencyMiddleware` to dispatch Domain Events inside transactions.
+*   **Shopizy.Contracts**: Shared Data Transfer Objects (DTOs) for HTTP request and response models.
 
 ## 🧪 Running Tests
 

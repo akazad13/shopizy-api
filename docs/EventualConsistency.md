@@ -1,5 +1,7 @@
 # Eventual Consistency & Domain Events
 
+[⬅️ Back to README](../README.md) · [Repository Memory](RepositoryMemory.md) · [Domain Models](Domain.md) · [Threat Model](ThreatModel.md)
+
 This doc describes how Shopizy delivers domain events reliably and the rules contributors must follow when writing event handlers.
 
 ## Goals

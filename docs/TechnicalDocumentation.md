@@ -1,5 +1,7 @@
 # Shopizy — Technical Architecture & Implementation Reference
 
+[⬅️ Back to README](../README.md) · [Repository Memory](RepositoryMemory.md) · [Feature Docs](FeatureDocumentation.md) · [API](Api.md)
+
 This document serves as the comprehensive technical guide for developers, architects, and DevOps engineers working on the **Shopizy** codebase.
 
 ---
@@ -148,7 +150,7 @@ public static partial void ShippingRateEstimationError(this ILogger logger, Exce
 
 ## 🧪 10. Testing Strategy & CI/CD Verification
 
-Shopizy maintains a comprehensive test pyramid with **1,063+ automated tests**:
+Shopizy maintains a comprehensive test pyramid with **1,173+ automated tests**:
 
 ```
                   ┌──────────────────────┐

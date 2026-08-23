@@ -1,5 +1,7 @@
 # Shopizy API
 
+[⬅️ Back to README](../README.md) · [Repository Memory](RepositoryMemory.md) · [Domain Models](Domain.md) · [Eventual Consistency](EventualConsistency.md)
+
 The hand-maintained route reference that previously lived here drifted from the implementation. The authoritative source for the API surface is the OpenAPI document generated at runtime.
 
 ## Where to look
