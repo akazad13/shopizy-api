@@ -23,7 +23,10 @@ public class GetPromoCodesEndpoint : ApiEndpoint
                 {
                     return await HandleAsync(
                         mediator,
-                        new GetPromoCodesQuery(pageNumber, pageSize),
+                        new GetPromoCodesQuery(
+                            pageNumber <= 0 ? 1 : pageNumber,
+                            pageSize <= 0 ? 10 : pageSize
+                        ),
                         promoCodes => Results.Ok(mapper.Map<List<PromoCodeResponse>>(promoCodes)),
                         ex => logger.PromoCodeFetchError(ex)
                     );

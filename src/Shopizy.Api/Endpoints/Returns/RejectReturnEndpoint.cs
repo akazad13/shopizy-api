@@ -14,7 +14,7 @@ public class RejectReturnEndpoint : ApiEndpoint
                 "api/v1.0/returns/{returnId:guid}/reject",
                 async (
                     Guid returnId,
-                    RejectReturnRequest request,
+                    [FromBody] RejectReturnRequest request,
                     [FromServices] IDispatcher mediator,
                     ILogger<RejectReturnEndpoint> logger
                 ) =>

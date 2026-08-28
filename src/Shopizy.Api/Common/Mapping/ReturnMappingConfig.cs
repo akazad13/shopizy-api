@@ -17,18 +17,16 @@ public class ReturnMappingConfig : IRegister
                 (Guid UserId, Guid OrderId, RequestReturnRequest request),
                 RequestReturnCommand
             >()
-            .Map(dest => dest.UserId, src => src.UserId)
-            .Map(dest => dest.OrderId, src => src.OrderId)
-            .Map(dest => dest.Reason, src => src.request.Reason)
-            .Map(
-                dest => dest.Items,
-                src =>
-                    src.request.Items.Select(i => new RequestReturnItemCommand(
-                            i.OrderItemId,
-                            i.Quantity
-                        ))
-                        .ToList()
-            );
+            .ConstructUsing(src => new RequestReturnCommand(
+                src.OrderId,
+                src.UserId,
+                src.request.Reason,
+                src.request.Items.Select(i => new RequestReturnItemCommand(
+                        i.OrderItemId,
+                        i.Quantity
+                    ))
+                    .ToList()
+            ));
 
         config
             .NewConfig<ReturnItem, ReturnItemDto>()

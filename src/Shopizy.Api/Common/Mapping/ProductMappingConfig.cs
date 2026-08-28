@@ -106,36 +106,71 @@ public class ProductMappingConfig : IRegister
 #pragma warning disable CS8625
         config
             .NewConfig<Product, ProductResponse>()
-            .Map(dest => dest.ProductId, src => (object?)src.Id != null ? src.Id.Value : Guid.Empty)
-            .Map(
-                dest => dest.CategoryId,
-                src => (object?)src.CategoryId != null ? src.CategoryId.Value : Guid.Empty
-            )
-            .Map(
-                dest => dest.BrandId,
-                src => (object?)src.BrandId != null ? (Guid?)src.BrandId.Value : null
-            )
-            .Map(
-                dest => dest.Price,
-                src => src.UnitPrice != null ? src.UnitPrice.Amount.ToString() : "0"
-            );
+            .ConstructUsing(src => new ProductResponse(
+                (object?)src.Id != null ? src.Id.Value : Guid.Empty,
+                src.Name,
+                src.ShortDescription,
+                src.Description,
+                (object?)src.CategoryId != null ? src.CategoryId.Value : Guid.Empty,
+                (object?)src.UnitPrice != null ? src.UnitPrice.Amount.ToString() : "0",
+                src.Discount ?? 0m,
+                (object?)src.BrandId != null ? (Guid?)src.BrandId.Value : null,
+                src.Sizes,
+                src.Colors,
+                src.Tags,
+                src.Barcode,
+                src.StockQuantity,
+                (object?)src.AverageRating != null
+                    ? new Contracts.Product.AverageRating(
+                        src.AverageRating.Value,
+                        src.AverageRating.NumRatings
+                    )
+                    : new Contracts.Product.AverageRating(0, 0),
+                src.ProductImages.Select(img => new ProductImageResponse(
+                        img.Id.Value,
+                        img.ImageUrl,
+                        img.Seq,
+                        img.PublicId
+                    ))
+                    .ToList(),
+                src.Highlights
+            ));
 
         config
             .NewConfig<Product, ProductDetailResponse>()
-            .Map(dest => dest.ProductId, src => (object?)src.Id != null ? src.Id.Value : Guid.Empty)
-            .Map(
-                dest => dest.CategoryId,
-                src => (object?)src.CategoryId != null ? src.CategoryId.Value : Guid.Empty
-            )
-            .Map(dest => dest.Sku, src => src.SKU)
-            .Map(
-                dest => dest.BrandId,
-                src => (object?)src.BrandId != null ? (Guid?)src.BrandId.Value : null
-            )
-            .Map(
-                dest => dest.Price,
-                src => src.UnitPrice != null ? src.UnitPrice.Amount.ToString() : "0"
-            );
+            .ConstructUsing(src => new ProductDetailResponse(
+                (object?)src.Id != null ? src.Id.Value : Guid.Empty,
+                src.Name,
+                src.ShortDescription,
+                src.Description,
+                (object?)src.CategoryId != null ? src.CategoryId.Value : Guid.Empty,
+                (object?)src.UnitPrice != null ? src.UnitPrice.Amount.ToString() : "0",
+                src.Discount ?? 0m,
+                src.SKU,
+                (object?)src.BrandId != null ? (Guid?)src.BrandId.Value : null,
+                src.Sizes,
+                src.Colors,
+                src.Tags,
+                src.Barcode,
+                src.StockQuantity,
+                (object?)src.AverageRating != null
+                    ? new Contracts.Product.AverageRating(
+                        src.AverageRating.Value,
+                        src.AverageRating.NumRatings
+                    )
+                    : new Contracts.Product.AverageRating(0, 0),
+                src.Favourites,
+                null,
+                src.ProductImages.Select(img => new ProductImageResponse(
+                        img.Id.Value,
+                        img.ImageUrl,
+                        img.Seq,
+                        img.PublicId
+                    ))
+                    .ToList(),
+                new List<ProductDetailReviewResponse>(),
+                src.Highlights
+            ));
 
         config
             .NewConfig<ProductImage, ProductImageResponse>()

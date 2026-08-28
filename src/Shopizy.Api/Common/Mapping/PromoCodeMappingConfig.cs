@@ -31,13 +31,15 @@ public class PromoCodeMappingConfig : IRegister
 
         config
             .NewConfig<PromoCode, PromoCodeResponse>()
-            .Map(dest => dest.PromoCodeId, src => src.Id.Value)
-            .Map(dest => dest.Code, src => src.Code)
-            .Map(dest => dest.Description, src => src.Description)
-            .Map(dest => dest.Discount, src => src.Discount)
-            .Map(dest => dest.IsPercentage, src => src.IsPercentage)
-            .Map(dest => dest.IsActive, src => src.IsActive)
-            .Map(dest => dest.NumOfTimeUsed, src => src.NumOfTimeUsed)
-            .Map(dest => dest.CreatedOn, src => src.CreatedOn);
+            .ConstructUsing(src => new PromoCodeResponse(
+                src.Id.Value,
+                src.Code,
+                src.Description,
+                src.Discount,
+                src.IsPercentage,
+                src.IsActive,
+                src.NumOfTimeUsed,
+                src.CreatedOn
+            ));
     }
 }

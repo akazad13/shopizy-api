@@ -45,6 +45,7 @@ public static class SecurityRegister
             )
             .AddPolicy("Order.Create", policy => policy.RequireClaim(claimName, "create:order"))
             .AddPolicy("Order.Get", policy => policy.RequireClaim(claimName, "get:order"))
+            .AddPolicy("Order.Read", policy => policy.RequireClaim(claimName, "get:order"))
             .AddPolicy("Order.Modify", policy => policy.RequireClaim(claimName, "modify:order"))
             .AddPolicy("Order.Delete", policy => policy.RequireClaim(claimName, "delete:order"))
             .AddPolicy("Cart.Create", policy => policy.RequireClaim(claimName, "create:cart"))
@@ -74,6 +75,7 @@ public static class SecurityRegister
             .AddPolicy("Admin.ViewUsers", policy => policy.RequireRole(adminRole))
             .AddPolicy("Admin.UpdateOrderStatus", policy => policy.RequireRole(adminRole))
             .AddPolicy("Admin.UpdateUserRole", policy => policy.RequireRole(adminRole))
+            .AddPolicy("Order.Manage", policy => policy.RequireRole(adminRole))
             .AddPolicy(
                 "ProductReview.Create",
                 policy => policy.RequireClaim(claimName, "create:review")
