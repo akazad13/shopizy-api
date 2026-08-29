@@ -1,6 +1,6 @@
 -- ==============================================================================
 -- SHOPIZY INITIAL SEED DATA SCRIPT
--- Compatible with current EF Core schema
+-- Verified against current EF Core schema & database migrations
 -- ==============================================================================
 
 -- 1. SEED DEFAULT USER (For Review Author & Testing)
@@ -20,13 +20,13 @@ END;
 -- 2. SEED BRANDS
 IF NOT EXISTS (SELECT 1 FROM [Brands] WHERE [Id] = 'B1000000-0000-0000-0000-000000000001')
 BEGIN
-    INSERT INTO [Brands] ([Id], [Name], [Description], [LogoUrl], [CreatedOn]) VALUES
-        ('B1000000-0000-0000-0000-000000000001', 'Zara', 'Contemporary fashion and clothing', 'https://res.cloudinary.com/akazad13/image/upload/v1729420812/shopizy/zara.png', GETDATE()),
-        ('B1000000-0000-0000-0000-000000000002', 'Calvin Klein', 'Modern minimalism fashion', 'https://res.cloudinary.com/akazad13/image/upload/v1729420812/shopizy/ck.png', GETDATE()),
-        ('B1000000-0000-0000-0000-000000000003', 'H&M', 'Fashion and quality at best price', 'https://res.cloudinary.com/akazad13/image/upload/v1729420812/shopizy/hm.png', GETDATE()),
-        ('B1000000-0000-0000-0000-000000000004', 'Hugo Boss', 'Premium apparel and accessories', 'https://res.cloudinary.com/akazad13/image/upload/v1729420812/shopizy/boss.png', GETDATE()),
-        ('B1000000-0000-0000-0000-000000000005', 'Adidas', 'Athletic and casual apparel', 'https://res.cloudinary.com/akazad13/image/upload/v1729420812/shopizy/adidas.png', GETDATE()),
-        ('B1000000-0000-0000-0000-000000000006', 'Nike', 'Just Do It sport and lifestyle', 'https://res.cloudinary.com/akazad13/image/upload/v1729420812/shopizy/nike.png', GETDATE());
+    INSERT INTO [Brands] ([Id], [Name], [Country], [LogoUrl]) VALUES
+        ('B1000000-0000-0000-0000-000000000001', 'Zara', 'Spain', 'https://res.cloudinary.com/akazad13/image/upload/v1729420812/shopizy/zara.png'),
+        ('B1000000-0000-0000-0000-000000000002', 'Calvin Klein', 'United States', 'https://res.cloudinary.com/akazad13/image/upload/v1729420812/shopizy/ck.png'),
+        ('B1000000-0000-0000-0000-000000000003', 'H&M', 'Sweden', 'https://res.cloudinary.com/akazad13/image/upload/v1729420812/shopizy/hm.png'),
+        ('B1000000-0000-0000-0000-000000000004', 'Hugo Boss', 'Germany', 'https://res.cloudinary.com/akazad13/image/upload/v1729420812/shopizy/boss.png'),
+        ('B1000000-0000-0000-0000-000000000005', 'Adidas', 'Germany', 'https://res.cloudinary.com/akazad13/image/upload/v1729420812/shopizy/adidas.png'),
+        ('B1000000-0000-0000-0000-000000000006', 'Nike', 'United States', 'https://res.cloudinary.com/akazad13/image/upload/v1729420812/shopizy/nike.png');
 END;
 
 -- 3. SEED CATEGORIES
