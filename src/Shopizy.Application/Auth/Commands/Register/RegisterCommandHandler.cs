@@ -37,6 +37,8 @@ public class RegisterCommandHandler(
         "get:wishlist",
         "modify:wishlist",
         "create:wishlist",
+        "create:review",
+        "get:review",
     ];
 
     private readonly IUserRepository _userRepository = userRepository;
