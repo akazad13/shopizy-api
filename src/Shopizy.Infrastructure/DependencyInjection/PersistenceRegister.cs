@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shopizy.Application.Common.Interfaces.Persistence;
@@ -57,7 +58,8 @@ public static class PersistenceRegister
                             o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                         }
                     )
-                    .AddInterceptors(interceptor);
+                    .AddInterceptors(interceptor)
+                    .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
             }
         );
 
