@@ -128,6 +128,10 @@ All endpoints follow Minimal API pattern (`IEndpoint` implementations registered
 - `GET/POST /products/{productId}/reviews`: Review submission & upvoting.
 - `GET/POST/DELETE /users/{userId}/wishlist`: Wishlist management.
 
+### 👥 Admin User Management (`/api/v1.0/admin/users`)
+- `GET /?pageNumber=1&pageSize=10`: Paginated list of users including roles and statistics (`UserDetails`).
+- `PATCH /{userId}/role`: Update a user's role and optionally replace assigned permission IDs (`UpdateUserRoleRequest`).
+
 ---
 
 ## 5. Security & Authorization Architecture

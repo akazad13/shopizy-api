@@ -1,4 +1,4 @@
-﻿using Shopizy.Domain.Orders.ValueObjects;
+using Shopizy.Domain.Orders.ValueObjects;
 using Shopizy.Domain.Users.ValueObjects;
 
 namespace Shopizy.Application.Users.Queries.GetUser;
@@ -8,6 +8,7 @@ public record UserDto(
     string? FirstName,
     string? LastName,
     string Email,
+    string Role,
     string? ProfileImageUrl,
     string? Phone,
     Address? Address,

@@ -210,6 +210,6 @@ Enterprise security posture protecting user identities and API resources.
 ### Key Capabilities
 - **JWT Authentication:** Short-lived access tokens with claim-based authorization policies.
 - **Redis Refresh Tokens:** Secure sliding session tokens with automatic token rotation and revocation.
-- **Role-Based Access Control (RBAC):** Granular permission definitions (`Admin`, `Customer`, `Support`).
+- **Role-Based Access Control (RBAC):** Granular permission definitions (`Admin`, `Customer`), cached name-to-id resolution (`IPermissionLookup`), and Admin endpoints to view user lists and update user roles and permissions (`PATCH /api/v1.0/admin/users/{userId}/role`).
 - **Idempotency Store:** Redis-backed idempotency protection preventing duplicate charge submissions.
 - **Security Headers & Rate Limiting:** Built-in protection against DDoS, brute force, clickjacking, and XSS attacks.

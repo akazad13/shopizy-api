@@ -9,6 +9,7 @@ namespace Shopizy.Contracts.User;
 /// <param name="FirstName">The user's first name.</param>
 /// <param name="LastName">The user's last name.</param>
 /// <param name="Email">The user's email address.</param>
+/// <param name="Role">The user's role.</param>
 /// <param name="ProfileImageUrl">The URL of the user's profile image.</param>
 /// <param name="Phone">The user's phone number.</param>
 /// <param name="Address">The user's address.</param>
@@ -23,6 +24,7 @@ public record UserDetails(
     string? FirstName,
     string? LastName,
     string Email,
+    string Role,
     string? ProfileImageUrl,
     string? Phone,
     Address? Address,

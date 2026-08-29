@@ -86,6 +86,7 @@ public class GetUserQueryHandlerTests
         result.IsError.ShouldBeFalse();
         result.Value.Id.ShouldBe(user.Id);
         result.Value.Email.ShouldBe("john@example.com");
+        result.Value.Role.ShouldBe("Customer");
         result.Value.TotalOrders.ShouldBe(2);
         result.Value.TotalReturns.ShouldBe(1);
     }

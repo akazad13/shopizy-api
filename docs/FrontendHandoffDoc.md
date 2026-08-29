@@ -89,6 +89,7 @@ export interface UserDetails {
   firstName?: string;
   lastName?: string;
   email: string;
+  role: 'Customer' | 'Admin' | string;
   profileImageUrl?: string;
   phone?: string;
   address?: Address;
@@ -113,6 +114,11 @@ export interface NotificationPreferences {
   promotions: boolean;
   priceAlerts: boolean;
   restockAlerts: boolean;
+}
+
+export interface UpdateUserRoleRequest {
+  role: 'Customer' | 'Admin' | string;
+  permissionIds?: string[];
 }
 
 // ==========================================
@@ -314,6 +320,8 @@ export interface GiftCardValidationResponse {
 | `/api/v1.0/users/{userId}` | `GET` | Bearer | Gets user profile and default address |
 | `/api/v1.0/users/{userId}/notification-preferences` | `GET` | Bearer | Gets user notification preferences |
 | `/api/v1.0/users/{userId}/notification-preferences` | `PUT` | Bearer | Updates user notification preferences (Email) |
+| `/api/v1.0/admin/users` | `GET` | Admin Bearer | Gets paginated list of users (`PagedResponse<UserDetails>`) including `role` |
+| `/api/v1.0/admin/users/{userId}/role` | `PATCH` | Admin Bearer | Updates user role and optionally replaces permission set |
 
 ---
 
@@ -356,6 +364,28 @@ export interface GiftCardValidationResponse {
   "promotions": false,
   "priceAlerts": true,
   "restockAlerts": true
+}
+```
+
+#### 4. Update User Role (`PATCH /api/v1.0/admin/users/{userId}/role`)
+> **Note:** `permissionIds` is optional. If omitted, existing user permissions remain unchanged.
+```json
+// Request Body (Role only)
+{
+  "role": "Admin"
+}
+
+// Request Body (Role + Permission Replacement)
+{
+  "role": "Admin",
+  "permissionIds": [
+    "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  ]
+}
+
+// Response (200 OK)
+{
+  "message": "User roles/permissions updated successfully."
 }
 ```
 

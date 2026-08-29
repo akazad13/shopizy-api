@@ -24,6 +24,7 @@ public class GetUserQueryHandlerTestsRefactored
             "First",
             "Last",
             "test@test.com",
+            "Customer",
             null,
             "",
             null,

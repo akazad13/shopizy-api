@@ -433,6 +433,7 @@ public class ContractDTOsTests
             "John",
             "Doe",
             "john@example.com",
+            "Customer",
             "img.png",
             "1234567890",
             null,
@@ -444,6 +445,7 @@ public class ContractDTOsTests
             null
         );
         userDetails.TotalOrders.ShouldBe(5);
+        userDetails.Role.ShouldBe("Customer");
     }
 }
 

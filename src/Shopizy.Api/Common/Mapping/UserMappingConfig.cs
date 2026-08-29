@@ -45,6 +45,7 @@ public class UserMappingConfig : IRegister
         config
             .NewConfig<User, UserDetails>()
             .Map(dest => dest.Id, src => src.Id.Value)
+            .Map(dest => dest.Role, src => src.Role.ToString())
             .Map(
                 dest => dest.Address,
                 src =>

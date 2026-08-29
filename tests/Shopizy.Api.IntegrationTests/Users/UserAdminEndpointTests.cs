@@ -32,6 +32,7 @@ public class UserAdminEndpointTests : BaseIntegrationTest
         );
         pagedResponse.ShouldNotBeNull();
         pagedResponse.Items.ShouldNotBeNull();
+        pagedResponse.Items.ShouldAllBe(u => !string.IsNullOrEmpty(u.Role));
     }
 
     [Fact]
@@ -49,6 +50,31 @@ public class UserAdminEndpointTests : BaseIntegrationTest
 
         // 3. Act
         var updateRoleRequest = new UpdateUserRoleRequest("Admin", new List<Guid>());
+        var response = await HttpClient.PatchAsJsonAsync(
+            $"/api/v1.0/admin/users/{regularUserId}/role",
+            updateRoleRequest,
+            TestContext.Current.CancellationToken
+        );
+
+        // 4. Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task Admin_UpdateUserRole_WithoutPermissionIds_WhenAdmin_ReturnsOk()
+    {
+        // 1. Create a regular user
+        var (_, regularUserId) = await AuthenticateAsNewUserAsync(
+            "TargetUser2",
+            "Test",
+            "targetrole2@example.com"
+        );
+
+        // 2. Authenticate as Admin
+        await AuthenticateAsAdminAsync();
+
+        // 3. Act - only send role, PermissionIds is null
+        var updateRoleRequest = new UpdateUserRoleRequest("Admin");
         var response = await HttpClient.PatchAsJsonAsync(
             $"/api/v1.0/admin/users/{regularUserId}/role",
             updateRoleRequest,

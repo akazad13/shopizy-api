@@ -41,14 +41,14 @@ public class UpdateUserRoleCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_HaveError_When_PermissionIdsIsNull()
+    public async Task Should_NotHaveError_When_PermissionIdsIsNull()
     {
-        var command = new UpdateUserRoleCommand(Guid.NewGuid(), "Admin", null!, Guid.NewGuid());
+        var command = new UpdateUserRoleCommand(Guid.NewGuid(), "Admin", null, Guid.NewGuid());
         var result = await _validator.TestValidateAsync(
             command,
             cancellationToken: TestContext.Current.CancellationToken
         );
-        result.ShouldHaveValidationErrorFor(x => x.PermissionIds);
+        result.ShouldNotHaveValidationErrorFor(x => x.PermissionIds);
     }
 
     [Fact]

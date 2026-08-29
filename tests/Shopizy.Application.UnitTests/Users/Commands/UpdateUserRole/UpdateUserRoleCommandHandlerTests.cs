@@ -88,4 +88,23 @@ public class UpdateUserRoleCommandHandlerTests
         user.Role.ShouldBe(initialRole);
         user.PermissionIds.Count.ShouldBe(0);
     }
+
+    [Fact]
+    public async Task Handle_WhenPermissionIdsIsNull_ShouldUpdateRoleAndRetainPermissions()
+    {
+        // Arrange
+        var user = UserFactory.CreateUser();
+        var initialPermissionCount = user.PermissionIds.Count;
+        var command = new UpdateUserRoleCommand(user.Id.Value, "Admin", null, Guid.NewGuid());
+
+        _mockUserRepository.Setup(r => r.GetUserByIdAsync(user.Id)).ReturnsAsync(user);
+
+        // Act
+        var result = await _handler.Handle(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.IsError.ShouldBeFalse();
+        user.Role.ShouldBe(UserRole.Admin);
+        user.PermissionIds.Count.ShouldBe(initialPermissionCount);
+    }
 }

@@ -9,6 +9,5 @@ public class UpdateUserRoleCommandValidator : AbstractValidator<UpdateUserRoleCo
         RuleFor(x => x.UserId).NotEmpty();
         RuleFor(x => x.ModifiedById).NotEmpty();
         RuleFor(x => x.Role).NotEmpty();
-        RuleFor(x => x.PermissionIds).NotNull();
     }
 }

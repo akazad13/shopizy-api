@@ -29,7 +29,10 @@ public class UpdateUserRoleCommandHandler(IUserRepository userRepository)
             user.UpdateRole(role);
         }
 
-        user.UpdatePermissions([.. command.PermissionIds.Select(PermissionId.Create)]);
+        if (command.PermissionIds is not null)
+        {
+            user.UpdatePermissions([.. command.PermissionIds.Select(PermissionId.Create)]);
+        }
 
         return Result.Success;
     }

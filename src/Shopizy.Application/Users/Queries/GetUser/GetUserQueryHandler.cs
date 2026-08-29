@@ -54,6 +54,7 @@ public class GetUserQueryHandler(IUserRepository userRepository, IOrderRepositor
             user.FirstName,
             user.LastName,
             user.Email,
+            user.Role.ToString(),
             user.ProfileImageUrl,
             user.Phone,
             user.Address,

@@ -29,6 +29,7 @@ public class GetUserTests : BaseIntegrationTest
         );
         userDetails.ShouldNotBeNull();
         userDetails.Id.ShouldBe(userId);
+        userDetails.Role.ShouldBe("Customer");
     }
 
     [Fact]
