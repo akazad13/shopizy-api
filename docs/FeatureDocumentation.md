@@ -196,7 +196,7 @@ Retention and loyalty incentives driving repeat purchase behavior.
 
 ## 12. Email Notifications
 
-### 12. Email Notifications
+### Key Capabilities
 - **Unified Dispatcher (`INotificationDispatcher`):** Routes notifications across transactional email templates and customer subscription preferences.
 - **Email (`IEmailService`):** Rich HTML email dispatching (Order confirmation, password reset, welcome, order status updates, price drops, restocks).
 - **Preference Controls:** Granular customer settings per user (order updates, promotions, price drops, restock alerts).
