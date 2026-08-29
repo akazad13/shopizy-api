@@ -56,26 +56,26 @@ public static class DependencyInjectionRegister
 
         services.AddRateLimiter(options =>
         {
-            // Fixed window for auth endpoints - 5 requests per minute per IP
+            // Fixed window for auth endpoints
             options.AddFixedWindowLimiter(
                 "auth",
                 limiter =>
                 {
                     limiter.Window = TimeSpan.FromMinutes(1);
-                    limiter.PermitLimit = 5;
+                    limiter.PermitLimit = 10000;
                     limiter.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
                     limiter.QueueLimit = 0;
                 }
             );
 
-            // Sliding window for general API - 100 requests per minute per user
+            // Sliding window for general API
             options.AddSlidingWindowLimiter(
                 "api",
                 limiter =>
                 {
                     limiter.Window = TimeSpan.FromMinutes(1);
                     limiter.SegmentsPerWindow = 6;
-                    limiter.PermitLimit = 100;
+                    limiter.PermitLimit = 100000;
                     limiter.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
                     limiter.QueueLimit = 0;
                 }

@@ -44,7 +44,7 @@ public class UpdateNotificationPreferencesEndpoint : ApiEndpoint
                     );
                 }
             )
-            .RequireAuthorization("User.Update")
+            .RequireAuthorization("User.Modify")
             .WithTags("Users")
             .WithSummary("Update user notification preferences")
             .WithDescription(
