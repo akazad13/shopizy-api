@@ -19,7 +19,7 @@ Welcome to the comprehensive feature guide for **Shopizy**, a modern, enterprise
 9. [Customer Reviews, Social Proof & Photos](#9-customer-reviews-social-proof--photos)
 10. [Wishlists, Price-Drop & Restock Alerts](#10-wishlists-price-drop--restock-alerts)
 11. [Loyalty Rewards & Gift Cards](#11-loyalty-rewards--gift-cards)
-12. [Multi-Channel Notifications (Email, SMS, Push)](#12-multi-channel-notifications-email-sms-push)
+12. [Email Notifications](#12-email-notifications)
 13. [Identity, RBAC & Security](#13-identity-rbac--security)
 
 ---
@@ -194,15 +194,12 @@ Retention and loyalty incentives driving repeat purchase behavior.
 
 ---
 
-## 12. Multi-Channel Notifications (Email, SMS, Push)
+## 12. Email Notifications
 
-A unified notification gateway coordinating customer communications.
-
-### Key Capabilities
-- **Unified Dispatcher (`INotificationDispatcher`):** Routes notifications across Email, SMS, and Push simultaneously.
-- **SMS Gateway (`ISmsService`):** Transactional SMS alerts for order updates and verification codes.
-- **Push Notifications (`IPushNotificationService`):** Mobile and web push notifications.
-- **Customer Notification Preferences:** Granular opt-in/opt-out settings for Order Updates, Marketing Promotions, Price Drops, and Restock Alerts.
+### 12. Email Notifications
+- **Unified Dispatcher (`INotificationDispatcher`):** Routes notifications across transactional email templates and customer subscription preferences.
+- **Email (`IEmailService`):** Rich HTML email dispatching (Order confirmation, password reset, welcome, order status updates, price drops, restocks).
+- **Preference Controls:** Granular customer settings per user (order updates, promotions, price drops, restock alerts).
 
 ---
 

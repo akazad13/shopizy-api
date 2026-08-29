@@ -104,7 +104,6 @@ export interface UserAddress extends Address {
 export interface NotificationPreferences {
   userId: string;
   emailEnabled: boolean;
-  pushEnabled: boolean;
   orderUpdates: boolean;
   promotions: boolean;
   priceAlerts: boolean;
@@ -309,7 +308,7 @@ export interface GiftCardValidationResponse {
 | `/api/v1.0/auth/reset-password` | `POST` | Anonymous | Resets password using `resetToken` |
 | `/api/v1.0/users/{userId}` | `GET` | Bearer | Gets user profile, default address, and 2FA status |
 | `/api/v1.0/users/{userId}/notification-preferences` | `GET` | Bearer | Gets user notification preferences |
-| `/api/v1.0/users/{userId}/notification-preferences` | `PUT` | Bearer | Updates user notification preferences (Email/Push) |
+| `/api/v1.0/users/{userId}/notification-preferences` | `PUT` | Bearer | Updates user notification preferences (Email) |
 
 ---
 
@@ -344,12 +343,10 @@ export interface GiftCardValidationResponse {
 ```
 
 #### 3. Update Notification Preferences (`PUT /api/v1.0/users/{userId}/notification-preferences`)
-> **Note for AI:** SMS/Phone options are removed from the platform. Use `emailEnabled` and `pushEnabled`.
+> **Note for AI:** SMS/Phone and Push notification options are removed from the platform. Use `emailEnabled`.
 ```json
-// Request Body
 {
   "emailEnabled": true,
-  "pushEnabled": true,
   "orderUpdates": true,
   "promotions": false,
   "priceAlerts": true,
@@ -555,7 +552,7 @@ sequenceDiagram
 * `GET /api/v1.0/users/{userId}/wishlist` — View saved items.
 * `PATCH /api/v1.0/users/{userId}/wishlist` — Add item to wishlist.
 * `DELETE /api/v1.0/users/{userId}/wishlist/items/{productId}` — Remove item.
-* **Automatic Background Alerts:** When a user has a product in their wishlist, the backend automatically dispatches Email / Push notifications when:
+* **Automatic Background Alerts:** When a user has a product in their wishlist, the backend automatically dispatches Email notifications when:
   1. Price drops (`ProductPriceDroppedDomainEvent`).
   2. Out-of-stock item is restocked (`ProductBackInStockDomainEvent`).
 

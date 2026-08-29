@@ -1110,7 +1110,7 @@
             "description": "Updates notification channels and subscription preferences.",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"emailEnabled\": true,\n  \"pushEnabled\": true,\n  \"orderUpdates\": true,\n  \"promotions\": false,\n  \"priceAlerts\": true,\n  \"restockAlerts\": true\n}",
+              "raw": "{\n  \"emailEnabled\": true,\n  \"orderUpdates\": true,\n  \"promotions\": false,\n  \"priceAlerts\": true,\n  \"restockAlerts\": true\n}",
               "options": {
                 "raw": {
                   "language": "json"
