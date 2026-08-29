@@ -1,25 +1,17 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shopizy.Application.Common.Interfaces.Services;
-using Shopizy.Domain.Orders.ValueObjects;
 
 namespace Shopizy.Infrastructure.Services.Shipping;
 
 /// <summary>
-/// Service providing multi-carrier shipping rate estimation and live package tracking.
+/// Service providing fixed shipping rates for Standard, Express, and Premium tiers and package tracking.
 /// </summary>
 public class ShippingCarrierService(
     IOptions<ShippingSettings> options,
     ILogger<ShippingCarrierService> logger
 ) : IShippingCarrierService
 {
-    private static readonly Action<ILogger, string, decimal, Exception?> LogRatesEstimated =
-        LoggerMessage.Define<string, decimal>(
-            LogLevel.Information,
-            new EventId(1, nameof(EstimateShippingRatesAsync)),
-            "Estimated shipping rates for destination: {Country}, Subtotal: {Subtotal}"
-        );
-
     private static readonly Action<ILogger, string, string, Exception?> LogShipmentTracked =
         LoggerMessage.Define<string, string>(
             LogLevel.Information,
@@ -30,100 +22,44 @@ public class ShippingCarrierService(
     private readonly ShippingSettings _settings = options.Value;
     private readonly ILogger<ShippingCarrierService> _logger = logger;
 
-    public Task<IReadOnlyList<ShippingRateEstimateDto>> EstimateShippingRatesAsync(
-        Address destinationAddress,
-        decimal totalWeightKg,
-        decimal subtotal,
+    public Task<IReadOnlyList<ShippingRateEstimateDto>> GetShippingMethodsAsync(
         CancellationToken cancellationToken = default
     )
     {
-        var weightSurcharge = Math.Max(0, totalWeightKg) * _settings.WeightRatePerKg;
-        var isInternational =
-            !string.Equals(destinationAddress.Country, "US", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(
-                destinationAddress.Country,
-                "USA",
-                StringComparison.OrdinalIgnoreCase
-            );
-
-        var internationalMultiplier = isInternational ? 2.5m : 1.0m;
-        var rates = new List<ShippingRateEstimateDto>();
-
-        // 1. Free / Standard Shipping
-        var isFreeShipping = subtotal >= _settings.FreeShippingThreshold && !isInternational;
-        var standardCost = isFreeShipping
-            ? 0m
-            : Math.Round(
-                (_settings.BaseStandardRate + weightSurcharge) * internationalMultiplier,
-                2
-            );
-
-        rates.Add(
-            new ShippingRateEstimateDto(
-                Carrier: "USPS",
-                ServiceCode: "USPS_GROUND",
-                ServiceName: isFreeShipping
-                    ? "Free Standard Shipping (USPS)"
-                    : "Standard Ground (USPS)",
-                Rate: standardCost,
+        var rates = new List<ShippingRateEstimateDto>
+        {
+            // 1. Standard Delivery (Fixed price e.g. $4.99, 3-5 business days)
+            new(
+                Carrier: "Standard",
+                ServiceCode: "STANDARD",
+                ServiceName: "Standard Delivery",
+                Rate: _settings.StandardShippingRate,
                 Currency: "USD",
-                EstimatedDaysMin: isInternational ? 7 : 3,
-                EstimatedDaysMax: isInternational ? 14 : 5
-            )
-        );
-
-        // 2. UPS Ground / Standard
-        var upsRate = Math.Round(
-            (_settings.BaseStandardRate * 1.2m + weightSurcharge) * internationalMultiplier,
-            2
-        );
-        rates.Add(
-            new ShippingRateEstimateDto(
-                Carrier: "UPS",
-                ServiceCode: "UPS_GROUND",
-                ServiceName: "UPS Ground",
-                Rate: upsRate,
+                EstimatedDaysMin: 3,
+                EstimatedDaysMax: 5
+            ),
+            // 2. Express Delivery (Fixed price e.g. $9.99, 2-3 business days)
+            new(
+                Carrier: "Express",
+                ServiceCode: "EXPRESS",
+                ServiceName: "Express Delivery",
+                Rate: _settings.ExpressShippingRate,
                 Currency: "USD",
-                EstimatedDaysMin: isInternational ? 6 : 2,
-                EstimatedDaysMax: isInternational ? 10 : 4
-            )
-        );
-
-        // 3. FedEx Express / Priority
-        var fedexExpressRate = Math.Round(
-            (_settings.BaseExpressRate + weightSurcharge * 1.5m) * internationalMultiplier,
-            2
-        );
-        rates.Add(
-            new ShippingRateEstimateDto(
-                Carrier: "FedEx",
-                ServiceCode: "FEDEX_2DAY",
-                ServiceName: "FedEx 2-Day Express",
-                Rate: fedexExpressRate,
-                Currency: "USD",
-                EstimatedDaysMin: isInternational ? 3 : 2,
-                EstimatedDaysMax: isInternational ? 5 : 2
-            )
-        );
-
-        // 4. Overnight / DHL Express
-        var overnightRate = Math.Round(
-            (_settings.BaseOvernightRate + weightSurcharge * 2.0m) * internationalMultiplier,
-            2
-        );
-        rates.Add(
-            new ShippingRateEstimateDto(
-                Carrier: isInternational ? "DHL" : "FedEx",
-                ServiceCode: isInternational ? "DHL_EXPRESS" : "FEDEX_OVERNIGHT",
-                ServiceName: isInternational ? "DHL Express Worldwide" : "FedEx Priority Overnight",
-                Rate: overnightRate,
+                EstimatedDaysMin: 2,
+                EstimatedDaysMax: 3
+            ),
+            // 3. Premium Delivery (Fixed price e.g. $19.99, 1-2 business days)
+            new(
+                Carrier: "Premium",
+                ServiceCode: "PREMIUM",
+                ServiceName: "Premium Delivery",
+                Rate: _settings.PremiumShippingRate,
                 Currency: "USD",
                 EstimatedDaysMin: 1,
-                EstimatedDaysMax: isInternational ? 3 : 1
-            )
-        );
+                EstimatedDaysMax: 2
+            ),
+        };
 
-        LogRatesEstimated(_logger, destinationAddress.Country, subtotal, null);
         return Task.FromResult<IReadOnlyList<ShippingRateEstimateDto>>(rates.AsReadOnly());
     }
 

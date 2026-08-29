@@ -517,7 +517,7 @@
             "description": "Resets the password using the reset token.",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"token\": \"{{resetPasswordToken}}\",\n  \"newPassword\": \"NewTestUser@1234!\"\n}",
+              "raw": "{\n  \"resetToken\": \"{{resetPasswordToken}}\",\n  \"newPassword\": \"NewTestUser@1234!\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1110,7 +1110,7 @@
             "description": "Updates notification channels and subscription preferences.",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"emailEnabled\": true,\n  \"smsEnabled\": true,\n  \"pushEnabled\": true,\n  \"orderUpdates\": true,\n  \"promotions\": false,\n  \"priceAlerts\": true,\n  \"restockAlerts\": true\n}",
+              "raw": "{\n  \"emailEnabled\": true,\n  \"pushEnabled\": true,\n  \"orderUpdates\": true,\n  \"promotions\": false,\n  \"priceAlerts\": true,\n  \"restockAlerts\": true\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3830,13 +3830,13 @@
       ]
     },
     {
-      "name": "12 — Shipping & Estimation",
+      "name": "12 — Shipping & Tracking",
       "description": "Shipping rate estimations and real-time package tracking.",
       "item": [
         {
-          "name": "Estimate Shipping Rates",
+          "name": "Get Shipping Methods",
           "request": {
-            "method": "POST",
+            "method": "GET",
             "header": [
               {
                 "key": "Content-Type",
@@ -3846,7 +3846,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1.0/shipping/estimate-rates",
+              "raw": "{{baseUrl}}/api/v1.0/shipping/methods",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -3854,20 +3854,11 @@
                 "api",
                 "v1.0",
                 "shipping",
-                "estimate-rates"
+                "methods"
               ],
               "query": []
             },
-            "description": "Estimates multi-carrier shipping rates for a given payload.",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"fromZipCode\": \"10001\",\n  \"toZipCode\": \"90210\",\n  \"weightKg\": 0.5,\n  \"orderTotal\": 99.99\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
+            "description": "Retrieves available fixed shipping methods (Standard, Express, Premium) and delivery timeframes."
           },
           "event": [
             {
@@ -3876,7 +3867,8 @@
                 "exec": [
                   "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
                   "const r = pm.response.json();",
-                  "pm.test('Has rates', () => pm.expect(Array.isArray(r)).to.be.true);"
+                  "pm.test('Has shipping methods', () => pm.expect(Array.isArray(r)).to.be.true);",
+                  "pm.test('Contains Standard delivery', () => pm.expect(r.some(m => m.serviceCode === 'STANDARD')).to.be.true);"
                 ],
                 "type": "text/javascript"
               }
@@ -5097,7 +5089,7 @@
       "description": "Transactional messaging and customer SMS alerts.",
       "item": [
         {
-          "name": "Send SMS Notification (Admin)",
+          "name": "Send Email Notification (Admin)",
           "request": {
             "method": "POST",
             "header": [
@@ -5115,7 +5107,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1.0/notifications/sms",
+              "raw": "{{baseUrl}}/api/v1.0/notifications/email",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -5123,14 +5115,14 @@
                 "api",
                 "v1.0",
                 "notifications",
-                "sms"
+                "email"
               ],
               "query": []
             },
-            "description": "Dispatches an SMS alert to a customer phone number.",
+            "description": "Dispatches an email notification to a customer email address.",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"phoneNumber\": \"+15551234567\",\n  \"message\": \"Your Shopizy order has been received!\"\n}",
+              "raw": "{\n  \"to\": \"{{userEmail}}\",\n  \"subject\": \"Shopizy Notification\",\n  \"body\": \"Your Shopizy order has been processed!\"\n}",
               "options": {
                 "raw": {
                   "language": "json"

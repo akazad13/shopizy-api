@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using Shopizy.Domain.Orders.ValueObjects;
 using Shopizy.Infrastructure.Services.Shipping;
 using Shouldly;
 using Xunit;
@@ -21,43 +20,25 @@ public class ShippingCarrierServiceTests
     }
 
     [Fact]
-    public async Task EstimateShippingRatesAsync_SubtotalAboveThreshold_ShouldOfferFreeStandardShipping()
+    public async Task GetShippingMethodsAsync_ShouldReturnStandardExpressPremiumOptions()
     {
-        // Arrange
-        var address = Address.CreateNew("123 Main St", "Dallas", "TX", "US", "75001");
-
         // Act
-        var rates = await _sut.EstimateShippingRatesAsync(
-            address,
-            totalWeightKg: 1.5m,
-            subtotal: 120m
-        );
+        var rates = await _sut.GetShippingMethodsAsync();
 
         // Assert
-        rates.ShouldNotBeEmpty();
-        var usps = rates.First(r => r.Carrier == "USPS");
-        usps.Rate.ShouldBe(0m);
-        usps.ServiceName.ShouldContain("Free");
-    }
+        rates.Count.ShouldBe(3);
 
-    [Fact]
-    public async Task EstimateShippingRatesAsync_InternationalAddress_ShouldApplyMultiplierAndNoFreeShipping()
-    {
-        // Arrange
-        var address = Address.CreateNew("456 Queen St", "Toronto", "ON", "CA", "M5V2A8");
+        var standard = rates.First(r => r.ServiceCode == "STANDARD");
+        standard.Rate.ShouldBe(_settings.StandardShippingRate);
+        standard.ServiceName.ShouldBe("Standard Delivery");
 
-        // Act
-        var rates = await _sut.EstimateShippingRatesAsync(
-            address,
-            totalWeightKg: 2m,
-            subtotal: 200m
-        );
+        var express = rates.First(r => r.ServiceCode == "EXPRESS");
+        express.Rate.ShouldBe(_settings.ExpressShippingRate);
+        express.ServiceName.ShouldBe("Express Delivery");
 
-        // Assert
-        rates.ShouldNotBeEmpty();
-        var usps = rates.First(r => r.Carrier == "USPS");
-        usps.Rate.ShouldBeGreaterThan(0m);
-        rates.ShouldContain(r => r.Carrier == "DHL");
+        var premium = rates.First(r => r.ServiceCode == "PREMIUM");
+        premium.Rate.ShouldBe(_settings.PremiumShippingRate);
+        premium.ServiceName.ShouldBe("Premium Delivery");
     }
 
     [Fact]

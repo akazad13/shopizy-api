@@ -12,7 +12,6 @@ public enum OrderStatus
 
 public enum DeliveryMethods
 {
-    Free = 0,
     Standard = 1,
     Express = 2,
     Premium = 3,

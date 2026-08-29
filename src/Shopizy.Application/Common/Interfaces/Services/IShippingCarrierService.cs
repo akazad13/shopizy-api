@@ -1,9 +1,7 @@
-using Shopizy.Domain.Orders.ValueObjects;
-
 namespace Shopizy.Application.Common.Interfaces.Services;
 
 /// <summary>
-/// DTO representing an estimated shipping rate from a carrier service.
+/// DTO representing a shipping method from a carrier service.
 /// </summary>
 public record ShippingRateEstimateDto(
     string Carrier,
@@ -33,17 +31,14 @@ public record ShippingTrackingInfoDto(
 public record TrackingCheckpointDto(DateTime TimestampUtc, string Location, string Description);
 
 /// <summary>
-/// Service interface for querying live shipping carrier rates and parcel tracking.
+/// Service interface for querying available shipping methods and parcel tracking.
 /// </summary>
 public interface IShippingCarrierService
 {
     /// <summary>
-    /// Estimates available shipping rates and delivery timeframes for the destination address.
+    /// Retrieves available fixed shipping methods and delivery timeframes.
     /// </summary>
-    Task<IReadOnlyList<ShippingRateEstimateDto>> EstimateShippingRatesAsync(
-        Address destinationAddress,
-        decimal totalWeightKg,
-        decimal subtotal,
+    Task<IReadOnlyList<ShippingRateEstimateDto>> GetShippingMethodsAsync(
         CancellationToken cancellationToken = default
     );
 
