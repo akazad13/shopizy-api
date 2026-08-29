@@ -1,7 +1,7 @@
 namespace Shopizy.Application.Common.Interfaces.Services;
 
 /// <summary>
-/// Unified multi-channel notification dispatcher routing messages across Email, SMS, and Push.
+/// Unified notification dispatcher routing messages across Email and Push.
 /// </summary>
 public interface INotificationDispatcher
 {
@@ -11,7 +11,6 @@ public interface INotificationDispatcher
     Task DispatchNotificationAsync(
         Guid userId,
         string? email,
-        string? phoneNumber,
         string subject,
         string message,
         string? targetUrl = null,

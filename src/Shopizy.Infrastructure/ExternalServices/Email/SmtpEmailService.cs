@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shopizy.Application.Common.Interfaces.Services;
 
-namespace Shopizy.Infrastructure.Services;
+namespace Shopizy.Infrastructure.ExternalServices.Email;
 
 public class SmtpEmailService(
     IOptions<EmailSettings> emailSettings,

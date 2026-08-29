@@ -7,6 +7,7 @@ using Shopizy.Application.Common.Interfaces.Services;
 using Shopizy.Infrastructure.Common.Caching;
 using Shopizy.Infrastructure.Common.HealthChecks;
 using Shopizy.Infrastructure.Common.Idempotency;
+using Shopizy.Infrastructure.ExternalServices.Email;
 using Shopizy.Infrastructure.ExternalServices.MediaUploader.CloudinaryService;
 using Shopizy.Infrastructure.ExternalServices.PaymentGateway.Stripe;
 using Shopizy.Infrastructure.Security.RefreshTokens;
@@ -88,6 +89,7 @@ public static class ExternalServicesRegister
 
         services.AddHealthChecks().AddCheck<RedisHealthCheck>("redis");
 
+        // Email Service
         services.Configure<EmailSettings>(configuration.GetSection(EmailSettings.Section));
         var emailSettings =
             configuration.GetSection(EmailSettings.Section).Get<EmailSettings>()
@@ -126,13 +128,7 @@ public static class ExternalServicesRegister
             Shopizy.Infrastructure.Services.Search.ProductSearchEngine
         >();
 
-        // Multi-channel notifications (SMS & Push)
-        services.Configure<Shopizy.Infrastructure.Services.Notifications.SmsSettings>(
-            configuration.GetSection(
-                Shopizy.Infrastructure.Services.Notifications.SmsSettings.Section
-            )
-        );
-        services.AddScoped<ISmsService, Shopizy.Infrastructure.Services.Notifications.SmsService>();
+        // Notifications (Push & Multi-channel Dispatcher)
         services.AddScoped<
             IPushNotificationService,
             Shopizy.Infrastructure.Services.Notifications.PushNotificationService

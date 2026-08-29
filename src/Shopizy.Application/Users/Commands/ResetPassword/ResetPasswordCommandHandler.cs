@@ -17,7 +17,7 @@ public class ResetPasswordCommandHandler(
         CancellationToken cancellationToken = default
     )
     {
-        var user = await userRepository.GetUserByResetTokenAsync(request.Token);
+        var user = await userRepository.GetUserByResetTokenAsync(request.ResetToken);
         if (user is null)
         {
             return Error.NotFound(
@@ -26,7 +26,7 @@ public class ResetPasswordCommandHandler(
             );
         }
 
-        if (!user.IsPasswordResetTokenValid(request.Token))
+        if (!user.IsPasswordResetTokenValid(request.ResetToken))
         {
             return Error.Validation(
                 "PasswordReset.ExpiredToken",

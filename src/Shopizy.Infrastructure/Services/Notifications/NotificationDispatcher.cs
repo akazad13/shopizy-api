@@ -5,7 +5,6 @@ namespace Shopizy.Infrastructure.Services.Notifications;
 
 public class NotificationDispatcher(
     IEmailService emailService,
-    ISmsService smsService,
     IPushNotificationService pushService,
     ILogger<NotificationDispatcher> logger
 ) : INotificationDispatcher
@@ -14,18 +13,16 @@ public class NotificationDispatcher(
         LoggerMessage.Define<Guid, string>(
             LogLevel.Information,
             new EventId(1, nameof(DispatchNotificationAsync)),
-            "Multi-channel notification dispatched for User: {UserId}, Subject: '{Subject}'"
+            "Notification dispatched for User: {UserId}, Subject: '{Subject}'"
         );
 
     private readonly IEmailService _emailService = emailService;
-    private readonly ISmsService _smsService = smsService;
     private readonly IPushNotificationService _pushService = pushService;
     private readonly ILogger<NotificationDispatcher> _logger = logger;
 
     public async Task DispatchNotificationAsync(
         Guid userId,
         string? email,
-        string? phoneNumber,
         string subject,
         string message,
         string? targetUrl = null,
@@ -42,14 +39,7 @@ public class NotificationDispatcher(
             tasks.Add(_emailService.SendAsync(email, subject, message, cancellationToken));
         }
 
-        // 2. SMS Channel
-        if (prefs.SmsEnabled && !string.IsNullOrWhiteSpace(phoneNumber))
-        {
-            var smsText = $"{subject}: {message}";
-            tasks.Add(_smsService.SendSmsAsync(phoneNumber, smsText, cancellationToken));
-        }
-
-        // 3. Push Channel
+        // 2. Push Channel
         if (prefs.PushEnabled && userId != Guid.Empty)
         {
             tasks.Add(

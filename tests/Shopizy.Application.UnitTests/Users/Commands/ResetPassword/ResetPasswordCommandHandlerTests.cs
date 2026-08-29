@@ -35,7 +35,7 @@ public class ResetPasswordCommandHandlerTests
         var command = new ResetPasswordCommand("invalid-token", "NewPassword123!");
 
         _mockUserRepository
-            .Setup(r => r.GetUserByResetTokenAsync(command.Token))
+            .Setup(r => r.GetUserByResetTokenAsync(command.ResetToken))
             .ReturnsAsync((Shopizy.Domain.Users.User?)null);
 
         // Act

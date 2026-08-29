@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Moq;
-using Shopizy.Infrastructure.Services;
+using Shopizy.Infrastructure.ExternalServices.Email;
 using Shouldly;
 using Xunit;
 

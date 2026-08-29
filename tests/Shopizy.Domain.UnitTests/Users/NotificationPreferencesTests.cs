@@ -15,7 +15,6 @@ public class NotificationPreferencesTests
         var prefs = NotificationPreference.CreateDefault();
 
         prefs.EmailEnabled.ShouldBeTrue();
-        prefs.SmsEnabled.ShouldBeTrue();
         prefs.PushEnabled.ShouldBeTrue();
         prefs.OrderUpdates.ShouldBeTrue();
         prefs.Promotions.ShouldBeTrue();
@@ -28,7 +27,6 @@ public class NotificationPreferencesTests
     {
         var prefs = NotificationPreference.Create(
             emailEnabled: false,
-            smsEnabled: true,
             pushEnabled: false,
             orderUpdates: true,
             promotions: false,
@@ -37,7 +35,6 @@ public class NotificationPreferencesTests
         );
 
         prefs.EmailEnabled.ShouldBeFalse();
-        prefs.SmsEnabled.ShouldBeTrue();
         prefs.PushEnabled.ShouldBeFalse();
         prefs.OrderUpdates.ShouldBeTrue();
         prefs.Promotions.ShouldBeFalse();
@@ -52,7 +49,6 @@ public class NotificationPreferencesTests
 
         prefs.Update(
             emailEnabled: false,
-            smsEnabled: false,
             pushEnabled: false,
             orderUpdates: false,
             promotions: false,
@@ -61,7 +57,6 @@ public class NotificationPreferencesTests
         );
 
         prefs.EmailEnabled.ShouldBeFalse();
-        prefs.SmsEnabled.ShouldBeFalse();
         prefs.PushEnabled.ShouldBeFalse();
         prefs.OrderUpdates.ShouldBeFalse();
         prefs.Promotions.ShouldBeFalse();
@@ -85,7 +80,6 @@ public class NotificationPreferencesTests
 
         user.UpdateNotificationPreferences(
             emailEnabled: false,
-            smsEnabled: false,
             pushEnabled: true,
             orderUpdates: true,
             promotions: false,
@@ -94,7 +88,6 @@ public class NotificationPreferencesTests
         );
 
         user.NotificationPreferences.EmailEnabled.ShouldBeFalse();
-        user.NotificationPreferences.SmsEnabled.ShouldBeFalse();
         user.NotificationPreferences.PushEnabled.ShouldBeTrue();
         user.NotificationPreferences.OrderUpdates.ShouldBeTrue();
         user.NotificationPreferences.Promotions.ShouldBeFalse();

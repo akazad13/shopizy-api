@@ -18,7 +18,7 @@ public class ResetPasswordEndpoint : ApiEndpoint
                     ILogger<ResetPasswordEndpoint> logger
                 ) =>
                 {
-                    var command = new ResetPasswordCommand(request.Token, request.NewPassword);
+                    var command = new ResetPasswordCommand(request.ResetToken, request.NewPassword);
 
                     return await HandleAsync(
                         mediator,

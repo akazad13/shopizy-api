@@ -1,3 +1,4 @@
+using Shopizy.Application.Common.EmailTemplates;
 using Shopizy.Application.Common.Interfaces.Persistence;
 using Shopizy.Application.Common.Interfaces.Services;
 using Shopizy.Domain.Orders.Events;
@@ -23,8 +24,8 @@ public class OrderPaidEmailDomainEventHandler(
 
         await emailService.SendAsync(
             to: user.Email,
-            subject: $"Payment Received for Order #{domainEvent.OrderId.Value}",
-            body: $"Hi {user.FirstName},\n\nWe have received payment for your order #{domainEvent.OrderId.Value}. We are currently processing your shipment.\n\nThank you for shopping with Shopizy!",
+            subject: EmailTemplates.OrderPaid.GetSubject(domainEvent.OrderId.Value),
+            body: EmailTemplates.OrderPaid.BuildBody(user.FirstName, domainEvent.OrderId.Value),
             cancellationToken: cancellationToken
         );
     }

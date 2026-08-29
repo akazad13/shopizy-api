@@ -81,9 +81,6 @@ public sealed class UserConfigurations : IEntityTypeConfiguration<User>
                 npb.Property(np => np.EmailEnabled)
                     .HasColumnName("Notification_EmailEnabled")
                     .HasDefaultValue(true);
-                npb.Property(np => np.SmsEnabled)
-                    .HasColumnName("Notification_SmsEnabled")
-                    .HasDefaultValue(true);
                 npb.Property(np => np.PushEnabled)
                     .HasColumnName("Notification_PushEnabled")
                     .HasDefaultValue(true);

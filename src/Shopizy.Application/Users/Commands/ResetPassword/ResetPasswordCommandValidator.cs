@@ -7,7 +7,7 @@ public class ResetPasswordCommandValidator : AbstractValidator<ResetPasswordComm
 {
     public ResetPasswordCommandValidator()
     {
-        RuleFor(x => x.Token).NotEmpty();
+        RuleFor(x => x.ResetToken).NotEmpty();
         RuleFor(x => x.NewPassword).StrongPassword();
     }
 }

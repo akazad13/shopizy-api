@@ -1,3 +1,4 @@
+using Shopizy.Application.Common.EmailTemplates;
 using Shopizy.Application.Common.Interfaces.Persistence;
 using Shopizy.Application.Common.Interfaces.Services;
 using Shopizy.Domain.Orders.Events;
@@ -24,8 +25,12 @@ public class OrderCancelledEmailDomainEventHandler(
 
         await emailService.SendAsync(
             to: user.Email,
-            subject: $"Order #{order.Id.Value} Cancelled",
-            body: $"Hi {user.FirstName},\n\nYour order #{order.Id.Value} has been cancelled. Reason: {order.CancellationReason ?? "Customer request"}.\n\nIf you have any questions, please contact customer support.",
+            subject: EmailTemplates.OrderCancelled.GetSubject(order.Id.Value),
+            body: EmailTemplates.OrderCancelled.BuildBody(
+                user.FirstName,
+                order.Id.Value,
+                order.CancellationReason
+            ),
             cancellationToken: cancellationToken
         );
     }

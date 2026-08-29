@@ -1,16 +1,13 @@
 namespace Shopizy.Domain.Users.Entities;
 
 /// <summary>
-/// Owned type encapsulating multi-channel notification preferences for a <see cref="User"/>.
+/// Owned type encapsulating notification preferences for a <see cref="User"/>.
 /// Stored in the same Users table row via EF owned-entity mapping.
 /// </summary>
 public sealed class NotificationPreference
 {
     /// <summary>Gets whether email notifications are enabled.</summary>
     public bool EmailEnabled { get; private set; } = true;
-
-    /// <summary>Gets whether SMS notifications are enabled.</summary>
-    public bool SmsEnabled { get; private set; } = true;
 
     /// <summary>Gets whether push notifications are enabled.</summary>
     public bool PushEnabled { get; private set; } = true;
@@ -37,7 +34,6 @@ public sealed class NotificationPreference
     /// </summary>
     public static NotificationPreference Create(
         bool emailEnabled,
-        bool smsEnabled,
         bool pushEnabled,
         bool orderUpdates,
         bool promotions,
@@ -47,7 +43,6 @@ public sealed class NotificationPreference
         new()
         {
             EmailEnabled = emailEnabled,
-            SmsEnabled = smsEnabled,
             PushEnabled = pushEnabled,
             OrderUpdates = orderUpdates,
             Promotions = promotions,
@@ -60,7 +55,6 @@ public sealed class NotificationPreference
     /// </summary>
     public void Update(
         bool emailEnabled,
-        bool smsEnabled,
         bool pushEnabled,
         bool orderUpdates,
         bool promotions,
@@ -69,7 +63,6 @@ public sealed class NotificationPreference
     )
     {
         EmailEnabled = emailEnabled;
-        SmsEnabled = smsEnabled;
         PushEnabled = pushEnabled;
         OrderUpdates = orderUpdates;
         Promotions = promotions;

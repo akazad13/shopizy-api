@@ -4,6 +4,7 @@ using Shopizy.Application.Common.Interfaces.Persistence;
 using Shopizy.Domain.Common.CustomErrors;
 using Shopizy.Domain.Users;
 using Shopizy.Domain.Users.Enums;
+using Shopizy.SharedKernel.Application.Interfaces.Persistence;
 using Shopizy.SharedKernel.Application.Messaging;
 
 namespace Shopizy.Application.Auth.Commands.Register;
@@ -14,10 +15,12 @@ namespace Shopizy.Application.Auth.Commands.Register;
 /// <param name="userRepository"></param>
 /// <param name="passwordManager"></param>
 /// <param name="permissionLookup"></param>
+/// <param name="unitOfWork"></param>
 public class RegisterCommandHandler(
     IUserRepository userRepository,
     IPasswordManager passwordManager,
-    IPermissionLookup permissionLookup
+    IPermissionLookup permissionLookup,
+    IUnitOfWork unitOfWork
 ) : ICommandHandler<RegisterCommand, ErrorOr<Success>>
 {
     private static readonly string[] s_customerPermissionNames =
@@ -44,6 +47,7 @@ public class RegisterCommandHandler(
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IPasswordManager _passwordManager = passwordManager;
     private readonly IPermissionLookup _permissionLookup = permissionLookup;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
     /// <summary>
     /// Handles the user registration process including validation, password hashing, and cart creation.
@@ -94,6 +98,7 @@ public class RegisterCommandHandler(
         );
 
         await _userRepository.AddAsync(user);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success;
     }

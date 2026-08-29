@@ -34,6 +34,7 @@ public class RegisterCommandHandlerTests
     private readonly Mock<IUserRepository> _mockUserRepository;
     private readonly Mock<IPasswordManager> _mockPasswordManager;
     private readonly Mock<IPermissionLookup> _mockPermissionLookup;
+    private readonly Mock<Shopizy.SharedKernel.Application.Interfaces.Persistence.IUnitOfWork> _mockUnitOfWork;
     private readonly RegisterCommandHandler _handler;
 
     public RegisterCommandHandlerTests()
@@ -41,6 +42,8 @@ public class RegisterCommandHandlerTests
         _mockUserRepository = new Mock<IUserRepository>();
         _mockPasswordManager = new Mock<IPasswordManager>();
         _mockPermissionLookup = new Mock<IPermissionLookup>();
+        _mockUnitOfWork =
+            new Mock<Shopizy.SharedKernel.Application.Interfaces.Persistence.IUnitOfWork>();
         _mockPermissionLookup
             .Setup(p =>
                 p.GetIdsByNamesAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>())
@@ -49,7 +52,8 @@ public class RegisterCommandHandlerTests
         _handler = new RegisterCommandHandler(
             _mockUserRepository.Object,
             _mockPasswordManager.Object,
-            _mockPermissionLookup.Object
+            _mockPermissionLookup.Object,
+            _mockUnitOfWork.Object
         );
     }
 

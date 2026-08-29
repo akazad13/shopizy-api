@@ -5,7 +5,7 @@ public static partial class LoggerMessages
     [LoggerMessage(
         EventId = 1070,
         Level = LogLevel.Error,
-        Message = "An error occurred while sending SMS notification."
+        Message = "An error occurred while sending email notification."
     )]
-    public static partial void SmsDispatchError(this ILogger logger, Exception ex);
+    public static partial void EmailDispatchError(this ILogger logger, Exception ex);
 }

@@ -6,7 +6,7 @@ namespace Shopizy.Infrastructure.Services.Notifications;
 public class PushNotificationService(ILogger<PushNotificationService> logger)
     : IPushNotificationService
 {
-    private static readonly Action<ILogger, Guid, string, Exception?> LogPushSent =
+    private static readonly Action<ILogger, Guid, string, Exception?> s_logPushSent =
         LoggerMessage.Define<Guid, string>(
             LogLevel.Information,
             new EventId(1, nameof(SendPushNotificationAsync)),
@@ -28,7 +28,7 @@ public class PushNotificationService(ILogger<PushNotificationService> logger)
             return Task.FromResult(false);
         }
 
-        LogPushSent(_logger, userId, title, null);
+        s_logPushSent(_logger, userId, title, null);
         return Task.FromResult(true);
     }
 }

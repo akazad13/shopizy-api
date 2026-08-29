@@ -1,3 +1,4 @@
+using Shopizy.Application.Common.EmailTemplates;
 using Shopizy.Application.Common.Interfaces.Services;
 using Shopizy.Domain.Users.Events;
 using Shopizy.SharedKernel.Application.Messaging;
@@ -16,8 +17,8 @@ public class UserWelcomeEmailDomainEventHandler(IEmailService emailService)
 
         await emailService.SendAsync(
             to: user.Email,
-            subject: "Welcome to Shopizy!",
-            body: $"Hi {user.FirstName},\n\nWelcome to Shopizy! Your account has been created successfully.\n\nHappy shopping!",
+            subject: EmailTemplates.Welcome.Subject,
+            body: EmailTemplates.Welcome.BuildBody(user.FirstName),
             cancellationToken: cancellationToken
         );
     }

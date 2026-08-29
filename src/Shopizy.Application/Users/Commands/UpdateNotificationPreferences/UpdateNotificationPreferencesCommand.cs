@@ -5,12 +5,11 @@ using Shopizy.SharedKernel.Application.Messaging;
 namespace Shopizy.Application.Users.Commands.UpdateNotificationPreferences;
 
 /// <summary>
-/// Command to update a user's multi-channel notification preferences.
+/// Command to update a user's notification preferences.
 /// </summary>
 public record UpdateNotificationPreferencesCommand(
     Guid UserId,
     bool EmailEnabled,
-    bool SmsEnabled,
     bool PushEnabled,
     bool OrderUpdates,
     bool Promotions,

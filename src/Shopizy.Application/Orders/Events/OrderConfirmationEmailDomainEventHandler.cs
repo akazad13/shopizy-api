@@ -1,3 +1,4 @@
+using Shopizy.Application.Common.EmailTemplates;
 using Shopizy.Application.Common.Interfaces.Persistence;
 using Shopizy.Application.Common.Interfaces.Services;
 using Shopizy.Domain.Orders.Events;
@@ -27,8 +28,13 @@ public class OrderConfirmationEmailDomainEventHandler(
 
         await emailService.SendAsync(
             to: user.Email,
-            subject: $"Order Confirmation #{order.Id.Value}",
-            body: $"Hi {user.FirstName},\n\nYour order #{order.Id.Value} has been placed successfully.\n\nOrder total: {total.Amount} {total.Currency}\n\nThank you for shopping with Shopizy!",
+            subject: EmailTemplates.OrderConfirmation.GetSubject(order.Id.Value),
+            body: EmailTemplates.OrderConfirmation.BuildBody(
+                user.FirstName,
+                order.Id.Value,
+                total.Amount,
+                total.Currency.ToString()
+            ),
             cancellationToken: cancellationToken
         );
     }

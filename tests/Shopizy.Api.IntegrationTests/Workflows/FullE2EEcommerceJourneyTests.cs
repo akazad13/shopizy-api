@@ -140,7 +140,6 @@ public class FullE2EEcommerceJourneyTests(IntegrationTestWebAppFactory factory)
             true,
             true,
             true,
-            true,
             false,
             true,
             true
