@@ -30,7 +30,7 @@ public class CreateGiftCardEndpoint : ApiEndpoint
                     );
                 }
             )
-            .RequireAuthorization("Admin")
+            .RequireAuthorization("GiftCard.Create")
             .WithTags("GiftCards")
             .WithSummary("Create gift card")
             .WithDescription("Creates a new gift card.")

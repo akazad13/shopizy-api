@@ -34,7 +34,7 @@ public class GetLoyaltyAccountEndpoint : ApiEndpoint
                     );
                 }
             )
-            .RequireAuthorization("User.Get")
+            .RequireAuthorization("Loyalty.Get")
             .WithTags("LoyaltyAccounts")
             .WithSummary("Get loyalty account")
             .WithDescription("Returns the loyalty account and transaction history for a user.")

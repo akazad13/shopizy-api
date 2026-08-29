@@ -23,16 +23,24 @@ public class GetPaymentByIdEndpoint : ApiEndpoint
                     ILogger<GetPaymentByIdEndpoint> logger
                 ) =>
                 {
-                    // Payment ownership is not easily verified purely by path,
-                    // ideally we'd check if the user is an admin or the owner.
-                    // For now, we will require "Payment.Read" or "Order.Read" permission if those exist,
-                    // or just rely on the overall Authorize directive if it's admin.
                     var query = new GetPaymentByIdQuery(paymentId);
 
                     return await HandleAsync(
                         mediator,
                         query,
-                        payment => Results.Ok(mapper.Map<PaymentDto>(payment)),
+                        payment =>
+                        {
+                            if (!user.IsInRole("Admin") && !user.IsAuthorized(payment.UserId.Value))
+                            {
+                                return CustomResults.Problem([
+                                    ErrorOr.Error.Forbidden(
+                                        description: "You are not authorized to view this payment."
+                                    ),
+                                ]);
+                            }
+
+                            return Results.Ok(mapper.Map<PaymentDto>(payment));
+                        },
                         ex => logger.PaymentFetchError(ex)
                     );
                 }

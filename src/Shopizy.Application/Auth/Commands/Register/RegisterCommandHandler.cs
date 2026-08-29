@@ -1,6 +1,7 @@
 using ErrorOr;
 using Shopizy.Application.Common.Interfaces.Authentication;
 using Shopizy.Application.Common.Interfaces.Persistence;
+using Shopizy.Application.Common.Security.Permissions;
 using Shopizy.Domain.Common.CustomErrors;
 using Shopizy.Domain.Users;
 using Shopizy.Domain.Users.Enums;
@@ -23,27 +24,6 @@ public class RegisterCommandHandler(
     IUnitOfWork unitOfWork
 ) : ICommandHandler<RegisterCommand, ErrorOr<Success>>
 {
-    private static readonly string[] s_customerPermissionNames =
-    [
-        "create:cart",
-        "create:order",
-        "delete:cart",
-        "delete:order",
-        "get:cart",
-        "get:order",
-        "get:category",
-        "get:product",
-        "get:user",
-        "modify:cart",
-        "modify:order",
-        "modify:user",
-        "get:wishlist",
-        "modify:wishlist",
-        "create:wishlist",
-        "create:review",
-        "get:review",
-    ];
-
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IPasswordManager _passwordManager = passwordManager;
     private readonly IPermissionLookup _permissionLookup = permissionLookup;
@@ -84,7 +64,7 @@ public class RegisterCommandHandler(
         var hashedPassword = _passwordManager.CreateHashString(command.Password);
 
         var permissionIds = await _permissionLookup.GetIdsByNamesAsync(
-            s_customerPermissionNames,
+            RolePermissions.Customer,
             cancellationToken
         );
 

@@ -28,7 +28,19 @@ public class GetPaymentByOrderEndpoint : ApiEndpoint
                     return await HandleAsync(
                         mediator,
                         query,
-                        payment => Results.Ok(mapper.Map<PaymentDto>(payment)),
+                        payment =>
+                        {
+                            if (!user.IsInRole("Admin") && !user.IsAuthorized(payment.UserId.Value))
+                            {
+                                return CustomResults.Problem([
+                                    ErrorOr.Error.Forbidden(
+                                        description: "You are not authorized to view this payment."
+                                    ),
+                                ]);
+                            }
+
+                            return Results.Ok(mapper.Map<PaymentDto>(payment));
+                        },
                         ex => logger.PaymentFetchError(ex)
                     );
                 }

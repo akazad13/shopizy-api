@@ -44,6 +44,7 @@ public sealed class PermissionConfigurations : IEntityTypeConfiguration<Permissi
             CreatePermission("9b259d3d-b634-4232-9deb-e5fdb20d7a64", "get:wishlist"),
             CreatePermission("759b8d6d-ffda-4c99-bf29-ed335c029a5c", "modify:wishlist"),
             CreatePermission("d99cab25-5af2-4b9c-9fad-385e4715d7f2", "create:wishlist"),
+            CreatePermission("11a0778b-51b4-4ca5-9ce8-7359deb36d33", "delete:wishlist"),
             CreatePermission("b25fd8ef-723d-47d1-8b31-648a69733975", "get:dashboard"),
             CreatePermission("c3a1e8f2-4d7b-4e9a-b123-8f5d2e6a1c34", "create:review"),
             CreatePermission("a7b2c9d4-5e3f-4a1b-9c8d-2f6e0b4a7d91", "get:review")

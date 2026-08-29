@@ -37,7 +37,7 @@ public class RedeemPointsEndpoint : ApiEndpoint
                     );
                 }
             )
-            .RequireAuthorization("User.Modify")
+            .RequireAuthorization("Loyalty.Redeem")
             .WithTags("LoyaltyAccounts")
             .WithSummary("Redeem loyalty points")
             .WithDescription(

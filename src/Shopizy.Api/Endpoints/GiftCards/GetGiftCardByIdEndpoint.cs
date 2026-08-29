@@ -31,7 +31,7 @@ public class GetGiftCardByIdEndpoint : ApiEndpoint
                     );
                 }
             )
-            .RequireAuthorization("Admin")
+            .RequireAuthorization("GiftCard.Get")
             .WithTags("GiftCards")
             .WithSummary("Get gift card by ID")
             .WithDescription("Retrieves gift card details by its unique ID.")

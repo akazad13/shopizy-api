@@ -36,7 +36,7 @@ public class AnswerQuestionEndpoint : ApiEndpoint
                     );
                 }
             )
-            .RequireAuthorization("Admin")
+            .RequireAuthorization("Question.Answer")
             .WithTags("ProductQuestions")
             .WithSummary("Answer a product question")
             .WithDescription("Allows an admin to answer a product question.")

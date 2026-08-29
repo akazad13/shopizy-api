@@ -30,7 +30,7 @@ public class GetGiftCardsEndpoint : ApiEndpoint
                     );
                 }
             )
-            .RequireAuthorization("Admin")
+            .RequireAuthorization("GiftCard.Get")
             .WithTags("GiftCards")
             .WithSummary("Get gift cards")
             .WithDescription("Returns a paginated list of all gift cards.")

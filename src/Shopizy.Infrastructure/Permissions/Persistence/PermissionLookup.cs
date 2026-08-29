@@ -38,6 +38,14 @@ public sealed class PermissionLookup(IServiceScopeFactory scopeFactory) : IPermi
         return ids;
     }
 
+    public async Task<IReadOnlyList<PermissionId>> GetAllIdsAsync(
+        CancellationToken cancellationToken = default
+    )
+    {
+        var map = _byName ?? await LoadAsync(cancellationToken).ConfigureAwait(false);
+        return map.Values.ToList();
+    }
+
     public void Invalidate() => _byName = null;
 
     private async Task<IReadOnlyDictionary<string, PermissionId>> LoadAsync(

@@ -34,7 +34,7 @@ public class AskQuestionEndpoint : ApiEndpoint
                     );
                 }
             )
-            .RequireAuthorization()
+            .RequireAuthorization("Question.Ask")
             .WithTags("ProductQuestions")
             .WithSummary("Ask a product question")
             .WithDescription("Allows an authenticated user to ask a question about a product.")

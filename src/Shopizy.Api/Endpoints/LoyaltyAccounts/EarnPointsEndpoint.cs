@@ -31,7 +31,7 @@ public class EarnPointsEndpoint : ApiEndpoint
                     );
                 }
             )
-            .RequireAuthorization("Admin")
+            .RequireAuthorization("Loyalty.Earn")
             .WithTags("LoyaltyAccounts")
             .WithSummary("Earn loyalty points")
             .WithDescription("Admin grants loyalty points to a user's account.")

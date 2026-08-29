@@ -19,6 +19,12 @@ public interface IPermissionLookup
     );
 
     /// <summary>
+    /// Returns all existing <see cref="PermissionId"/> values in the system.
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    Task<IReadOnlyList<PermissionId>> GetAllIdsAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Drops the in-memory cache so the next call refreshes from the database.
     /// </summary>
     void Invalidate();
