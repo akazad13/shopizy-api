@@ -68,7 +68,6 @@ public class SmtpEmailService(
         catch (Exception ex)
         {
             s_emailFailed(logger, to, subject, ex);
-            throw;
         }
     }
 }

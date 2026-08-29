@@ -304,7 +304,7 @@
             "description": "Authenticates admin credentials and returns tokens.",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"abul.kalam@gmail.com\",\n  \"password\": \"TestAdmin@1234!\"\n}",
+              "raw": "{\n  \"email\": \"abul.kalam@gmail.com\",\n  \"password\": \"TestUser@1234!\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
