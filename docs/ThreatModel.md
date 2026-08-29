@@ -51,7 +51,7 @@ Tenants:
 |---|---|
 | Stack traces / connection strings leaking via 500 responses | `GlobalExceptionHandler` returns sanitized `ProblemDetails` and only logs raw exception when `IsServerSide=true`. |
 | Cache poisoning leaking other users' data | Cache keys include user-scoped identifiers where applicable; idempotency replay scope is `userId:path:idempotencyKey`. |
-| OAuth / API keys committed | Empty placeholders in `appsettings*.json`; secrets sourced from env vars / user-secrets. Stripe key bound via `IStripeClient` from options, not the global static. |
+| API keys committed | Empty placeholders in `appsettings*.json`; secrets sourced from env vars / user-secrets. Stripe key bound via `IStripeClient` from options, not the global static. |
 | Refresh tokens leaking from a Redis snapshot | Stored as SHA-256 hash, never plaintext. |
 | PII in logs | Source-generated `LoggerMessage` definitions limit interpolation; no email/password values are logged. |
 

@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Shopizy.Application.Common.Interfaces.Authentication;
 using Shopizy.Infrastructure.Security.CurrentUserProvider;
 using Shopizy.Infrastructure.Security.Hashing;
-using Shopizy.Infrastructure.Security.Totp;
 
 namespace Shopizy.Infrastructure.DependencyInjection;
 
@@ -12,7 +11,6 @@ public static class SecurityRegister
     {
         services.AddScoped<IPasswordManager, PasswordManager>();
         services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
-        services.AddScoped<ITotpHelper, TotpHelper>();
 
         const string claimName = "permissions";
         const string adminRole = "Admin";

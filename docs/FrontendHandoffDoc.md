@@ -86,19 +86,24 @@ export interface AuthResponse {
 
 export interface UserDetails {
   id: string;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
-  role: string;
-  isTwoFactorEnabled: boolean;
-  addresses: UserAddress[];
-  defaultAddressId?: string;
-  createdAtUtc: string;
+  profileImageUrl?: string;
+  phone?: string;
+  address?: Address;
+  totalOrders: number;
+  totalReviewed: number;
+  totalFavorites: number;
+  totalReturns: number;
+  createdOn: string;
+  modifiedOn?: string;
 }
 
-export interface UserAddress extends Address {
-  id: string;
+export interface UserAddressResponse extends Address {
+  addressId: string;
   isDefault: boolean;
+  createdOn: string;
 }
 
 export interface NotificationPreferences {
@@ -306,7 +311,7 @@ export interface GiftCardValidationResponse {
 | `/api/v1.0/auth/refresh` | `POST` | Anonymous | Obtains a new JWT token using sliding refresh token |
 | `/api/v1.0/auth/forgot-password` | `POST` | Anonymous | Sends password reset email link with `resetToken` |
 | `/api/v1.0/auth/reset-password` | `POST` | Anonymous | Resets password using `resetToken` |
-| `/api/v1.0/users/{userId}` | `GET` | Bearer | Gets user profile, default address, and 2FA status |
+| `/api/v1.0/users/{userId}` | `GET` | Bearer | Gets user profile and default address |
 | `/api/v1.0/users/{userId}/notification-preferences` | `GET` | Bearer | Gets user notification preferences |
 | `/api/v1.0/users/{userId}/notification-preferences` | `PUT` | Bearer | Updates user notification preferences (Email) |
 

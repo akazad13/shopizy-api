@@ -63,12 +63,6 @@ public sealed class User : AggregateRoot<UserId, Guid>, IAuditable
     /// <summary>Gets the password reset token expiry.</summary>
     public DateTime? PasswordResetTokenExpiry => Credentials.PasswordResetTokenExpiry;
 
-    /// <summary>Gets the two-factor authentication secret.</summary>
-    public string? TwoFactorSecret => Credentials.TwoFactorSecret;
-
-    /// <summary>Gets whether two-factor authentication is enabled.</summary>
-    public bool IsTwoFactorEnabled => Credentials.IsTwoFactorEnabled;
-
     /// <summary>
     /// Gets the user's customer ID for payment processing.
     /// </summary>
@@ -335,13 +329,4 @@ public sealed class User : AggregateRoot<UserId, Guid>, IAuditable
 
     /// <summary>Clears the password reset token after use.</summary>
     public void ClearPasswordResetToken() => Credentials.ClearPasswordResetToken();
-
-    /// <summary>Generates a new TOTP secret and marks 2FA as pending confirmation.</summary>
-    public string EnableTwoFactor() => Credentials.EnableTwoFactor();
-
-    /// <summary>Marks 2FA as fully enabled after code verification.</summary>
-    public void ConfirmTwoFactor() => Credentials.ConfirmTwoFactor();
-
-    /// <summary>Removes the TOTP secret and disables 2FA.</summary>
-    public void DisableTwoFactor() => Credentials.DisableTwoFactor();
 }

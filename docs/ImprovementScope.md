@@ -73,7 +73,6 @@ See [§9. Prioritized Roadmap](#9-prioritized-roadmap) for the per-item status.
 
 ### Strengths
 - PBKDF2 / HMACSHA512 / 10,000 iterations with versioned hashing (`src/Shopizy.Infrastructure/Security/Hashing/PasswordManager.cs:28,62`).
-- TOTP-based 2FA (`src/Shopizy.Infrastructure/Security/Totp/TotpHelper.cs:8-15`).
 - JWT validates issuer, audience, lifetime, signing key (`JwtBearerTokenValidationConfiguration.cs:19-27`).
 - Rate limiting: 5 req/min auth, 100 req/min API (`src/Shopizy.Api/DependencyInjectionRegister.cs:50-72`).
 
@@ -286,7 +285,7 @@ See [§9. Prioritized Roadmap](#9-prioritized-roadmap) for the per-item status.
 - `src/Shopizy.Infrastructure/Products/Persistence/{ProductRepository.cs,ProductConfigurations.cs}`
 - `src/Shopizy.Infrastructure/Orders/Persistence/{OrderRepository.cs,OrderConfigurations.cs}`
 - `src/Shopizy.Infrastructure/Carts/Persistence/CartRepository.cs`
-- `src/Shopizy.Infrastructure/Security/{Hashing/PasswordManager.cs,TokenGenerator/JwtTokenGenerator.cs,TokenValidation/JwtBearerTokenValidationConfiguration.cs,Totp/TotpHelper.cs}`
+- `src/Shopizy.Infrastructure/Security/{Hashing/PasswordManager.cs,TokenGenerator/JwtTokenGenerator.cs,TokenValidation/JwtBearerTokenValidationConfiguration.cs}`
 - `src/Shopizy.SharedKernel/Application/Behaviors/{ValidationBehavior.cs,CachingBehavior.cs}`
 - `src/Shopizy.SharedKernel/Domain/Models/Entity.cs`
 - `Directory.Build.props`, `Directory.Packages.props`, `.editorconfig`, `.config/dotnet-tools.json`

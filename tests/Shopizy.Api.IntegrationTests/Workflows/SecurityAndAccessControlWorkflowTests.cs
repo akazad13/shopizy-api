@@ -27,29 +27,6 @@ public class SecurityAndAccessControlWorkflowTests(IntegrationTestWebAppFactory 
     }
 
     [Fact]
-    public async Task TwoFactorAuth_EnableAndDisableLifecycle_Succeeds()
-    {
-        var ct = TestContext.Current.CancellationToken;
-        var (token, userId) = await AuthenticateAsNewUserAsync("TwoFactor", "User");
-
-        // 1. Enable 2FA
-        var enableResp = await HttpClient.PostAsync(
-            $"/api/v1.0/users/{userId}/two-factor/enable",
-            null,
-            ct
-        );
-        enableResp.StatusCode.ShouldBe(HttpStatusCode.OK);
-        var setup = await enableResp.Content.ReadFromJsonAsync<TwoFactorSetupResponse>(ct);
-        setup.ShouldNotBeNull();
-        setup.Secret.ShouldNotBeNullOrEmpty();
-        setup.QrCodeUri.ShouldNotBeNullOrEmpty();
-
-        // 2. Disable 2FA
-        var disableResp = await HttpClient.DeleteAsync($"/api/v1.0/users/{userId}/two-factor", ct);
-        disableResp.StatusCode.ShouldBe(HttpStatusCode.OK);
-    }
-
-    [Fact]
     public async Task PasswordRotation_OldPasswordBecomesInvalid_NewPasswordWorks()
     {
         var ct = TestContext.Current.CancellationToken;

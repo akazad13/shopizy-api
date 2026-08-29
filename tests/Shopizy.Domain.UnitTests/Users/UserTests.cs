@@ -167,26 +167,4 @@ public class UserTests
         user.PasswordResetToken.ShouldBeNull();
         user.PasswordResetTokenExpiry.ShouldBeNull();
     }
-
-    [Fact]
-    public void TwoFactor_EnableConfirmDisable_ShouldManage2FAState()
-    {
-        // Arrange
-        var user = User.Create("U", "U", "e@e.com", "pass", UserRole.Customer, []);
-
-        // Enable
-        var secret = user.EnableTwoFactor();
-        secret.ShouldNotBeNullOrEmpty();
-        user.TwoFactorSecret.ShouldBe(secret);
-        user.IsTwoFactorEnabled.ShouldBeFalse(); // Pending confirmation
-
-        // Confirm
-        user.ConfirmTwoFactor();
-        user.IsTwoFactorEnabled.ShouldBeTrue();
-
-        // Disable
-        user.DisableTwoFactor();
-        user.IsTwoFactorEnabled.ShouldBeFalse();
-        user.TwoFactorSecret.ShouldBeNull();
-    }
 }

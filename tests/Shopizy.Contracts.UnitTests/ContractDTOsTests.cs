@@ -59,12 +59,6 @@ public class ContractDTOsTests
 
         var reset = new ResetPasswordRequest("token123", "NewPass123!");
         reset.ShouldNotBeNull();
-
-        var twoFactorRes = new TwoFactorSetupResponse("secretkey", "qrurl");
-        twoFactorRes.ShouldNotBeNull();
-
-        var verify2FA = new VerifyTwoFactorRequest("123456");
-        verify2FA.ShouldNotBeNull();
     }
 
     [Fact]

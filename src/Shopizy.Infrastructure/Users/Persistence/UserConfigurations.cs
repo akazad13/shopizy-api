@@ -64,13 +64,6 @@ public sealed class UserConfigurations : IEntityTypeConfiguration<User>
                 cb.Property(c => c.PasswordResetTokenExpiry)
                     .HasColumnName("PasswordResetTokenExpiry")
                     .IsRequired(false);
-                cb.Property(c => c.TwoFactorSecret)
-                    .HasColumnName("TwoFactorSecret")
-                    .HasMaxLength(64)
-                    .IsRequired(false);
-                cb.Property(c => c.IsTwoFactorEnabled)
-                    .HasColumnName("IsTwoFactorEnabled")
-                    .HasDefaultValue(false);
             }
         );
 

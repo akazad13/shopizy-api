@@ -12,7 +12,6 @@ using Shopizy.Application.Users.Commands.ForgotPassword;
 using Shopizy.Application.Users.Commands.ResetPassword;
 using Shopizy.Application.Users.Commands.SetDefaultAddress;
 using Shopizy.Application.Users.Commands.UpdateUserAddress;
-using Shopizy.Application.Users.Commands.VerifyTwoFactor;
 using Shouldly;
 using Xunit;
 
@@ -91,16 +90,6 @@ public class ApplicationValidatorsTests
             "Country",
             "12345"
         );
-
-        var result = validator.TestValidate(command);
-        result.ShouldNotHaveAnyValidationErrors();
-    }
-
-    [Fact]
-    public void VerifyTwoFactorCommandValidator_WhenValid_ShouldNotHaveErrors()
-    {
-        var validator = new VerifyTwoFactorCommandValidator();
-        var command = new VerifyTwoFactorCommand(Guid.NewGuid(), "123456");
 
         var result = validator.TestValidate(command);
         result.ShouldNotHaveAnyValidationErrors();
