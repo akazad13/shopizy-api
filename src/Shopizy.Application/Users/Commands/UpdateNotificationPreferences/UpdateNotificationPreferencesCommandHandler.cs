@@ -30,7 +30,6 @@ public class UpdateNotificationPreferencesCommandHandler(IUserRepository userRep
 
         user.UpdateNotificationPreferences(
             request.EmailEnabled,
-            request.PushEnabled,
             request.OrderUpdates,
             request.Promotions,
             request.PriceAlerts,
@@ -42,7 +41,6 @@ public class UpdateNotificationPreferencesCommandHandler(IUserRepository userRep
         var prefs = user.NotificationPreferences;
         return new NotificationPreferencesDto(
             EmailEnabled: prefs.EmailEnabled,
-            PushEnabled: prefs.PushEnabled,
             OrderUpdates: prefs.OrderUpdates,
             Promotions: prefs.Promotions,
             PriceAlerts: prefs.PriceAlerts,

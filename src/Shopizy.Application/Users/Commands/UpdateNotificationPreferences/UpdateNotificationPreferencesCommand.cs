@@ -10,7 +10,6 @@ namespace Shopizy.Application.Users.Commands.UpdateNotificationPreferences;
 public record UpdateNotificationPreferencesCommand(
     Guid UserId,
     bool EmailEnabled,
-    bool PushEnabled,
     bool OrderUpdates,
     bool Promotions,
     bool PriceAlerts,

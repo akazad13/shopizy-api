@@ -5,7 +5,6 @@ namespace Shopizy.Infrastructure.Services.Notifications;
 
 public class NotificationDispatcher(
     IEmailService emailService,
-    IPushNotificationService pushService,
     ILogger<NotificationDispatcher> logger
 ) : INotificationDispatcher
 {
@@ -17,7 +16,6 @@ public class NotificationDispatcher(
         );
 
     private readonly IEmailService _emailService = emailService;
-    private readonly IPushNotificationService _pushService = pushService;
     private readonly ILogger<NotificationDispatcher> _logger = logger;
 
     public async Task DispatchNotificationAsync(
@@ -31,29 +29,12 @@ public class NotificationDispatcher(
     )
     {
         var prefs = preferences ?? new NotificationPreferencesDto();
-        var tasks = new List<Task>();
 
-        // 1. Email Channel
         if (prefs.EmailEnabled && !string.IsNullOrWhiteSpace(email))
         {
-            tasks.Add(_emailService.SendAsync(email, subject, message, cancellationToken));
+            await _emailService.SendAsync(email, subject, message, cancellationToken);
         }
 
-        // 2. Push Channel
-        if (prefs.PushEnabled && userId != Guid.Empty)
-        {
-            tasks.Add(
-                _pushService.SendPushNotificationAsync(
-                    userId,
-                    subject,
-                    message,
-                    targetUrl,
-                    cancellationToken
-                )
-            );
-        }
-
-        await Task.WhenAll(tasks);
         LogDispatchCompleted(_logger, userId, subject, null);
     }
 }

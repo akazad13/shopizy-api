@@ -137,12 +137,11 @@ public class FullE2EEcommerceJourneyTests(IntegrationTestWebAppFactory factory)
 
         // 2a. Update Notification Preferences
         var notifReq = new UpdateNotificationPreferencesRequest(
-            true,
-            true,
-            true,
-            false,
-            true,
-            true
+            EmailEnabled: true,
+            OrderUpdates: true,
+            Promotions: false,
+            PriceAlerts: true,
+            RestockAlerts: true
         );
         var notifResp = await HttpClient.PutAsJsonAsync(
             $"/api/v1.0/users/{customerUserId}/notification-preferences",

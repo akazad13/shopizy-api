@@ -15,7 +15,6 @@ public class NotificationPreferencesTests
         var prefs = NotificationPreference.CreateDefault();
 
         prefs.EmailEnabled.ShouldBeTrue();
-        prefs.PushEnabled.ShouldBeTrue();
         prefs.OrderUpdates.ShouldBeTrue();
         prefs.Promotions.ShouldBeTrue();
         prefs.PriceAlerts.ShouldBeTrue();
@@ -27,7 +26,6 @@ public class NotificationPreferencesTests
     {
         var prefs = NotificationPreference.Create(
             emailEnabled: false,
-            pushEnabled: false,
             orderUpdates: true,
             promotions: false,
             priceAlerts: true,
@@ -35,7 +33,6 @@ public class NotificationPreferencesTests
         );
 
         prefs.EmailEnabled.ShouldBeFalse();
-        prefs.PushEnabled.ShouldBeFalse();
         prefs.OrderUpdates.ShouldBeTrue();
         prefs.Promotions.ShouldBeFalse();
         prefs.PriceAlerts.ShouldBeTrue();
@@ -49,7 +46,6 @@ public class NotificationPreferencesTests
 
         prefs.Update(
             emailEnabled: false,
-            pushEnabled: false,
             orderUpdates: false,
             promotions: false,
             priceAlerts: false,
@@ -57,7 +53,6 @@ public class NotificationPreferencesTests
         );
 
         prefs.EmailEnabled.ShouldBeFalse();
-        prefs.PushEnabled.ShouldBeFalse();
         prefs.OrderUpdates.ShouldBeFalse();
         prefs.Promotions.ShouldBeFalse();
         prefs.PriceAlerts.ShouldBeFalse();
@@ -80,7 +75,6 @@ public class NotificationPreferencesTests
 
         user.UpdateNotificationPreferences(
             emailEnabled: false,
-            pushEnabled: true,
             orderUpdates: true,
             promotions: false,
             priceAlerts: true,
@@ -88,7 +82,6 @@ public class NotificationPreferencesTests
         );
 
         user.NotificationPreferences.EmailEnabled.ShouldBeFalse();
-        user.NotificationPreferences.PushEnabled.ShouldBeTrue();
         user.NotificationPreferences.OrderUpdates.ShouldBeTrue();
         user.NotificationPreferences.Promotions.ShouldBeFalse();
         user.NotificationPreferences.PriceAlerts.ShouldBeTrue();

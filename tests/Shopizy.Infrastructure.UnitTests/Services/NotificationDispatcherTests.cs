@@ -9,26 +9,21 @@ namespace Shopizy.Infrastructure.UnitTests.Services;
 public class NotificationDispatcherTests
 {
     private readonly Mock<IEmailService> _mockEmailService = new();
-    private readonly Mock<IPushNotificationService> _mockPushService = new();
     private readonly Mock<ILogger<NotificationDispatcher>> _mockLogger = new();
     private readonly NotificationDispatcher _sut;
 
     public NotificationDispatcherTests()
     {
-        _sut = new NotificationDispatcher(
-            _mockEmailService.Object,
-            _mockPushService.Object,
-            _mockLogger.Object
-        );
+        _sut = new NotificationDispatcher(_mockEmailService.Object, _mockLogger.Object);
     }
 
     [Fact]
-    public async Task DispatchNotificationAsync_AllChannelsEnabled_ShouldSendToAll()
+    public async Task DispatchNotificationAsync_EmailEnabled_ShouldSendEmail()
     {
         // Arrange
         var userId = Guid.NewGuid();
         var email = "user@example.com";
-        var prefs = new NotificationPreferencesDto(EmailEnabled: true, PushEnabled: true);
+        var prefs = new NotificationPreferencesDto(EmailEnabled: true);
 
         // Act
         await _sut.DispatchNotificationAsync(
@@ -51,26 +46,15 @@ public class NotificationDispatcherTests
                 ),
             Times.Once
         );
-        _mockPushService.Verify(
-            p =>
-                p.SendPushNotificationAsync(
-                    userId,
-                    "Order Confirmation",
-                    "Thank you for your order!",
-                    null,
-                    It.IsAny<CancellationToken>()
-                ),
-            Times.Once
-        );
     }
 
     [Fact]
-    public async Task DispatchNotificationAsync_PushDisabled_ShouldOnlySendEmail()
+    public async Task DispatchNotificationAsync_EmailDisabled_ShouldNotSendEmail()
     {
         // Arrange
         var userId = Guid.NewGuid();
         var email = "user@example.com";
-        var prefs = new NotificationPreferencesDto(EmailEnabled: true, PushEnabled: false);
+        var prefs = new NotificationPreferencesDto(EmailEnabled: false);
 
         // Act
         await _sut.DispatchNotificationAsync(
@@ -86,20 +70,9 @@ public class NotificationDispatcherTests
         _mockEmailService.Verify(
             e =>
                 e.SendAsync(
-                    email,
-                    "Price Drop",
-                    "Item is now on sale!",
-                    It.IsAny<CancellationToken>()
-                ),
-            Times.Once
-        );
-        _mockPushService.Verify(
-            p =>
-                p.SendPushNotificationAsync(
-                    It.IsAny<Guid>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<string?>(),
+                    It.IsAny<string>(),
                     It.IsAny<CancellationToken>()
                 ),
             Times.Never

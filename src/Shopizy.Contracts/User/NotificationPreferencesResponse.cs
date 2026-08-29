@@ -6,7 +6,6 @@ namespace Shopizy.Contracts.User;
 public record NotificationPreferencesResponse(
     Guid UserId,
     bool EmailEnabled,
-    bool PushEnabled,
     bool OrderUpdates,
     bool Promotions,
     bool PriceAlerts,

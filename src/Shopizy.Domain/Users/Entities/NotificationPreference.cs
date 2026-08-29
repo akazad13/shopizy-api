@@ -9,9 +9,6 @@ public sealed class NotificationPreference
     /// <summary>Gets whether email notifications are enabled.</summary>
     public bool EmailEnabled { get; private set; } = true;
 
-    /// <summary>Gets whether push notifications are enabled.</summary>
-    public bool PushEnabled { get; private set; } = true;
-
     /// <summary>Gets whether order update alerts are enabled.</summary>
     public bool OrderUpdates { get; private set; } = true;
 
@@ -34,7 +31,6 @@ public sealed class NotificationPreference
     /// </summary>
     public static NotificationPreference Create(
         bool emailEnabled,
-        bool pushEnabled,
         bool orderUpdates,
         bool promotions,
         bool priceAlerts,
@@ -43,7 +39,6 @@ public sealed class NotificationPreference
         new()
         {
             EmailEnabled = emailEnabled,
-            PushEnabled = pushEnabled,
             OrderUpdates = orderUpdates,
             Promotions = promotions,
             PriceAlerts = priceAlerts,
@@ -55,7 +50,6 @@ public sealed class NotificationPreference
     /// </summary>
     public void Update(
         bool emailEnabled,
-        bool pushEnabled,
         bool orderUpdates,
         bool promotions,
         bool priceAlerts,
@@ -63,7 +57,6 @@ public sealed class NotificationPreference
     )
     {
         EmailEnabled = emailEnabled;
-        PushEnabled = pushEnabled;
         OrderUpdates = orderUpdates;
         Promotions = promotions;
         PriceAlerts = priceAlerts;

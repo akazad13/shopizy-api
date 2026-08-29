@@ -224,7 +224,6 @@ public sealed class User : AggregateRoot<UserId, Guid>, IAuditable
     /// </summary>
     public void UpdateNotificationPreferences(
         bool emailEnabled,
-        bool pushEnabled,
         bool orderUpdates,
         bool promotions,
         bool priceAlerts,
@@ -234,7 +233,6 @@ public sealed class User : AggregateRoot<UserId, Guid>, IAuditable
         NotificationPreferences ??= NotificationPreference.CreateDefault();
         NotificationPreferences.Update(
             emailEnabled,
-            pushEnabled,
             orderUpdates,
             promotions,
             priceAlerts,

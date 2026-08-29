@@ -31,7 +31,6 @@ public class GetNotificationPreferencesQueryHandler(IUserRepository userReposito
         var prefs = user.NotificationPreferences;
         return new NotificationPreferencesDto(
             EmailEnabled: prefs.EmailEnabled,
-            PushEnabled: prefs.PushEnabled,
             OrderUpdates: prefs.OrderUpdates,
             Promotions: prefs.Promotions,
             PriceAlerts: prefs.PriceAlerts,

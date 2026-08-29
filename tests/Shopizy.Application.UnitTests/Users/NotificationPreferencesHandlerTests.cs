@@ -52,7 +52,6 @@ public class NotificationPreferencesHandlerTests
 
         result.IsError.ShouldBeFalse();
         result.Value.EmailEnabled.ShouldBeTrue();
-        result.Value.PushEnabled.ShouldBeTrue();
     }
 
     [Fact]
@@ -67,7 +66,6 @@ public class NotificationPreferencesHandlerTests
         var command = new UpdateNotificationPreferencesCommand(
             userId,
             EmailEnabled: false,
-            PushEnabled: false,
             OrderUpdates: false,
             Promotions: false,
             PriceAlerts: false,
@@ -89,7 +87,6 @@ public class NotificationPreferencesHandlerTests
         var command = new UpdateNotificationPreferencesCommand(
             user.Id.Value,
             EmailEnabled: false,
-            PushEnabled: true,
             OrderUpdates: true,
             Promotions: false,
             PriceAlerts: true,
@@ -100,7 +97,6 @@ public class NotificationPreferencesHandlerTests
 
         result.IsError.ShouldBeFalse();
         result.Value.EmailEnabled.ShouldBeFalse();
-        result.Value.PushEnabled.ShouldBeTrue();
         result.Value.OrderUpdates.ShouldBeTrue();
         result.Value.Promotions.ShouldBeFalse();
         result.Value.PriceAlerts.ShouldBeTrue();

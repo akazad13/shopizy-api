@@ -5,7 +5,6 @@ namespace Shopizy.Application.Common.Interfaces.Services;
 /// </summary>
 public record NotificationPreferencesDto(
     bool EmailEnabled = true,
-    bool PushEnabled = true,
     bool OrderUpdates = true,
     bool Promotions = true,
     bool PriceAlerts = true,

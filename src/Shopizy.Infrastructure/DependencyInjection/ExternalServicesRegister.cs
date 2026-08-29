@@ -128,11 +128,7 @@ public static class ExternalServicesRegister
             Shopizy.Infrastructure.Services.Search.ProductSearchEngine
         >();
 
-        // Notifications (Push & Multi-channel Dispatcher)
-        services.AddScoped<
-            IPushNotificationService,
-            Shopizy.Infrastructure.Services.Notifications.PushNotificationService
-        >();
+        // Notifications (Multi-channel Dispatcher)
         services.AddScoped<
             INotificationDispatcher,
             Shopizy.Infrastructure.Services.Notifications.NotificationDispatcher
