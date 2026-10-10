@@ -9,6 +9,6 @@ public record GetProductVariantsQuery(Guid ProductId)
     : IQuery<ErrorOr<IReadOnlyList<ProductVariant>>>,
         ICachableRequest
 {
-    public string CacheKey => $"product-variants:{ProductId}";
+    public string CacheKey => CacheKeys.ProductVariants(ProductId);
     public TimeSpan? Expiration => TimeSpan.FromMinutes(15);
 }

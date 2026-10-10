@@ -6,6 +6,6 @@ namespace Shopizy.Application.Brands.Queries.ListBrands;
 
 public record ListBrandsQuery() : IQuery<ErrorOr<List<BrandItem>>>, ICachableRequest
 {
-    public string CacheKey => "brands-all";
+    public string CacheKey => CacheKeys.BrandsAll;
     public TimeSpan? Expiration => TimeSpan.FromMinutes(30);
 }

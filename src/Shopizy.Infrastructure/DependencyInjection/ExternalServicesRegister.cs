@@ -71,9 +71,11 @@ public static class ExternalServicesRegister
             var configurationOptions = new ConfigurationOptions
             {
                 EndPoints = { { settings.Endpoint, settings.Port } },
-                User = settings.Username,
-                Password = settings.Password,
+                User = string.IsNullOrWhiteSpace(settings.Username) ? null : settings.Username,
+                Password = string.IsNullOrWhiteSpace(settings.Password) ? null : settings.Password,
                 AbortOnConnectFail = false,
+                ConnectTimeout = 5000,
+                SyncTimeout = 5000,
             };
             return ConnectionMultiplexer.Connect(configurationOptions);
         });

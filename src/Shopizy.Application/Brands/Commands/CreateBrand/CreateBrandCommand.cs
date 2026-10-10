@@ -10,5 +10,5 @@ public record CreateBrandCommand(Guid UserId, string Name, string? LogoUrl, stri
         IInvalidateCache
 {
     public IReadOnlyCollection<string> CacheKeysToInvalidate =>
-        ["brands-all", "brands-string-list"];
+        [CacheKeys.BrandsAll, CacheKeys.ProductBrands];
 }

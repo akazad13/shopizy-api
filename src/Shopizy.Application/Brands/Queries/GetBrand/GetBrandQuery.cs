@@ -7,6 +7,6 @@ namespace Shopizy.Application.Brands.Queries.GetBrand;
 
 public record GetBrandQuery(Guid BrandId) : IQuery<ErrorOr<Brand>>, ICachableRequest
 {
-    public string CacheKey => $"brand:{BrandId}";
+    public string CacheKey => CacheKeys.Brand(BrandId);
     public TimeSpan? Expiration => TimeSpan.FromMinutes(30);
 }

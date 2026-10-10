@@ -18,5 +18,5 @@ public record UpdateVariantCommand(
 ) : ICommand<ErrorOr<ProductVariant>>, IInvalidateCache
 {
     public IReadOnlyCollection<string> CacheKeysToInvalidate =>
-        [$"product-variants:{ProductId}", $"product:{ProductId}"];
+        [CacheKeys.ProductVariants(ProductId), CacheKeys.Product(ProductId)];
 }

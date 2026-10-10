@@ -16,5 +16,5 @@ public record UpdateCategoryCommand(Guid UserId, Guid CategoryId, string Name, G
         IInvalidateCache
 {
     public IReadOnlyCollection<string> CacheKeysToInvalidate =>
-        ["categories-tree", "categories-all", $"category:{CategoryId}"];
+        [CacheKeys.CategoriesTree, CacheKeys.CategoriesAll, CacheKeys.Category(CategoryId)];
 }

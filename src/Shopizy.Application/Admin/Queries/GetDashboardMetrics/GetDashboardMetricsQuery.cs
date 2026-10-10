@@ -6,6 +6,6 @@ namespace Shopizy.Application.Admin.Queries.GetDashboardMetrics;
 
 public record GetDashboardMetricsQuery() : IQuery<ErrorOr<DashboardMetricsDto>>, ICachableRequest
 {
-    public string CacheKey => "admin:dashboard-metrics";
+    public string CacheKey => CacheKeys.AdminDashboardMetrics;
     public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
 }

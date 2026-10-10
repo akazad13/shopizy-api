@@ -1,4 +1,5 @@
-﻿using ErrorOr;
+using ErrorOr;
+using Shopizy.SharedKernel.Application.Caching;
 using Shopizy.SharedKernel.Application.Messaging;
 
 namespace Shopizy.Application.Users.Commands.UpdateUser;
@@ -25,4 +26,7 @@ public record UpdateUserCommand(
     string? State,
     string? Country,
     string? ZipCode
-) : ICommand<ErrorOr<Success>>;
+) : ICommand<ErrorOr<Success>>, IInvalidateCache
+{
+    public IReadOnlyCollection<string> CacheKeysToInvalidate => [CacheKeys.User(UserId)];
+}

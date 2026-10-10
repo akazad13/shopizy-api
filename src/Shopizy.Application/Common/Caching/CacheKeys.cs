@@ -7,6 +7,29 @@ namespace Shopizy.Application;
 /// </summary>
 public static class CacheKeys
 {
+    public const string BrandsAll = "brands-all";
+    public const string ProductBrands = "products:brands";
+
+    public static string Brand(Guid brandId) =>
+        string.Create(CultureInfo.InvariantCulture, $"brand:{brandId}");
+
+    public const string CategoriesAll = "categories-all";
+    public const string CategoriesTree = "categories-tree";
+
+    public static string Category(Guid categoryId) =>
+        string.Create(CultureInfo.InvariantCulture, $"category:{categoryId}");
+
     public static string Product(Guid productId) =>
         string.Create(CultureInfo.InvariantCulture, $"product:{productId}");
+
+    public static string ProductVariants(Guid productId) =>
+        string.Create(CultureInfo.InvariantCulture, $"product-variants:{productId}");
+
+    public static string User(Guid userId) =>
+        string.Create(CultureInfo.InvariantCulture, $"user-{userId}");
+
+    public const string AdminDashboardMetrics = "admin:dashboard-metrics";
+
+    public static string AdminTopProducts(int count) =>
+        string.Create(CultureInfo.InvariantCulture, $"admin:top-products:{count}");
 }

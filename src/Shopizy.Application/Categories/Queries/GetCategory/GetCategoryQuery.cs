@@ -11,6 +11,6 @@ namespace Shopizy.Application.Categories.Queries.GetCategory;
 /// <param name="CategoryId">The category's unique identifier.</param>
 public record GetCategoryQuery(Guid CategoryId) : IQuery<ErrorOr<Category>>, ICachableRequest
 {
-    public string CacheKey => $"category:{CategoryId}";
+    public string CacheKey => CacheKeys.Category(CategoryId);
     public TimeSpan? Expiration => TimeSpan.FromMinutes(30);
 }

@@ -14,5 +14,5 @@ public record DeleteCategoryCommand(Guid UserId, Guid CategoryId)
         IInvalidateCache
 {
     public IReadOnlyCollection<string> CacheKeysToInvalidate =>
-        ["categories-tree", "categories-all", $"category:{CategoryId}"];
+        [CacheKeys.CategoriesTree, CacheKeys.CategoriesAll, CacheKeys.Category(CategoryId)];
 }

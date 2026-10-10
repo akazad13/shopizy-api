@@ -2,7 +2,6 @@ using ErrorOr;
 using Shopizy.Application.Common.Interfaces.Persistence;
 using Shopizy.Domain.Common.CustomErrors;
 using Shopizy.Domain.Users.ValueObjects;
-using Shopizy.SharedKernel.Application.Caching;
 using Shopizy.SharedKernel.Application.Messaging;
 
 namespace Shopizy.Application.Users.Commands.UpdateUser;
@@ -11,12 +10,10 @@ namespace Shopizy.Application.Users.Commands.UpdateUser;
 /// Handles the <see cref="UpdateUserCommand"/> to update user information.
 /// </summary>
 /// <param name="userRepository"></param>
-/// <param name="cacheHelper"></param>
-public class UpdateUserCommandHandler(IUserRepository userRepository, ICacheHelper cacheHelper)
+public class UpdateUserCommandHandler(IUserRepository userRepository)
     : ICommandHandler<UpdateUserCommand, ErrorOr<Success>>
 {
     private readonly IUserRepository _userRepository = userRepository;
-    private readonly ICacheHelper _cacheHelper = cacheHelper;
 
     /// <summary>
     /// Handles the update user command.
@@ -55,8 +52,6 @@ public class UpdateUserCommandHandler(IUserRepository userRepository, ICacheHelp
                 request.ZipCode ?? string.Empty
             );
         }
-
-        await _cacheHelper.RemoveAsync($"user-{user.Id.Value}");
 
         return Result.Success;
     }

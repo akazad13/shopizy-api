@@ -1,3 +1,4 @@
+using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.EntityFrameworkCore;
 using Shopizy.Application.Common.Interfaces.Persistence;
 using Shopizy.Domain.Permissions;
@@ -11,7 +12,7 @@ public class PermissionRepository(AppDbContext dbContext) : IPermissionRepositor
     private readonly AppDbContext _dbContext = dbContext;
 
     public async Task<IReadOnlyList<Permission>> GetAsync() =>
-        await _dbContext.Permissions.AsNoTracking().ToListAsync();
+        await _dbContext.Permissions.AsNoTracking().Cacheable().ToListAsync();
 
     public Task<Permission?> GetByIdAsync(PermissionId id) =>
         _dbContext.Permissions.SingleOrDefaultAsync(p => p.Id == id);

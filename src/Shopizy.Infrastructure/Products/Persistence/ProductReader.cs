@@ -1,3 +1,4 @@
+using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.EntityFrameworkCore;
 using Shopizy.Application.Common.Interfaces.Persistence;
 using Shopizy.Domain.Products;
@@ -34,5 +35,6 @@ public sealed class ProductReader(AppDbContext dbContext) : IProductReader
             .Brands.AsNoTracking()
             .Select(b => b.Name)
             .Distinct()
+            .Cacheable()
             .ToListAsync(cancellationToken);
 }

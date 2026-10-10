@@ -9,5 +9,5 @@ public record DeleteBrandCommand(Guid UserId, Guid BrandId)
         IInvalidateCache
 {
     public IReadOnlyCollection<string> CacheKeysToInvalidate =>
-        ["brands-all", "brands-string-list", $"brand:{BrandId}"];
+        [CacheKeys.BrandsAll, CacheKeys.ProductBrands, CacheKeys.Brand(BrandId)];
 }

@@ -9,6 +9,6 @@ public record GetTopProductsQuery(int Count = 10)
     : IQuery<ErrorOr<List<TopProductDto>>>,
         ICachableRequest
 {
-    public string CacheKey => $"admin:top-products:{Count}";
+    public string CacheKey => CacheKeys.AdminTopProducts(Count);
     public TimeSpan? Expiration => TimeSpan.FromMinutes(15);
 }

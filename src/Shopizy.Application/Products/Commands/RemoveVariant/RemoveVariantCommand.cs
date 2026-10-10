@@ -9,5 +9,5 @@ public record RemoveVariantCommand(Guid ProductId, Guid VariantId)
         IInvalidateCache
 {
     public IReadOnlyCollection<string> CacheKeysToInvalidate =>
-        [$"product-variants:{ProductId}", $"product:{ProductId}"];
+        [CacheKeys.ProductVariants(ProductId), CacheKeys.Product(ProductId)];
 }

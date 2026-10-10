@@ -1,4 +1,4 @@
-﻿using ErrorOr;
+using ErrorOr;
 using Shopizy.SharedKernel.Application.Caching;
 using Shopizy.SharedKernel.Application.Messaging;
 
@@ -8,5 +8,6 @@ public record DeleteProductCommand(Guid UserId, Guid ProductId)
     : ICommand<ErrorOr<Success>>,
         IInvalidateCache
 {
-    public IReadOnlyCollection<string> CacheKeysToInvalidate => [CacheKeys.Product(ProductId)];
+    public IReadOnlyCollection<string> CacheKeysToInvalidate =>
+        [CacheKeys.Product(ProductId), CacheKeys.ProductVariants(ProductId)];
 }

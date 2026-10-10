@@ -16,5 +16,5 @@ public record CreateCategoryCommand(Guid UserId, string Name, Guid? ParentId)
         IInvalidateCache
 {
     public IReadOnlyCollection<string> CacheKeysToInvalidate =>
-        ["categories-tree", "categories-all"];
+        [CacheKeys.CategoriesTree, CacheKeys.CategoriesAll];
 }

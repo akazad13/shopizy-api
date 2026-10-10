@@ -9,6 +9,6 @@ namespace Shopizy.Application.Categories.Queries.ListCategories;
 /// </summary>
 public record ListCategoriesQuery() : IQuery<ErrorOr<List<CategoryItem>>>, ICachableRequest
 {
-    public string CacheKey => "categories-all";
+    public string CacheKey => CacheKeys.CategoriesAll;
     public TimeSpan? Expiration => TimeSpan.FromMinutes(30);
 }

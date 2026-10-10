@@ -9,6 +9,6 @@ namespace Shopizy.Application.Categories.Queries.CategoriesTree;
 /// </summary>
 public record CategoriesTreeQuery() : IQuery<ErrorOr<List<CategoryTree>>>, ICachableRequest
 {
-    public string CacheKey => "categories-tree";
+    public string CacheKey => CacheKeys.CategoriesTree;
     public TimeSpan? Expiration => TimeSpan.FromMinutes(30);
 }

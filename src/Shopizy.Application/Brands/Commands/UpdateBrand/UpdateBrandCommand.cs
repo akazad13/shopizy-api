@@ -13,5 +13,5 @@ public record UpdateBrandCommand(
 ) : ICommand<ErrorOr<Success>>, IInvalidateCache
 {
     public IReadOnlyCollection<string> CacheKeysToInvalidate =>
-        ["brands-all", "brands-string-list", $"brand:{BrandId}"];
+        [CacheKeys.BrandsAll, CacheKeys.ProductBrands, CacheKeys.Brand(BrandId)];
 }

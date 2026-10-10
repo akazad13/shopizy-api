@@ -14,13 +14,11 @@ public class UpdateUserCommandHandlerTests
 {
     private readonly UpdateUserCommandHandler _sut;
     private readonly Mock<IUserRepository> _mockUserRepository;
-    private readonly Mock<ICacheHelper> _mockCacheHelper;
 
     public UpdateUserCommandHandlerTests()
     {
         _mockUserRepository = new Mock<IUserRepository>();
-        _mockCacheHelper = new Mock<ICacheHelper>();
-        _sut = new UpdateUserCommandHandler(_mockUserRepository.Object, _mockCacheHelper.Object);
+        _sut = new UpdateUserCommandHandler(_mockUserRepository.Object);
     }
 
     [Fact]
@@ -34,10 +32,6 @@ public class UpdateUserCommandHandlerTests
             .Setup(u => u.GetUserByIdAsync(UserId.Create(command.UserId)))
             .ReturnsAsync(user);
 
-        _mockCacheHelper
-            .Setup(c => c.RemoveAsync($"user-{user.Id.Value}"))
-            .Returns(Task.CompletedTask);
-
         // Act
         var result = await _sut.Handle(command, TestContext.Current.CancellationToken);
 
@@ -50,7 +44,6 @@ public class UpdateUserCommandHandlerTests
             Times.Once
         );
         _mockUserRepository.Verify(x => x.Update(user), Times.Never);
-        _mockCacheHelper.Verify(c => c.RemoveAsync($"user-{user.Id.Value}"), Times.Once);
     }
 
     [Fact]
@@ -76,29 +69,16 @@ public class UpdateUserCommandHandlerTests
             Times.Once
         );
         _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Never);
-        _mockCacheHelper.Verify(c => c.RemoveAsync(It.IsAny<string>()), Times.Never);
     }
 
     [Fact]
-    public async Task Should_InvalidateCache_When_UserIsUpdatedSuccessfully()
+    public void UpdateUserCommand_Should_DeclareUserCacheKeyForInvalidation()
     {
         // Arrange
         var command = UpdateUserCommandUtils.CreateCommand();
-        var user = UserFactory.CreateUser();
-
-        _mockUserRepository
-            .Setup(u => u.GetUserByIdAsync(UserId.Create(command.UserId)))
-            .ReturnsAsync(user);
-
-        _mockCacheHelper
-            .Setup(c => c.RemoveAsync($"user-{user.Id.Value}"))
-            .Returns(Task.CompletedTask);
-
-        // Act
-        var result = await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
-        Assert.False(result.IsError);
-        _mockCacheHelper.Verify(c => c.RemoveAsync($"user-{user.Id.Value}"), Times.Once);
+        Assert.IsAssignableFrom<IInvalidateCache>(command);
+        Assert.Contains(CacheKeys.User(command.UserId), command.CacheKeysToInvalidate);
     }
 }
