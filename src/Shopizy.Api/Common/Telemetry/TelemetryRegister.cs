@@ -10,6 +10,7 @@ public static class TelemetryRegister
 {
     public const string ServiceName = "Shopizy.Api";
     public const string OutboxMeterName = "Shopizy.Outbox";
+    public const string WorkersMeterName = "Shopizy.Workers";
 
     public static IServiceCollection AddTelemetry(
         this IServiceCollection services,
@@ -55,6 +56,7 @@ public static class TelemetryRegister
                 metrics
                     .SetResourceBuilder(resource)
                     .AddMeter(OutboxMeterName)
+                    .AddMeter(WorkersMeterName)
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation();
 

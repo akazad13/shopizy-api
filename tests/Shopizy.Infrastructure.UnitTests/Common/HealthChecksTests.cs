@@ -69,4 +69,63 @@ public class HealthChecksTests
         result.Status.ShouldBe(HealthStatus.Healthy);
         result.Description.ShouldBe("Database is reachable.");
     }
+
+    [Fact]
+    public async Task OutboxHealthCheck_WhenDeadLetterCountBelowThreshold_ShouldReturnHealthy()
+    {
+        var services = new ServiceCollection();
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseInMemoryDatabase(Guid.NewGuid().ToString())
+        );
+        services.AddHttpContextAccessor();
+
+        var serviceProvider = services.BuildServiceProvider();
+        var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+        var healthCheck = new OutboxHealthCheck(scopeFactory);
+        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext());
+
+        result.Status.ShouldBe(HealthStatus.Healthy);
+        result.Description.ShouldNotBeNull();
+        result.Description.ShouldContain("healthy");
+    }
+
+    [Fact]
+    public async Task OutboxHealthCheck_WhenDeadLetterCountAtOrAboveThreshold_ShouldReturnDegraded()
+    {
+        var dbName = Guid.NewGuid().ToString();
+        var services = new ServiceCollection();
+        services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase(dbName));
+        services.AddHttpContextAccessor();
+
+        var serviceProvider = services.BuildServiceProvider();
+        var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+        using (var scope = scopeFactory.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            for (var i = 0; i < OutboxHealthCheck.DeadLetterWarningThreshold; i++)
+            {
+                dbContext.OutboxMessages.Add(
+                    new Shopizy.Infrastructure.Outbox.OutboxMessage
+                    {
+                        Id = Guid.NewGuid(),
+                        OccurredOn = DateTime.UtcNow,
+                        Type = "TestType",
+                        Content = "{}",
+                        DeadLetteredOn = DateTime.UtcNow,
+                        DeadLetterReason = "Failed",
+                    }
+                );
+            }
+            await dbContext.SaveChangesAsync();
+        }
+
+        var healthCheck = new OutboxHealthCheck(scopeFactory);
+        var result = await healthCheck.CheckHealthAsync(new HealthCheckContext());
+
+        result.Status.ShouldBe(HealthStatus.Degraded);
+        result.Description.ShouldNotBeNull();
+        result.Description.ShouldContain("exceeding threshold");
+    }
 }

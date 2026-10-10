@@ -30,6 +30,17 @@ public sealed class AbandonedCartReminderWorker(
             "AbandonedCartReminderWorker: Sent {Count} abandoned cart recovery reminder email(s)."
         );
 
+    private static readonly System.Diagnostics.Metrics.Meter s_meter = new(
+        "Shopizy.Workers",
+        "1.0"
+    );
+    private static readonly System.Diagnostics.Metrics.Counter<long> s_remindersSentCounter =
+        s_meter.CreateCounter<long>(
+            "shopizy.carts.reminders_sent",
+            unit: "{reminders}",
+            description: "Number of abandoned cart recovery reminder emails dispatched."
+        );
+
     private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
     private readonly CartSettings _cartSettings = cartSettings.Value;
     private readonly ILogger<AbandonedCartReminderWorker> _logger = logger;
@@ -75,6 +86,7 @@ public sealed class AbandonedCartReminderWorker(
         if (!result.IsError && result.Value > 0)
         {
             s_abandonedCartRemindersSent(_logger, result.Value, null);
+            s_remindersSentCounter.Add(result.Value);
         }
     }
 }

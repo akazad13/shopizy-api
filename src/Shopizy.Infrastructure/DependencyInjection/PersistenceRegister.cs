@@ -125,7 +125,10 @@ public static class PersistenceRegister
             }
         );
 
-        services.AddHealthChecks().AddCheck<DbHealthCheck>("database");
+        services
+            .AddHealthChecks()
+            .AddCheck<DbHealthCheck>("database")
+            .AddCheck<OutboxHealthCheck>("outbox");
         services.AddHostedService<DbMigrationsHostedService>();
         services.AddHostedService<OutboxProcessor>();
         services.AddScoped<IOutboxDrainer, OutboxDrainer>();

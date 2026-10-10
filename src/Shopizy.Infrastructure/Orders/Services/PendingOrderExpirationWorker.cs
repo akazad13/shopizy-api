@@ -30,6 +30,17 @@ public sealed class PendingOrderExpirationWorker(
             "PendingOrderExpirationWorker: Expired and cancelled {Count} unpaid order(s)."
         );
 
+    private static readonly System.Diagnostics.Metrics.Meter s_meter = new(
+        "Shopizy.Workers",
+        "1.0"
+    );
+    private static readonly System.Diagnostics.Metrics.Counter<long> s_ordersExpiredCounter =
+        s_meter.CreateCounter<long>(
+            "shopizy.orders.expired",
+            unit: "{orders}",
+            description: "Number of unpaid orders expired and cancelled."
+        );
+
     private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
     private readonly OrderSettings _orderSettings = orderSettings.Value;
     private readonly ILogger<PendingOrderExpirationWorker> _logger = logger;
@@ -77,6 +88,7 @@ public sealed class PendingOrderExpirationWorker(
         if (!result.IsError && result.Value > 0)
         {
             s_ordersExpired(_logger, result.Value, null);
+            s_ordersExpiredCounter.Add(result.Value);
         }
     }
 }
