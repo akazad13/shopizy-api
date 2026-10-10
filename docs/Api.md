@@ -1,26 +1,32 @@
 # Shopizy API
 
-[⬅️ Back to README](../README.md) · [Repository Memory](RepositoryMemory.md) · [Domain Models](Domain.md) · [Eventual Consistency](EventualConsistency.md)
+[⬅️ Back to README](../README.md) · [Product Requirements Document (PRD)](ProductRequirementsDocument.md) · [Repository Memory](RepositoryMemory.md) · [Feature Docs](FeatureDocumentation.md) · [Technical Docs](TechnicalDocumentation.md) · [Domain Models](Domain.md) · [Eventual Consistency](EventualConsistency.md)
 
-The hand-maintained route reference that previously lived here drifted from the implementation. The authoritative source for the API surface is the OpenAPI document generated at runtime.
+The authoritative source for the API surface is the OpenAPI document generated at runtime.
 
 ## Where to look
 
-- **Swagger UI** — start the API (`dotnet run --project src/Shopizy.Api`) and browse `https://localhost:5001/swagger`. Available in `Development` and `Production` environments by design (gated in `Program.cs`).
-- **OpenAPI JSON** — `https://localhost:5001/swagger/v1/swagger.json` for tooling.
-- **Bruno collection** — `Bruno/Shopizy/` has a working request collection for manual exercise.
+- **Swagger UI** — start the API (`dotnet run --project src/Shopizy.Api`) and browse `https://localhost:7172/swagger` (or `http://127.0.0.1:18080/swagger`). Available in `Development` and `Production` environments by design (configured in `Program.cs`).
+- **OpenAPI JSON** — `https://localhost:7172/swagger/v1/swagger.json` for tooling and SDK generators.
+- **Bruno collection** — `Bruno/Shopizy/` has a comprehensive, working request collection for manual testing.
 - **Versioning** — endpoints are routed under `api/v1.0/...`. The version is also accepted via the `api-version` query string or header.
 
 ## Auth shape
 
-- `POST /api/v1.0/auth/register` — create an account.
+- `POST /api/v1.0/auth/register` — create an account (assigns `Customer` role and default permissions).
 - `POST /api/v1.0/auth/login` — returns `{ token, refreshToken, refreshTokenExpiresAt }`.
-- `POST /api/v1.0/auth/refresh` — exchange a refresh token for a new access + refresh pair (rotated).
-- All other endpoints expect `Authorization: Bearer <token>`.
+- `POST /api/v1.0/auth/refresh-token` — exchange a sliding refresh token for a new access + refresh pair (rotated and tracked in Redis).
+- Protected endpoints expect `Authorization: Bearer <token>`.
+- Cross-tenant requests enforce ownership matching (`userId` path parameter vs. token `sub` claim).
+
+## Real-Time WebSockets (SignalR)
+
+- `/hubs/orders` — Customer order status updates (`ReceiveOrderStatusUpdate`), scoped to `user-{userId}` groups. Requires JWT Bearer token.
+- `/hubs/admin-dashboard` — Merchant live metrics and events (`ReceiveMetricUpdate`). Enforces `Admin` role.
 
 ## Idempotency
 
-`POST /api/v1.0/orders/checkout` and `POST /api/v1.0/users/{userId}/payments` require an `Idempotency-Key` header. Replays with the same key + body return the original response; reusing the key with a different body returns 409.
+`POST /api/v1.0/users/{userId}/orders`, `POST /api/v1.0/orders/checkout`, and payment endpoints require an `X-Idempotency-Key` (or `Idempotency-Key`) header. Replays with the same key + payload return the original response from Redis cache; reusing the key with a different body returns HTTP 409 Conflict.
 
 ## Contract versioning
 

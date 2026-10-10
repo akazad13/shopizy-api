@@ -1,5 +1,7 @@
 # Shopizy — Threat Model
 
+[⬅️ Back to README](../README.md) · [Product Requirements Document (PRD)](ProductRequirementsDocument.md) · [Repository Memory](RepositoryMemory.md) · [Technical Docs](TechnicalDocumentation.md) · [Improvement Scope](ImprovementScope.md)
+
 > One-page STRIDE-style review of the API surface. Use this when adding endpoints or changing trust boundaries.
 
 ## Trust Boundaries
@@ -71,11 +73,10 @@ Tenants:
 | Threat | Mitigation |
 |---|---|
 | Customer escalates to admin via direct request | Authorization policies check both role + permission claim (e.g. `Order.Create` requires `create:order`). Admin-only endpoints add `RequireRole("Admin")`. Tests cover the deny path. |
-| Permissions registered with a non-existent UUID | Permissions are loaded from DB during register. (Hardcoded ID list in `RegisterCommandHandler` is a tracked weakness — see audit S7.) |
+| Permissions registered with a non-existent UUID | Permissions are loaded and resolved by name from the database during user registration and role updates via a singleton-cached `IPermissionLookup`. |
 
 ## Outstanding risks (acknowledged, not fixed)
 
 - **CORS** allows credentials with explicit origins/methods/headers, but the allow-list is config-driven; misconfig in production is a deployment-time concern.
 - **CSRF** — all mutation endpoints use Bearer tokens (not cookies), so antiforgery is not wired up. If cookie auth is ever added, antiforgery must be added with it.
-- **Permission UUIDs** for the Customer role are hardcoded in `RegisterCommandHandler`. Replace with a name-based lookup + cache (audit S7).
 - **CS86xx nullable warnings** are still suppressed in `.editorconfig`; ~164 sites need cleanup before strict null-safety is enforced.

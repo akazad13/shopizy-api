@@ -1,6 +1,6 @@
 # Shopizy — Technical Architecture & Implementation Reference
 
-[⬅️ Back to README](../README.md) · [Repository Memory](RepositoryMemory.md) · [Feature Docs](FeatureDocumentation.md) · [API](Api.md)
+[⬅️ Back to README](../README.md) · [Product Requirements Document (PRD)](ProductRequirementsDocument.md) · [Repository Memory](RepositoryMemory.md) · [Feature Docs](FeatureDocumentation.md) · [Domain Models](Domain.md) · [Eventual Consistency](EventualConsistency.md) · [Frontend Handoff](FrontendHandoffDoc.md) · [API](Api.md)
 
 This document serves as the comprehensive technical guide for developers, architects, and DevOps engineers working on the **Shopizy** codebase.
 
@@ -150,12 +150,12 @@ public static partial void ShippingRateEstimationError(this ILogger logger, Exce
 
 ## 🧪 10. Testing Strategy & CI/CD Verification
 
-Shopizy maintains a comprehensive test pyramid with **1,173+ automated tests**:
+Shopizy maintains a comprehensive test pyramid with **1,164 automated tests**:
 
 ```
                   ┌──────────────────────┐
                   │ Integration Tests    │  (ASP.NET Core TestHost +
-                  │ (Shopizy.Api.Tests)  │   Testcontainers MsSql & Docker)
+                  │ (Shopizy.Api.Tests)  │   Testcontainers MsSql 2022 & Docker)
                   └──────────┬───────────┘
                              │
                   ┌──────────▼───────────┐

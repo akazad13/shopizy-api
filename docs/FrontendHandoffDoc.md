@@ -1,10 +1,12 @@
 # 🚀 Shopizy — Frontend Handoff & AI Development Specification
 
+[⬅️ Back to README](../README.md) · [Product Requirements Document (PRD)](ProductRequirementsDocument.md) · [Repository Memory](RepositoryMemory.md) · [Feature Docs](FeatureDocumentation.md) · [Technical Docs](TechnicalDocumentation.md) · [API](Api.md)
+
 > **Target Audience:** Frontend Engineering Teams & AI Coding Agents (Cursor, Copilot, Antigravity, Next.js, Angular, React, Vue)  
 > **Backend Architecture:** .NET 10 Clean Architecture & DDD (REST JSON + SignalR WebSockets)  
-> **Base API URL (Local Dev):** `http://localhost:5000/api/v1.0` (or `http://127.0.0.1:18080/api/v1.0`)  
+> **Base API URL (Local Dev):** `https://localhost:7172/api/v1.0` (or `http://127.0.0.1:18080/api/v1.0`)  
 > **Base API URL (Production):** `https://api.shopizy.com/api/v1.0`  
-> **Last Updated:** August 2026  
+> **Last Updated:** October 2026  
 
 ---
 

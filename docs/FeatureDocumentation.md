@@ -1,6 +1,6 @@
 # Shopizy — Complete Feature Documentation
 
-[⬅️ Back to README](../README.md) · [Repository Memory](RepositoryMemory.md) · [Technical Docs](TechnicalDocumentation.md) · [Frontend Handoff](FrontendHandoffDoc.md)
+[⬅️ Back to README](../README.md) · [Product Requirements Document (PRD)](ProductRequirementsDocument.md) · [Repository Memory](RepositoryMemory.md) · [Technical Docs](TechnicalDocumentation.md) · [Domain Models](Domain.md) · [Frontend Handoff](FrontendHandoffDoc.md) · [API](Api.md)
 
 Welcome to the comprehensive feature guide for **Shopizy**, a modern, enterprise-grade e-commerce backend platform built on .NET 10 and Clean Architecture.
 

@@ -1,6 +1,8 @@
 # Shopizy Project Structure Reference
 
-Last updated: 2026-08-23
+[⬅️ Back to README](../README.md) · [Product Requirements Document (PRD)](ProductRequirementsDocument.md) · [Repository Memory](RepositoryMemory.md) · [Technical Docs](TechnicalDocumentation.md) · [API](Api.md)
+
+Last updated: October 2026
 
 This document is a quick map of the repository to guide safe, targeted changes.
 Use it before editing to choose the right layer and keep boundaries clear.
@@ -119,6 +121,7 @@ Architecture/dependency-direction tests via `NetArchTest.Rules`, plus a Mapster 
 
 ## Existing Docs (`docs/`)
 
+- `ProductRequirementsDocument.md`: Comprehensive Product Requirements Document (PRD), business vision, epics, rules, and implementation phases.
 - `RepositoryMemory.md`: High-density map of domain aggregates, messaging pipelines, security, and developer quick reference.
 - `Api.md`: Pointer to the live Swagger UI, OpenAPI spec, and contract versioning rules.
 - `Domain.md`: Aggregate map, state machines, domain events, and concurrency tokens.

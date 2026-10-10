@@ -1,7 +1,9 @@
 # 🧠 Shopizy — Repository Memory & AI Architecture Reference
 
+[⬅️ Back to README](../README.md) · [Product Requirements Document (PRD)](ProductRequirementsDocument.md) · [Feature Docs](FeatureDocumentation.md) · [Technical Docs](TechnicalDocumentation.md) · [Domain Models](Domain.md) · [API](Api.md)
+
 > **Purpose:** High-density architecture map and reference manual for AI agents and developers. Consult this memory file to understand codebase structure, entity graphs, handler conventions, message routing, security mechanisms, and data access patterns without re-scanning the workspace.  
-> **Last Updated:** August 2026  
+> **Last Updated:** October 2026  
 > **Framework:** .NET 10 (C# 13) | **Architecture:** Clean Architecture & Domain-Driven Design (DDD)
 
 ---

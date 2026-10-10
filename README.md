@@ -10,28 +10,35 @@ Shopizy is a robust and scalable Online Store Management API built with .NET 10,
 Shopizy aims to provide a solid foundation for e-commerce platforms. It separates concerns into distinct layers (Domain, Application, Infrastructure, API) to ensure maintainability, testability, and scalability.
 
 Key features include:
--   **Product Management**: Create, update, delete, and search products.
--   **Category Management**: Organize products into hierarchical categories.
--   **Shopping Cart**: Manage user carts and items.
--   **Order Processing**: Place and track orders.
--   **User Management**: User authentication and profile management.
--   **Clean Architecture**: Decoupled layers for better code organization.
+-   **Product Catalog & Brand Management**: Hierarchical categories, brands, variants, barcode/SKU, and Cloudinary image galleries.
+-   **Faceted Search & Typo Tolerance**: Multi-token search with Levenshtein fuzzy distance, synonym expansion, dynamic facet buckets (categories, brands, price tiers, ratings), and "Did You Mean?" suggestions.
+-   **Shopping Cart & Recovery**: High-performance cart management with an automated background worker (`AbandonedCartReminderWorker`) for abandoned cart re-engagement.
+-   **Order Lifecycle & Inventory Protection**: Resilient state machine (`Pending` -> `Processing` -> `Shipping` -> `Delivered`), atomic stock reservation, and automated 15-minute unpaid order expiration (`PendingOrderExpirationWorker`).
+-   **Payments & Webhooks**: Stripe payment intent integration, idempotent webhook handling (`payment_intent.succeeded`, `payment_intent.payment_failed`), automatic refunds, and idempotency key protection (`X-Idempotency-Key`).
+-   **Shipping Logistics & Live Tracking**: Multi-carrier rate estimation (USPS, UPS, FedEx, DHL), free-shipping thresholds, and package tracking checkpoints.
+-   **Real-Time Operations**: SignalR WebSocket hubs for customer order status updates (`/hubs/orders`) and live merchant metrics (`/hubs/admin-dashboard`).
+-   **Customer Engagement & Social Proof**: Verified-purchase product reviews, community upvotes, wishlists with automatic price-drop and back-in-stock alerts, loyalty points, and digital gift cards.
+-   **Identity, RBAC & Security**: JWT authentication with sliding Redis refresh token rotation, granular permissions via cached `IPermissionLookup`, PBKDF2-HMACSHA512 password hashing, rate limiting, and security headers.
+-   **Clean Architecture & Eventual Consistency**: Strict layer boundaries, custom mediator pipeline with Scrutor decorators, in-transaction domain event dispatching, and background outbox processing.
 
 ## 🛠️ Built With
 
-*   [ASP.NET Core 10](https://dotnet.microsoft.com/en-us/apps/aspnet) - The web framework used.
-*   **Custom Messaging System** - Handrolled implementation for Commands, Queries, and Domain Events.
-*   [Scrutor](https://github.com/khellang/Scrutor) - Assembly scanning and decorator support for Microsoft.Extensions.DependencyInjection.
-*   [Mapster](https://github.com/MapsterMapper/Mapster) - A fast, fun and stimulating object to object mapper.
-*   [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) - Object-Relational Mapper (ORM).
-*   [Redis](https://redis.io/) - In-memory data structure store, used for caching.
-*   [Swagger](https://swagger.io/) - API Documentation.
-*   [ErrorOr](https://github.com/amantinband/error-or) - A simple, fluent discrimination union for error handling.
-*   [Npgsql](https://www.npgsql.org/) - .NET data provider for PostgreSQL.
-*   [xUnit](https://xunit.net/) - Testing framework.
-*   [Shouldly](https://shouldly.io/) - Assertion library with a focus on readability.
-*   [Moq](https://github.com/devlooped/moq) - Mocking library for .NET.
-*   [Testcontainers](https://testcontainers.com/) - Spin up real databases in Docker for integration testing.
+*   [ASP.NET Core 10](https://dotnet.microsoft.com/en-us/apps/aspnet) - The web framework used (Minimal APIs).
+*   **Custom Messaging System** - Handrolled mediator implementation for Commands, Queries, and Domain Events (`IDispatcher`).
+*   [Scrutor](https://github.com/khellang/Scrutor) - Assembly scanning and decorator support for dependency injection pipelines.
+*   [Mapster](https://github.com/MapsterMapper/Mapster) - High-performance object-to-object mapper.
+*   [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) - Object-Relational Mapper (ORM) with migrations and optimistic concurrency (`RowVersion`).
+*   [Microsoft SQL Server](https://www.microsoft.com/sql-server) - Relational database engine (SQL Server 2022).
+*   [Redis](https://redis.io/) - In-memory data store for caching, sliding refresh tokens, and request idempotency.
+*   [SignalR](https://dotnet.microsoft.com/apps/aspnet/signalr) - Real-time two-way WebSocket hubs.
+*   [Stripe](https://stripe.com/) - Payment processing and webhook reconciliation.
+*   [Cloudinary](https://cloudinary.com/) - Cloud media storage and asset optimization.
+*   [Swagger / OpenAPI](https://swagger.io/) - API documentation and interactive explorer.
+*   [ErrorOr](https://github.com/amantinband/error-or) - Fluent discriminated unions for domain and application error handling.
+*   [xUnit](https://xunit.net/) - Unit and integration testing framework.
+*   [Shouldly](https://shouldly.io/) - Fluent assertion library with descriptive messages.
+*   [Moq](https://github.com/devlooped/moq) - Mocking library for unit testing.
+*   [Testcontainers](https://testcontainers.com/) - Ephemeral Microsoft SQL Server 2022 container instances in Docker for integration tests.
 
 ## 🏁 Getting Started
 
@@ -40,8 +47,9 @@ Follow these steps to get a local copy up and running.
 ### Prerequisites
 
 *   [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
-*   [Redis](https://redis.io/download) (Running locally or via Docker)
-*   SQL Server (or configured database provider)
+*   [Docker & Docker Compose](https://www.docker.com/) (recommended for local SQL Server 2022, Redis 7, and Mailpit) or local instances of:
+    *   [Microsoft SQL Server 2022](https://www.microsoft.com/sql-server)
+    *   [Redis 7](https://redis.io/download)
 
 ### Installation
 
@@ -53,39 +61,50 @@ Follow these steps to get a local copy up and running.
     ```sh
     cd shopizy
     ```
-3.  **Restore dependencies**
+3.  **Start dependencies via Docker Compose** *(Optional, recommended)*
+    ```sh
+    docker-compose up -d
+    ```
+    This spins up Microsoft SQL Server 2022, Redis 7, and Mailpit for email preview.
+4.  **Restore dependencies**
     ```sh
     dotnet restore
     ```
-4.  **Configure Database**
-    Update the connection string in `src/Shopizy.Api/appsettings.json` (or `appsettings.Development.json`).
+5.  **Configure Database**
+    Update the connection string in `src/Shopizy.Api/appsettings.json` (or `appsettings.Development.json`):
     ```json
     "ConnectionStrings": {
-      "DefaultConnection": "Server=YOUR_SERVER;Database=ShopizyDb;Trusted_Connection=True;TrustServerCertificate=True;"
+      "DefaultConnection": "Server=localhost,1433;Database=ShopizyDb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;"
     }
     ```
-5.  **Run Migrations**
-    The application is configured to apply migrations on startup (`DbMigrationsHelper`), but you can also run them manually:
+6.  **Run Migrations**
+    The application applies migrations automatically on startup via `DbMigrationsHostedService`, or you can apply them manually:
     ```sh
-    cd src/Shopizy.Api
-    dotnet ef database update
+    dotnet ef database update --project src/Shopizy.Infrastructure --startup-project src/Shopizy.Api
     ```
-6.  **Run the API**
+7.  **Run the API**
     ```sh
-    dotnet run
+    dotnet run --project src/Shopizy.Api
     ```
 
 ## 🔌 Usage
 
-Once the API is running, you can explore the endpoints using Swagger UI.
+Once the API is running, you can explore the endpoints using Swagger UI or Bruno.
 
-*   **Swagger UI**: `https://localhost:7066/swagger/index.html` (Port may vary)
+*   **Swagger UI**: `https://localhost:7172/swagger` (or `http://127.0.0.1:18080/swagger`)
+*   **Bruno Collection**: Manual testing collections located under `Bruno/Shopizy/`.
 
 ### Key Endpoints
 
-*   `GET /api/v1.0/products`: Search and filter products.
-*   `POST /api/v1.0/users/{userId}/cart`: Add items to cart.
-*   `POST /api/v1.0/users/{userId}/orders`: Place an order.
+*   `POST /api/v1.0/auth/register` & `POST /api/v1.0/auth/login`: Customer & Admin authentication.
+*   `POST /api/v1.0/products/faceted-search`: Multi-token search with typo tolerance and dynamic facets.
+*   `GET /api/v1.0/products`: Search and filter catalog products.
+*   `POST /api/v1.0/users/{userId}/cart/items`: Manage user shopping cart items.
+*   `POST /api/v1.0/users/{userId}/orders`: Place an order (requires `X-Idempotency-Key`).
+*   `POST /api/v1.0/shipping/estimate-rates`: Live carrier rate quotes (USPS, UPS, FedEx, DHL).
+*   `POST /api/v1.0/webhooks/stripe`: Stripe payment status webhook reconciliation.
+*   `PATCH /api/v1.0/admin/users/{userId}/role`: Administrator role and permission assignment.
+*   `/hubs/orders` & `/hubs/admin-dashboard`: Real-time WebSocket channels.
 
 ## 📚 Documentation
 
@@ -107,7 +126,7 @@ For detailed guides and architecture specifications, please refer to:
 
 The solution follows **Clean Architecture** and **Domain-Driven Design (DDD)** principles:
 
-*   **Shopizy.Domain**: Contains enterprise logic and types (Aggregates, Entities, Value Objects, Enums, Domain Events). No dependencies.
+*   **Shopizy.Domain**: Contains enterprise logic and types (Aggregates, Entities, Value Objects, Enums, Domain Events). No external dependencies.
 *   **Shopizy.SharedKernel**: Contains shared domain and application primitives (`Entity`, `AggregateRoot`, `ValueObject`, `IDispatcher`, `IUnitOfWork`, `ErrorOr`).
 *   **Shopizy.Application**: Contains business logic and use cases. Implements a custom CQRS pattern with Commands and Queries.
     *   **Custom Dispatcher**: A custom `IDispatcher` resolves and executes handlers using dependency injection.
@@ -127,9 +146,10 @@ To run the automated tests, execute the following command in the root directory:
 dotnet test
 ```
 
-The solution includes:
--   **Unit Tests**: Logic verification for Domain, Application, and Infrastructure layers.
--   **Integration Tests**: End-to-end API and Database verification using **Testcontainers** (PostgreSQL).
+The solution includes **1,164 automated tests**:
+-   **Unit Tests**: Logic verification for Domain, Application, Contracts, and Infrastructure layers.
+-   **Architecture Tests**: Enforces layer boundaries and dependency rules using NetArchTest.
+-   **Integration Tests**: End-to-end API and Database verification using **Testcontainers** (Microsoft SQL Server 2022).
 
 ## 🤝 Contributing
 

@@ -1,8 +1,10 @@
 # Shopizy — Improvement Scope
 
-> **Audit date:** 2026-04-26
-> **Last execution:** 2026-04-26 (P0 + P1 + P2 + P3 + tail-cleanup)
-> **Scope:** Full-solution audit of `D:/Practice/Projects/shopizy-main/shopizy-main`
+[⬅️ Back to README](../README.md) · [Product Requirements Document (PRD)](ProductRequirementsDocument.md) · [Repository Memory](RepositoryMemory.md) · [Technical Docs](TechnicalDocumentation.md) · [Threat Model](ThreatModel.md) · [API](Api.md)
+
+> **Audit date:** 2026-04-26  
+> **Last execution:** 2026-04-26 (P0 + P1 + P2 + P3 + tail-cleanup)  
+> **Scope:** Full-solution audit and architectural roadmap
 > **Goal:** Identify concrete improvement opportunities across architecture, security, persistence, API, tests, and DevOps. Each finding cites file/line where applicable and is prioritized by impact.
 
 **Status legend:** **[Done]** shipped · **[Partial]** pattern in place, full migration pending · **[Deferred]** scoped but not done · **[Open]** not started · **[Mooted]** no longer applicable after another change.

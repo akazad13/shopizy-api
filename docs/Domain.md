@@ -1,6 +1,6 @@
 # Shopizy Domain
 
-[⬅️ Back to README](../README.md) · [API](Api.md) · [Eventual Consistency](EventualConsistency.md) · [Threat Model](ThreatModel.md)
+[⬅️ Back to README](../README.md) · [Product Requirements Document (PRD)](ProductRequirementsDocument.md) · [Repository Memory](RepositoryMemory.md) · [Technical Docs](TechnicalDocumentation.md) · [Feature Docs](FeatureDocumentation.md) · [API](Api.md) · [Eventual Consistency](EventualConsistency.md) · [Threat Model](ThreatModel.md)
 
 This document is a current map of the domain layer (`src/Shopizy.Domain`). The authoritative source of truth is the code — when in doubt, read the aggregate. Treat this as a navigation aid, not a specification.
 
