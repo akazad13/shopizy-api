@@ -1,4 +1,5 @@
 using ErrorOr;
+using Shopizy.Domain.Categories.ValueObjects;
 using Shopizy.SharedKernel.Application.Caching;
 using Shopizy.SharedKernel.Application.Messaging;
 
@@ -11,7 +12,7 @@ namespace Shopizy.Application.Categories.Commands.UpdateCategory;
 /// <param name="CategoryId">The category's unique identifier to update.</param>
 /// <param name="Name">The new category name.</param>
 /// <param name="ParentId">The new parent category ID (null for root categories).</param>
-public record UpdateCategoryCommand(Guid UserId, Guid CategoryId, string Name, Guid? ParentId)
+public record UpdateCategoryCommand(Guid UserId, CategoryId CategoryId, string Name, Guid? ParentId)
     : ICommand<ErrorOr<Success>>,
         IInvalidateCache
 {

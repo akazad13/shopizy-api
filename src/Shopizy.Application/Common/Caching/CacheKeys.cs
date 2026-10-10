@@ -19,14 +19,27 @@ public static class CacheKeys
     public static string Category(Guid categoryId) =>
         string.Create(CultureInfo.InvariantCulture, $"category:{categoryId}");
 
+    public static string Category(Shopizy.Domain.Categories.ValueObjects.CategoryId categoryId) =>
+        Category(categoryId.Value);
+
     public static string Product(Guid productId) =>
         string.Create(CultureInfo.InvariantCulture, $"product:{productId}");
+
+    public static string Product(Shopizy.Domain.Products.ValueObjects.ProductId productId) =>
+        Product(productId.Value);
 
     public static string ProductVariants(Guid productId) =>
         string.Create(CultureInfo.InvariantCulture, $"product-variants:{productId}");
 
+    public static string ProductVariants(
+        Shopizy.Domain.Products.ValueObjects.ProductId productId
+    ) => ProductVariants(productId.Value);
+
     public static string User(Guid userId) =>
         string.Create(CultureInfo.InvariantCulture, $"user-{userId}");
+
+    public static string User(Shopizy.Domain.Users.ValueObjects.UserId userId) =>
+        User(userId.Value);
 
     public const string AdminDashboardMetrics = "admin:dashboard-metrics";
 

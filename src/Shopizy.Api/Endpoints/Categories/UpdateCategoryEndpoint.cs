@@ -1,3 +1,4 @@
+using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
 using Shopizy.Api.Common.LoggerMessages;
 using Shopizy.Application.Categories.Commands.UpdateCategory;
@@ -18,17 +19,17 @@ public class UpdateCategoryEndpoint : ApiEndpoint
                     [FromBody] UpdateCategoryRequest request,
                     [FromServices] ICurrentUser currentUser,
                     [FromServices] IDispatcher mediator,
+                    IMapper mapper,
                     ILogger<UpdateCategoryEndpoint> logger
                 ) =>
                 {
+                    var command = mapper.Map<UpdateCategoryCommand>(
+                        (currentUser.GetCurrentUserId(), categoryId, request)
+                    );
+
                     return await HandleAsync(
                         mediator,
-                        new UpdateCategoryCommand(
-                            currentUser.GetCurrentUserId(),
-                            categoryId,
-                            request.Name,
-                            request.ParentId
-                        ),
+                        command,
                         success =>
                             Results.Ok(SuccessResult.Success("Successfully updated category.")),
                         ex => logger.CategoryUpdateError(ex)

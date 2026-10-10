@@ -1,4 +1,5 @@
 using ErrorOr;
+using Shopizy.Domain.Categories.ValueObjects;
 using Shopizy.SharedKernel.Application.Caching;
 using Shopizy.SharedKernel.Application.Messaging;
 
@@ -9,7 +10,7 @@ namespace Shopizy.Application.Categories.Commands.DeleteCategory;
 /// </summary>
 /// <param name="UserId">The ID of the admin user performing the action.</param>
 /// <param name="CategoryId">The category's unique identifier to delete.</param>
-public record DeleteCategoryCommand(Guid UserId, Guid CategoryId)
+public record DeleteCategoryCommand(Guid UserId, CategoryId CategoryId)
     : ICommand<ErrorOr<Success>>,
         IInvalidateCache
 {

@@ -35,5 +35,31 @@ public class CategoryMappingConfig : IRegister
         config.NewConfig<CategoryItem, CategoryResponse>();
 
         config.NewConfig<Guid, GetCategoryQuery>().MapWith(src => new GetCategoryQuery(src));
+
+        config
+            .NewConfig<
+                (Guid UserId, Guid CategoryId, UpdateCategoryRequest request),
+                Shopizy.Application.Categories.Commands.UpdateCategory.UpdateCategoryCommand
+            >()
+            .MapWith(
+                src => new Shopizy.Application.Categories.Commands.UpdateCategory.UpdateCategoryCommand(
+                    src.UserId,
+                    Shopizy.Domain.Categories.ValueObjects.CategoryId.Create(src.CategoryId),
+                    src.request.Name,
+                    src.request.ParentId
+                )
+            );
+
+        config
+            .NewConfig<
+                (Guid UserId, Guid CategoryId),
+                Shopizy.Application.Categories.Commands.DeleteCategory.DeleteCategoryCommand
+            >()
+            .MapWith(
+                src => new Shopizy.Application.Categories.Commands.DeleteCategory.DeleteCategoryCommand(
+                    src.UserId,
+                    Shopizy.Domain.Categories.ValueObjects.CategoryId.Create(src.CategoryId)
+                )
+            );
     }
 }

@@ -35,8 +35,8 @@ public class AddProductToCartCommandHandler(
     {
         ArgumentNullException.ThrowIfNull(cmd);
 
-        var userId = UserId.Create(cmd.UserId);
-        var productId = ProductId.Create(cmd.ProductId);
+        var userId = cmd.UserId;
+        var productId = cmd.ProductId;
 
         var cart = await _cartRepository.GetCartByUserIdForUpdateAsync(userId);
 

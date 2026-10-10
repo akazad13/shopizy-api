@@ -28,7 +28,7 @@ public class DeleteCategoryCommandHandlerTests
         var category = CategoryFactory.Create();
 
         _mockCategoryRepository
-            .Setup(c => c.GetCategoryByIdAsync(CategoryId.Create(command.CategoryId)))
+            .Setup(c => c.GetCategoryByIdAsync(command.CategoryId))
             .ReturnsAsync(category);
 
         // Act

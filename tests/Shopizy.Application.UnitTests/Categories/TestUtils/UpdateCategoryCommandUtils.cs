@@ -8,7 +8,7 @@ public static class UpdateCategoryCommandUtils
     public static UpdateCategoryCommand CreateCommand() =>
         new(
             Constants.User.Id.Value,
-            Constants.Category.Id.Value,
+            Constants.Category.Id,
             Constants.Category.Name,
             Constants.Category.ParentId
         );

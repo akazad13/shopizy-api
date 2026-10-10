@@ -7,8 +7,8 @@ public static class AddProductToCartCommandUtils
 {
     public static AddProductToCartCommand CreateCommand() =>
         new(
-            Constants.User.Id.Value,
-            Constants.Product.Id.Value,
+            Constants.User.Id,
+            Constants.Product.Id,
             Constants.CartItem.Color,
             Constants.CartItem.Size,
             Constants.CartItem.Quantity

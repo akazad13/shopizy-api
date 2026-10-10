@@ -27,7 +27,7 @@ public class UpdateProductQuantityCommandHandlerTests
         var command = UpdateProductQuantityCommandUtils.CreateCommand(37);
 
         _mockCartRepository
-            .Setup(cr => cr.GetCartByUserIdForUpdateAsync(UserId.Create(command.UserId)))
+            .Setup(cr => cr.GetCartByUserIdForUpdateAsync(command.UserId))
             .ReturnsAsync(() => null);
 
         // Act
@@ -39,7 +39,7 @@ public class UpdateProductQuantityCommandHandlerTests
         Assert.Equal(CustomErrors.Cart.CartNotFound, result.Errors[0]);
 
         _mockCartRepository.Verify(
-            cr => cr.GetCartByUserIdForUpdateAsync(UserId.Create(command.UserId)),
+            cr => cr.GetCartByUserIdForUpdateAsync(command.UserId),
             Times.Once
         );
         _mockCartRepository.Verify(x => x.Update(It.IsAny<Cart>()), Times.Never);

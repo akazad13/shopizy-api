@@ -36,7 +36,7 @@ public class AddProductToCartCommandHandlerTests
         var command = AddProductToCartCommandUtils.CreateCommand();
 
         _mockCartRepository
-            .Setup(x => x.GetCartByUserIdForUpdateAsync(UserId.Create(command.UserId)))
+            .Setup(x => x.GetCartByUserIdForUpdateAsync(command.UserId))
             .ReturnsAsync(() => null);
 
         // Act
@@ -58,7 +58,7 @@ public class AddProductToCartCommandHandlerTests
         var command = AddProductToCartCommandUtils.CreateCommand();
 
         _mockCartRepository
-            .Setup(cr => cr.GetCartByUserIdForUpdateAsync(UserId.Create(command.UserId)))
+            .Setup(cr => cr.GetCartByUserIdForUpdateAsync(command.UserId))
             .ReturnsAsync(existingCart);
         _mockProductRepository
             .Setup(x => x.IsProductExistAsync(It.IsAny<ProductId>()))
@@ -74,10 +74,7 @@ public class AddProductToCartCommandHandlerTests
         Assert.Equal(existingCart, cart.Value);
         Assert.Single(cart.Value.CartItems);
         Assert.IsType<ProductId>(cart.Value.CartItems[0].ProductId);
-        Assert.Contains(
-            cart.Value.CartItems,
-            li => li.ProductId == ProductId.Create(command.ProductId)
-        );
+        Assert.Contains(cart.Value.CartItems, li => li.ProductId == command.ProductId);
         Assert.Equal(command.Quantity, cart.Value.CartItems[0].Quantity);
         _mockCartRepository.Verify(x => x.Update(It.IsAny<Cart>()), Times.Never);
     }
@@ -100,7 +97,7 @@ public class AddProductToCartCommandHandlerTests
         var command = AddProductToCartCommandUtils.CreateCommand();
 
         _mockCartRepository
-            .Setup(cr => cr.GetCartByUserIdForUpdateAsync(UserId.Create(command.UserId)))
+            .Setup(cr => cr.GetCartByUserIdForUpdateAsync(command.UserId))
             .ReturnsAsync(existingCart);
 
         _mockProductRepository
@@ -121,9 +118,7 @@ public class AddProductToCartCommandHandlerTests
         _mockCartRepository.Verify(x => x.Update(It.IsAny<Cart>()), Times.Never);
         Assert.Contains(
             cart.Value.CartItems,
-            li =>
-                li.ProductId == ProductId.Create(command.ProductId)
-                && li.Quantity == command.Quantity
+            li => li.ProductId == command.ProductId && li.Quantity == command.Quantity
         );
     }
 
@@ -133,11 +128,11 @@ public class AddProductToCartCommandHandlerTests
         var command = AddProductToCartCommandUtils.CreateCommand();
         var existingCart = CartFactory.Create();
         existingCart.AddLineItem(
-            CartItem.Create(ProductId.Create(command.ProductId), command.Color, command.Size, 1)
+            CartItem.Create(command.ProductId, command.Color, command.Size, 1)
         );
 
         _mockCartRepository
-            .Setup(cr => cr.GetCartByUserIdForUpdateAsync(UserId.Create(command.UserId)))
+            .Setup(cr => cr.GetCartByUserIdForUpdateAsync(command.UserId))
             .ReturnsAsync(existingCart);
 
         var result = await _sut.Handle(command, CancellationToken.None);
@@ -153,7 +148,7 @@ public class AddProductToCartCommandHandlerTests
         var existingCart = CartFactory.Create();
 
         _mockCartRepository
-            .Setup(cr => cr.GetCartByUserIdForUpdateAsync(UserId.Create(command.UserId)))
+            .Setup(cr => cr.GetCartByUserIdForUpdateAsync(command.UserId))
             .ReturnsAsync(existingCart);
         _mockProductRepository
             .Setup(x => x.IsProductExistAsync(It.IsAny<ProductId>()))

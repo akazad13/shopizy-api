@@ -28,7 +28,7 @@ public class UpdateProductQuantityCommandHandler(ICartRepository cartRepository)
         CancellationToken cancellationToken
     )
     {
-        var userId = UserId.Create(cmd.UserId);
+        var userId = cmd.UserId;
         var cart = await _cartRepository.GetCartByUserIdForUpdateAsync(userId);
 
         if (cart is null)
@@ -36,7 +36,7 @@ public class UpdateProductQuantityCommandHandler(ICartRepository cartRepository)
             return (Error)CustomErrors.Cart.CartNotFound;
         }
 
-        cart.UpdateLineItem(CartItemId.Create(cmd.CartItemId), cmd.Quantity);
+        cart.UpdateLineItem(cmd.CartItemId, cmd.Quantity);
 
         return cart;
     }

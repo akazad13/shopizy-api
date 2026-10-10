@@ -27,7 +27,7 @@ public class RemoveProductFromCartCommandHandlerTests
         var command = RemoveProductFromCartCommandUtils.CreateCommand();
 
         _mockCartRepository
-            .Setup(cr => cr.GetCartByUserIdForUpdateAsync(UserId.Create(command.UserId)))
+            .Setup(cr => cr.GetCartByUserIdForUpdateAsync(command.UserId))
             .ReturnsAsync(() => null);
 
         // Act
@@ -39,7 +39,7 @@ public class RemoveProductFromCartCommandHandlerTests
         Assert.Equal(CustomErrors.Cart.CartNotFound, result.Errors[0]);
 
         _mockCartRepository.Verify(
-            cr => cr.GetCartByUserIdForUpdateAsync(UserId.Create(command.UserId)),
+            cr => cr.GetCartByUserIdForUpdateAsync(command.UserId),
             Times.Once
         );
         _mockCartRepository.Verify(x => x.Update(It.IsAny<Cart>()), Times.Never);
@@ -54,7 +54,7 @@ public class RemoveProductFromCartCommandHandlerTests
         var command = RemoveProductFromCartCommandUtils.CreateCommand();
 
         _mockCartRepository
-            .Setup(cr => cr.GetCartByUserIdForUpdateAsync(UserId.Create(command.UserId)))
+            .Setup(cr => cr.GetCartByUserIdForUpdateAsync(command.UserId))
             .ReturnsAsync(() => existingCart);
 
         // Act
@@ -65,7 +65,7 @@ public class RemoveProductFromCartCommandHandlerTests
         Assert.IsType<Cart>(result.Value);
 
         _mockCartRepository.Verify(
-            cr => cr.GetCartByUserIdForUpdateAsync(UserId.Create(command.UserId)),
+            cr => cr.GetCartByUserIdForUpdateAsync(command.UserId),
             Times.Once
         );
         _mockCartRepository.Verify(x => x.Update(It.IsAny<Cart>()), Times.Never);

@@ -27,7 +27,7 @@ public class RemoveProductFromCartCommandHandler(ICartRepository cartRepository)
         CancellationToken cancellationToken = default
     )
     {
-        var userId = UserId.Create(cmd.UserId);
+        var userId = cmd.UserId;
         var cart = await _cartRepository.GetCartByUserIdForUpdateAsync(userId);
 
         if (cart is null)
@@ -35,7 +35,7 @@ public class RemoveProductFromCartCommandHandler(ICartRepository cartRepository)
             return (Error)CustomErrors.Cart.CartNotFound;
         }
 
-        var lineItem = cart.CartItems.FirstOrDefault(li => li.Id.Value == cmd.ItemId);
+        var lineItem = cart.CartItems.FirstOrDefault(li => li.Id == cmd.ItemId);
         if (lineItem is not null)
         {
             cart.RemoveLineItem(lineItem);

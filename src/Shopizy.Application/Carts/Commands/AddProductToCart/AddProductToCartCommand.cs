@@ -1,5 +1,7 @@
-﻿using ErrorOr;
+using ErrorOr;
 using Shopizy.Domain.Carts;
+using Shopizy.Domain.Products.ValueObjects;
+using Shopizy.Domain.Users.ValueObjects;
 using Shopizy.SharedKernel.Application.Messaging;
 
 namespace Shopizy.Application.Carts.Commands.AddProductToCart;
@@ -13,8 +15,8 @@ namespace Shopizy.Application.Carts.Commands.AddProductToCart;
 /// <param name="Size">The selected product size.</param>
 /// <param name="Quantity">The quantity to add.</param>
 public record AddProductToCartCommand(
-    Guid UserId,
-    Guid ProductId,
+    UserId UserId,
+    ProductId ProductId,
     string Color,
     string Size,
     int Quantity

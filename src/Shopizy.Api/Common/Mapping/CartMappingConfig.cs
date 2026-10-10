@@ -24,22 +24,31 @@ public class CartMappingConfig : IRegister
 
         config
             .NewConfig<(Guid UserId, AddProductToCartRequest request), AddProductToCartCommand>()
-            .Map(dest => dest.UserId, src => src.UserId)
-            .Map(dest => dest, src => src.request);
+            .MapWith(src => new AddProductToCartCommand(
+                Shopizy.Domain.Users.ValueObjects.UserId.Create(src.UserId),
+                Shopizy.Domain.Products.ValueObjects.ProductId.Create(src.request.ProductId),
+                src.request.Color,
+                src.request.Size,
+                src.request.Quantity
+            ));
 
         config
             .NewConfig<
                 (Guid UserId, Guid CartItemId, UpdateProductQuantityRequest request),
                 UpdateProductQuantityCommand
             >()
-            .Map(dest => dest.UserId, src => src.UserId)
-            .Map(dest => dest.CartItemId, src => src.CartItemId)
-            .Map(dest => dest, src => src.request);
+            .MapWith(src => new UpdateProductQuantityCommand(
+                Shopizy.Domain.Users.ValueObjects.UserId.Create(src.UserId),
+                Shopizy.Domain.Carts.ValueObjects.CartItemId.Create(src.CartItemId),
+                src.request.Quantity
+            ));
 
         config
             .NewConfig<(Guid UserId, Guid ItemId), RemoveProductFromCartCommand>()
-            .Map(dest => dest.UserId, src => src.UserId)
-            .Map(dest => dest.ItemId, src => src.ItemId);
+            .MapWith(src => new RemoveProductFromCartCommand(
+                Shopizy.Domain.Users.ValueObjects.UserId.Create(src.UserId),
+                Shopizy.Domain.Carts.ValueObjects.CartItemId.Create(src.ItemId)
+            ));
 
         config.NewConfig<Guid, GetCartQuery>().MapWith(userId => new GetCartQuery(userId));
 
