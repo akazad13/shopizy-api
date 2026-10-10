@@ -185,6 +185,7 @@ dotnet test tests/Shopizy.Api.IntegrationTests
 ## 8. Documentation Index
 
 - **[README.md](../README.md)**: Main getting started guide and project overview.
+- **[Product Requirements Document (PRD)](ProductRequirementsDocument.md)**: Product vision, user personas, functional epics, invariants, and implementation roadmap.
 - **[Feature Documentation](FeatureDocumentation.md)**: Business features and domain capabilities.
 - **[Technical Documentation](TechnicalDocumentation.md)**: Deep dive into Clean Architecture and DDD design.
 - **[API Documentation](Api.md)**: OpenAPI & Swagger guide.

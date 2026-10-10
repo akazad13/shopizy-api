@@ -91,6 +91,7 @@ Once the API is running, you can explore the endpoints using Swagger UI.
 
 For detailed guides and architecture specifications, please refer to:
 
+*   **[Product Requirements Document (PRD)](docs/ProductRequirementsDocument.md)**: Product vision, user personas, functional epics, critical business invariants, and phased engineering roadmap.
 *   **[Repository Memory & Architecture Reference](docs/RepositoryMemory.md)**: High-density map of domain aggregates, messaging pipelines, security, and developer quick reference.
 *   **[Feature Documentation](docs/FeatureDocumentation.md)**: End-to-end guide of all platform features, workflows, and business logic.
 *   **[Technical Documentation](docs/TechnicalDocumentation.md)**: Architectural patterns, DDD design, CQRS messaging, caching, and infrastructure references.
