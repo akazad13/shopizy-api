@@ -114,4 +114,18 @@ public sealed class ProductReader(AppDbContext dbContext) : IProductReader
 
         return query;
     }
+
+    public async Task<IReadOnlyList<Shopizy.Domain.Products.Entities.ProductVariant>?> GetProductVariantsAsync(
+        Shopizy.Domain.Products.ValueObjects.ProductId id,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var product = await _dbContext
+            .Products.AsNoTracking()
+            .Include(p => p.ProductVariants)
+            .Cacheable()
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+
+        return product?.ProductVariants;
+    }
 }

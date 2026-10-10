@@ -41,4 +41,14 @@ public interface IProductReader
         ProductSearchCriteria criteria,
         CancellationToken cancellationToken = default
     );
+
+    /// <summary>
+    /// Projects product variants for the given product ID without loading full reviews or images.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="cancellationToken"></param>
+    Task<IReadOnlyList<Shopizy.Domain.Products.Entities.ProductVariant>?> GetProductVariantsAsync(
+        Shopizy.Domain.Products.ValueObjects.ProductId id,
+        CancellationToken cancellationToken = default
+    );
 }

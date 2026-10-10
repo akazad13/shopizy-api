@@ -16,13 +16,13 @@ namespace Shopizy.Application.UnitTests.Products.Queries.GetProductVariants;
 
 public class GetProductVariantsQueryHandlerTests
 {
-    private readonly Mock<IProductRepository> _mockProductRepository;
+    private readonly Mock<IProductReader> _mockProductReader;
     private readonly GetProductVariantsQueryHandler _handler;
 
     public GetProductVariantsQueryHandlerTests()
     {
-        _mockProductRepository = new Mock<IProductRepository>();
-        _handler = new GetProductVariantsQueryHandler(_mockProductRepository.Object);
+        _mockProductReader = new Mock<IProductReader>();
+        _handler = new GetProductVariantsQueryHandler(_mockProductReader.Object);
     }
 
     [Fact]
@@ -30,9 +30,14 @@ public class GetProductVariantsQueryHandlerTests
     {
         // Arrange
         var productId = Guid.NewGuid();
-        _mockProductRepository
-            .Setup(r => r.GetProductByIdAsync(It.Is<ProductId>(id => id.Value == productId)))
-            .ReturnsAsync((Product?)null);
+        _mockProductReader
+            .Setup(r =>
+                r.GetProductVariantsAsync(
+                    It.Is<ProductId>(id => id.Value == productId),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync((IReadOnlyList<ProductVariant>?)null);
 
         var query = new GetProductVariantsQuery(productId);
 
@@ -48,34 +53,25 @@ public class GetProductVariantsQueryHandlerTests
     public async Task Handle_WhenProductExists_ShouldReturnVariants()
     {
         // Arrange
-        var product = Product.Create(
-            "Test",
-            "Short",
-            "Long",
-            CategoryId.CreateUnique(),
-            "SKU",
-            10,
-            Price.CreateNew(10, Currency.usd),
-            null,
-            null,
-            "Barcode",
-            "Colors",
-            "Sizes",
-            "Tags"
-        );
+        var productId = Guid.NewGuid();
         var variant = ProductVariant.Create(
             "Red-M",
             "SKU-RED-M",
             Price.CreateNew(12, Currency.usd),
             5
         );
-        product.AddVariant(variant);
+        IReadOnlyList<ProductVariant> variants = [variant];
 
-        _mockProductRepository
-            .Setup(r => r.GetProductByIdAsync(It.Is<ProductId>(id => id.Value == product.Id.Value)))
-            .ReturnsAsync(product);
+        _mockProductReader
+            .Setup(r =>
+                r.GetProductVariantsAsync(
+                    It.Is<ProductId>(id => id.Value == productId),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(variants);
 
-        var query = new GetProductVariantsQuery(product.Id.Value);
+        var query = new GetProductVariantsQuery(productId);
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
