@@ -11,13 +11,13 @@ namespace Shopizy.Application.UnitTests.Products.Queries.GetProducts;
 
 public class GetProductsQueryHandlerTestsRefactored
 {
-    private readonly Mock<IProductRepository> _mockProductRepository;
+    private readonly Mock<IProductReader> _mockProductReader;
     private readonly GetProductsQueryHandler _handler;
 
     public GetProductsQueryHandlerTestsRefactored()
     {
-        _mockProductRepository = new Mock<IProductRepository>();
-        _handler = new GetProductsQueryHandler(_mockProductRepository.Object);
+        _mockProductReader = new Mock<IProductReader>();
+        _handler = new GetProductsQueryHandler(_mockProductReader.Object);
     }
 
     [Fact]
@@ -54,8 +54,13 @@ public class GetProductsQueryHandlerTestsRefactored
         );
         var products = new List<Product> { product };
 
-        _mockProductRepository
-            .Setup(r => r.GetProductsWithCountAsync(It.IsAny<ProductSearchCriteria>()))
+        _mockProductReader
+            .Setup(r =>
+                r.GetProductsWithCountAsync(
+                    It.IsAny<ProductSearchCriteria>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
             .ReturnsAsync(((IReadOnlyList<Product>)products, 1));
 
         // Act
@@ -85,8 +90,13 @@ public class GetProductsQueryHandlerTestsRefactored
             10
         );
 
-        _mockProductRepository
-            .Setup(r => r.GetProductsWithCountAsync(It.IsAny<ProductSearchCriteria>()))
+        _mockProductReader
+            .Setup(r =>
+                r.GetProductsWithCountAsync(
+                    It.IsAny<ProductSearchCriteria>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
             .ReturnsAsync(((IReadOnlyList<Product>)new List<Product>(), 0));
 
         // Act

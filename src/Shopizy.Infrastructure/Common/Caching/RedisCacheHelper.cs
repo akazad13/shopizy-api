@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Shopizy.SharedKernel.Application.Caching;
 using StackExchange.Redis;
@@ -6,13 +7,15 @@ using StackExchange.Redis;
 namespace Shopizy.Infrastructure.Common.Caching;
 
 /// <summary>
-/// Helper class for interacting with Redis cache.
+/// Helper class for interacting with Redis cache with local in-memory fallback.
 /// </summary>
 /// <param name="connectionMultiplexer"></param>
 /// <param name="logger"></param>
+/// <param name="memoryCache"></param>
 public class RedisCacheHelper(
     IConnectionMultiplexer connectionMultiplexer,
-    ILogger<RedisCacheHelper> logger
+    ILogger<RedisCacheHelper> logger,
+    IMemoryCache? memoryCache = null
 ) : ICacheHelper
 {
     private static readonly JsonSerializerOptions _jsonOptions = new()
@@ -23,6 +26,7 @@ public class RedisCacheHelper(
 
     private readonly IConnectionMultiplexer _connectionMultiplexer = connectionMultiplexer;
     private readonly ILogger<RedisCacheHelper> _logger = logger;
+    private readonly IMemoryCache? _memoryCache = memoryCache;
 
     /// <summary>
     /// Gets the cached value for the specified key.
@@ -44,15 +48,15 @@ public class RedisCacheHelper(
             var value = JsonSerializer.Deserialize<T>(data.ToString(), _jsonOptions)!;
             return CacheResult<T>.Hit(value);
         }
-        catch (RedisConnectionException)
+        catch (RedisException)
         {
             _logger.RedisUnavailable(key);
-            return CacheResult<T>.Miss();
+            return TryFallbackMemoryGet<T>(key);
         }
         catch (Exception ex)
         {
             _logger.RedisGetError(ex, key);
-            return CacheResult<T>.Miss();
+            return TryFallbackMemoryGet<T>(key);
         }
     }
 
@@ -65,32 +69,31 @@ public class RedisCacheHelper(
     /// <param name="expiration">The expiration time for the cached value. If null, the value does not expire.</param>
     public async Task SetAsync<T>(string key, T value, TimeSpan? expiration = null)
     {
+        if (_memoryCache != null)
+        {
+            if (expiration.HasValue)
+            {
+                _memoryCache.Set(key, value, expiration.Value);
+            }
+            else
+            {
+                _memoryCache.Set(key, value);
+            }
+        }
+
         try
         {
             var db = _connectionMultiplexer.GetDatabase();
             var serializedValue = JsonSerializer.Serialize(value, _jsonOptions);
-            if (expiration.HasValue)
-            {
-                await db.StringSetAsync(
-                    key,
-                    serializedValue,
-                    expiry: expiration.Value,
-                    when: When.Always,
-                    flags: CommandFlags.None
-                );
-            }
-            else
-            {
-                await db.StringSetAsync(
-                    key,
-                    serializedValue,
-                    expiry: null,
-                    when: When.Always,
-                    flags: CommandFlags.None
-                );
-            }
+            await db.StringSetAsync(
+                key,
+                serializedValue,
+                expiry: expiration,
+                when: When.Always,
+                flags: CommandFlags.None
+            );
         }
-        catch (RedisConnectionException)
+        catch (RedisException)
         {
             _logger.RedisUnavailable(key);
         }
@@ -106,12 +109,14 @@ public class RedisCacheHelper(
     /// <param name="key">The cache key.</param>
     public async Task RemoveAsync(string key)
     {
+        _memoryCache?.Remove(key);
+
         try
         {
             var db = _connectionMultiplexer.GetDatabase();
             await db.KeyDeleteAsync(key);
         }
-        catch (RedisConnectionException)
+        catch (RedisException)
         {
             _logger.RedisUnavailable(key);
         }
@@ -119,5 +124,15 @@ public class RedisCacheHelper(
         {
             _logger.RedisRemoveError(ex, key);
         }
+    }
+
+    private CacheResult<T> TryFallbackMemoryGet<T>(string key)
+    {
+        if (_memoryCache != null && _memoryCache.TryGetValue(key, out T? value) && value != null)
+        {
+            return CacheResult<T>.Hit(value);
+        }
+
+        return CacheResult<T>.Miss();
     }
 }

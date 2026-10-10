@@ -7,10 +7,10 @@ using Shopizy.SharedKernel.Application.Messaging;
 
 namespace Shopizy.Application.Products.Queries.GetProducts;
 
-public class GetProductsQueryHandler(IProductRepository productRepository)
+public class GetProductsQueryHandler(IProductReader productReader)
     : IQueryHandler<GetProductsQuery, ErrorOr<ProductsResult>>
 {
-    private readonly IProductRepository _productRepository = productRepository;
+    private readonly IProductReader _productReader = productReader;
 
     public async Task<ErrorOr<ProductsResult>> Handle(
         GetProductsQuery query,
@@ -58,7 +58,10 @@ public class GetProductsQueryHandler(IProductRepository productRepository)
             query.PageSize
         );
 
-        var (products, totalCount) = await _productRepository.GetProductsWithCountAsync(criteria);
+        var (products, totalCount) = await _productReader.GetProductsWithCountAsync(
+            criteria,
+            cancellationToken
+        );
 
         return new ProductsResult(
             products.ToList(),

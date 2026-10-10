@@ -1,3 +1,4 @@
+using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.EntityFrameworkCore;
 using Shopizy.Application.Common.Interfaces.Persistence;
 using Shopizy.Domain.Products;
@@ -24,6 +25,7 @@ public class ProductRepository(AppDbContext dbContext) : IProductRepository
             .Include(p => p.ProductReviews)
                 .ThenInclude(p => p.User)
             .AsNoTracking()
+            .Cacheable()
             .FirstOrDefaultAsync(p => p.Id == id);
 
     public Task<Product?> GetProductByIdForUpdateAsync(ProductId id) =>

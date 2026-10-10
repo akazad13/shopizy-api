@@ -31,4 +31,14 @@ public interface IProductReader
     /// </summary>
     /// <param name="cancellationToken"></param>
     Task<IReadOnlyList<string>> GetBrandNamesAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Searches and pages products matching the specified criteria, returning the matching products and total match count.
+    /// </summary>
+    /// <param name="criteria"></param>
+    /// <param name="cancellationToken"></param>
+    Task<(IReadOnlyList<Product> Products, int TotalCount)> GetProductsWithCountAsync(
+        ProductSearchCriteria criteria,
+        CancellationToken cancellationToken = default
+    );
 }

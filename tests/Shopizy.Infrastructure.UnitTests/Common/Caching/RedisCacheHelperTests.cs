@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shopizy.Infrastructure.Common.Caching;
@@ -132,6 +133,38 @@ public class RedisCacheHelperTests
                 Times.Once
             );
         }
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenRedisFailsAndMemoryCacheHasValue_ShouldReturnFallbackValue()
+    {
+        // Arrange
+        var key = "fallback-key";
+        var expected = new TestDto { Name = "Fallback" };
+        using var memoryCache = new Microsoft.Extensions.Caching.Memory.MemoryCache(
+            new Microsoft.Extensions.Caching.Memory.MemoryCacheOptions()
+        );
+        memoryCache.Set(key, expected);
+
+        _mockDatabase
+            .Setup(db => db.StringGetAsync(key, It.IsAny<CommandFlags>()))
+            .ThrowsAsync(
+                new RedisConnectionException(ConnectionFailureType.UnableToConnect, "Redis down")
+            );
+
+        var helperWithMemory = new RedisCacheHelper(
+            _mockMultiplexer.Object,
+            _mockLogger.Object,
+            memoryCache
+        );
+
+        // Act
+        var result = await helperWithMemory.GetAsync<TestDto>(key);
+
+        // Assert
+        result.Success.ShouldBeTrue();
+        result.Value.ShouldNotBeNull();
+        result.Value.Name.ShouldBe("Fallback");
     }
 
     private class TestDto

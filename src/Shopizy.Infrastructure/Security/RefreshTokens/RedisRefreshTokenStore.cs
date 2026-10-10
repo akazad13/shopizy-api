@@ -72,7 +72,7 @@ public sealed class RedisRefreshTokenStore(
             await indexTask;
             await indexExpireTask;
         }
-        catch (RedisConnectionException ex)
+        catch (RedisException ex)
         {
             _redisStoreRefreshTokenUnavailable(logger, userId.Value.ToString(), ex);
         }
@@ -95,7 +95,7 @@ public sealed class RedisRefreshTokenStore(
             await db.SetRemoveAsync(UserIndexPrefix + userGuid, hash);
             return UserId.Create(userGuid);
         }
-        catch (RedisConnectionException ex)
+        catch (RedisException ex)
         {
             _redisConsumeRefreshTokenUnavailable(logger, ex);
             return null;
@@ -110,7 +110,7 @@ public sealed class RedisRefreshTokenStore(
             var db = connection.GetDatabase();
             await db.KeyDeleteAsync(KeyPrefix + hash);
         }
-        catch (RedisConnectionException ex)
+        catch (RedisException ex)
         {
             _redisRevokeRefreshTokenUnavailable(logger, ex);
         }
@@ -135,7 +135,7 @@ public sealed class RedisRefreshTokenStore(
             }
             await db.KeyDeleteAsync(UserIndexPrefix + userId.Value);
         }
-        catch (RedisConnectionException ex)
+        catch (RedisException ex)
         {
             _redisRevokeAllRefreshTokensUnavailable(logger, userId.Value.ToString(), ex);
         }

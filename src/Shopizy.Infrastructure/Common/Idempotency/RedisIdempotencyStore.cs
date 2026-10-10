@@ -39,7 +39,7 @@ public sealed class RedisIdempotencyStore(
                 ? JsonSerializer.Deserialize<IdempotencyRecord>(data.ToString())
                 : null;
         }
-        catch (RedisConnectionException ex)
+        catch (RedisException ex)
         {
             _redisReadUnavailable(logger, key, ex);
             return null;
@@ -59,7 +59,7 @@ public sealed class RedisIdempotencyStore(
             var serialized = JsonSerializer.Serialize(record);
             await db.StringSetAsync(KeyPrefix + key, serialized, ttl, when: When.Always);
         }
-        catch (RedisConnectionException ex)
+        catch (RedisException ex)
         {
             _redisStoreUnavailable(logger, key, ex);
         }

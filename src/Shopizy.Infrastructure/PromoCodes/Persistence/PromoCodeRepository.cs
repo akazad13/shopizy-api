@@ -1,3 +1,4 @@
+using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.EntityFrameworkCore;
 using Shopizy.Application.Common.Interfaces.Persistence;
 using Shopizy.Domain.PromoCodes;
@@ -16,6 +17,7 @@ public class PromoCodeRepository(AppDbContext dbContext) : IPromoCodeRepository
             .OrderByDescending(pc => pc.CreatedOn)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
+            .Cacheable()
             .ToListAsync();
 
     public Task<PromoCode?> GetPromoCodeByIdAsync(PromoCodeId id) =>

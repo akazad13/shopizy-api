@@ -1,3 +1,4 @@
+using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.EntityFrameworkCore;
 using Shopizy.Application.Common.Interfaces.Persistence;
 using Shopizy.Domain.GiftCards;
@@ -17,6 +18,7 @@ public class GiftCardRepository(AppDbContext dbContext) : IGiftCardRepository
             .OrderByDescending(gc => gc.CreatedOn)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
+            .Cacheable()
             .ToListAsync();
 
     public Task<GiftCard?> GetByIdAsync(GiftCardId id) =>
