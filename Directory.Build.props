@@ -8,9 +8,8 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <!-- CA1848: LoggerMessage delegate suggestion. Defer until we have a metrics push. -->
     <!-- NU1902/NU1903: transitive-package vulnerability advisories. Surface them as warnings; CI/Dependabot tracks remediation. -->
-    <!-- CS86xx: nullable-reference warnings re-enabled in .editorconfig (B2). Listed here to keep the
-         existing ~164 sites from breaking the build while they're cleaned up incrementally. -->
-    <WarningsNotAsErrors>$(WarningsNotAsErrors);CA1848;NU1902;NU1903;NU1608;CS8601;CS8602;CS8603;CS8604;CS8618;CS8629</WarningsNotAsErrors>
+    <!-- CS86xx: all nullable warnings resolved; strictly enforced as errors under TreatWarningsAsErrors. -->
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);CA1848;NU1902;NU1903;NU1608</WarningsNotAsErrors>
     <AnalysisLevel>latest</AnalysisLevel>
   </PropertyGroup>
 
