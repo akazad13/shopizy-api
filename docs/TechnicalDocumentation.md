@@ -155,15 +155,24 @@ All logging across the Application, Infrastructure, and API layers uses high-per
 public static partial void ShippingRateEstimationError(this ILogger logger, Exception ex);
 ```
 
-### OpenTelemetry Distributed Tracing
+### OpenTelemetry Distributed Tracing & Metrics
 - Full OpenTelemetry integration instrumenting **ASP.NET Core HTTP**, **HttpClient**, **EF Core SQL Queries**, and **StackExchange.Redis**.
+- Application and worker metrics via custom meters:
+  - `Shopizy.Outbox`: tracks `shopizy.outbox.processed` and `shopizy.outbox.dead_lettered` counters.
+  - `Shopizy.Workers`: tracks background task operations (`shopizy.orders.expired` and `shopizy.carts.reminders_sent`).
 - Exporters configured for OpenTelemetry Protocol (OTLP) and Console logging.
+
+### Health Checks (`/healthz`)
+- Comprehensive readiness and liveness checks covering:
+  - **SQL Server**: database connection liveness.
+  - **Redis**: distributed cache and store connectivity.
+  - **Outbox (`OutboxHealthCheck`)**: reports `Degraded` if the unprocessed dead-letter message backlog exceeds 10, alerting operators before data staleness propagates.
 
 ---
 
 ## 🧪 10. Testing Strategy & CI/CD Verification
 
-Shopizy maintains a comprehensive test pyramid with **1,164 automated tests**:
+Shopizy maintains a comprehensive test pyramid with **1,182 automated tests**:
 
 ```
                   ┌──────────────────────┐

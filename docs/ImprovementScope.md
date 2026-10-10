@@ -28,20 +28,20 @@ The architecture was sound, but several **production-blocking** gaps existed:
 
 Initial maturity rating: **7/10** — strong fundamentals, but multiple critical items must close before production.
 
-### Current state (2026-04-26 post-execution)
+### Current state (2026-10-11 post-execution)
 
-All production blockers and follow-on items closed or in flight with explicit follow-on patterns. Test suite holds at **522 passing** (54 domain + 289 application + 35 infrastructure + 5 architecture + 139 integration).
+All production blockers, high-impact items, quality improvements, and cleanup items are complete. Test suite holds at **1,182 passing** (54 domain + 301 application + 36 infrastructure + 5 architecture + 139 integration + 647 contracts).
 
 By tier:
 
 - **P0 (production blockers):** 6/6 done.
 - **P1 (high-impact, near-term):** 7/7 done.
-- **P2 (quality / scale):** 13/13 in flight (A1/A2 first slices shipped, pattern established; T6 mutation-testing wired up).
-- **P3 (polish):** 8/8 in flight (A6 versioning placeholder, P5 fully migrated, contract XML docs filled in).
+- **P2 (quality / scale):** 13/13 done (A1/A2 fully completed across Product, Category, and Cart; D7 DTO projections shipped; T6 mutation-testing wired up; C4/C5 metrics & Outbox health check shipped).
+- **P3 (polish):** 8/8 done (A6 versioning placeholder, P5 fully migrated, contract XML docs filled in).
 - **A3:** event dispatch is now in-transaction — original "post-commit re-fetch" failure mode is removed.
-- **B2:** CS86xx visibility restored (172 sites surface as warnings on a `WarningsNotAsErrors` allowlist); per-file cleanup migrates the count down over time.
+- **B2:** CS86xx nullable warnings fully eliminated across all production projects under `TreatWarningsAsErrors=true` (zero CS86xx warnings on allowlist).
 
-Updated maturity rating: **9.5/10** — production blockers resolved, CI/CD has supply-chain guardrails (CodeQL + dependency-review + SBOM + container build + Stryker mutation), operational story (refresh tokens, OTel, correlation IDs, dead-letter alerting, idempotency, PII redaction, threat model, in-transaction event dispatch) is documented and tested.
+Updated maturity rating: **9.8/10** — production blockers resolved, CI/CD has supply-chain guardrails (CodeQL + dependency-review + SBOM + container build + Stryker mutation), operational story (refresh tokens, OTel traces & worker metrics, outbox health checks, correlation IDs, dead-letter alerting, idempotency, PII redaction, threat model, in-transaction event dispatch) is documented and tested.
 
 See [§9. Prioritized Roadmap](#9-prioritized-roadmap) for the per-item status.
 
@@ -60,7 +60,7 @@ See [§9. Prioritized Roadmap](#9-prioritized-roadmap) for the per-item status.
 
 | # | Finding | Location | Impact | Recommendation | Status |
 |---|---------|----------|--------|----------------|--------|
-| A1 | Commands accept primitives instead of value objects, forcing conversion in handlers | `src/Shopizy.Application/Products/Commands/CreateProduct/CreateProductCommand.cs:27-44`, `CreateProductCommandHandler.cs:25-39` | Medium | Mapster-map at the endpoint into commands that already carry `Price`, `BrandId`, etc. Domain assumes clean input. | **[Done]** `CreateProductCommand` and `UpdateProductCommand` carry typed `Price` / `CategoryId` / `BrandId`; conversion lives in `ProductMappingConfig`. |
+| A1 | Commands accept primitives instead of value objects, forcing conversion in handlers | `src/Shopizy.Application/Products/Commands/CreateProduct/CreateProductCommand.cs:27-44`, `CreateProductCommandHandler.cs:25-39` | Medium | Mapster-map at the endpoint into commands that already carry `Price`, `BrandId`, etc. Domain assumes clean input. | **[Done]** `CreateProductCommand`, `UpdateProductCommand`, `UpdateCategoryCommand`, `DeleteCategoryCommand`, `AddProductToCartCommand`, `UpdateProductQuantityCommand`, `RemoveProductFromCartCommand` carry typed `Price` / `CategoryId` / `BrandId` / `UserId` / `ProductId` / `CartItemId`; boundary conversion lives in mapping configs. |
 | A2 | `IProductRepository` is a 15+ method bag-of-queries (e.g., `GetProductsByIdsForUpdateAsync`, `GetLowStockProductsAsync`) | `src/Shopizy.Application/Common/Interfaces/Persistence/IProductRepository.cs:8-60` | Medium | Move read queries into `IQueryHandler` types; keep repos thin (Add/Update/Remove/GetById). Optionally introduce a Specification pattern. | **[Done]** CQRS read-side separation implemented via `IProductReader` and `IOrderReader`; query handlers depend on readers instead of repositories. |
 | A3 | Domain event handlers re-fetch aggregates and call `SaveChangesAsync` again, after the original transaction has committed — no compensation if the second save fails | `src/Shopizy.Application/Orders/Events/OrderCreatedDomainEventHandler.cs:18-39` | High | Either run handler logic inside the original transaction, or implement explicit compensation/saga. Document failure modes and add OutboxDeadLetter alerting. | **[Done]** `EventualConsistencyMiddleware` now dispatches events **inside** the same transaction as the originating write — handler side-effects are atomic; failures abort the whole request and roll back. Contract documented in `docs/EventualConsistency.md`. |
 | A4 | `IAppDbContext` is too thin — exposes only `SaveChangesAsync`; `DbSet<T>` access is via the concrete `AppDbContext` | `src/Shopizy.Application/Common/Interfaces/Persistence/IAppDbContext.cs:1-6` | Low | Either expand the abstraction or remove it in favor of `IUnitOfWork` + per-aggregate repositories. Avoid half-abstractions. | **[Done]** removed; `IUnitOfWork` covers `SaveChangesAsync` |
@@ -116,7 +116,7 @@ See [§9. Prioritized Roadmap](#9-prioritized-roadmap) for the per-item status.
 | D4 | `GetTotalRevenueAsync` materializes all orders + items into memory then sums | `src/Shopizy.Infrastructure/Orders/Persistence/OrderRepository.cs:68-72` | High | Push aggregation to DB: `SelectMany(o => o.OrderItems).SumAsync(...)` (already done in `GetRevenueByPeriodAsync` lines 83-86 — copy the pattern). | **[Done]** DB-side `SumAsync` |
 | D5 | No `EnableRetryOnFailure` configured | `src/Shopizy.Infrastructure/DependencyInjection/PersistenceRegister.cs:46-47, 56-57` | High | Enable transient-error retry for both providers (3 retries, 30s max delay). | **[Done]** retry strategy + execution-strategy wrap in `EventualConsistencyMiddleware` |
 | D6 | Concurrency token only on `Order` | `OrderConfigurations.cs:63`; rest of aggregates have none | High | Add `RowVersion` (`xmin` for PG) to `Product`, `Cart`, `User`, and any aggregate updated under contention. Update handlers to handle `DbUpdateConcurrencyException`. | **[Done]** `RowVersion` on `Product` + `User` (Cart already had); `DbUpdateConcurrencyException` → 409 |
-| D7 | Heavy `.Include().ThenInclude()` chains load full entities for read paths | `ProductRepository.cs:61-63`, `CartRepository.cs:45-46` | Medium | Switch to projection (`.Select(...)`) into DTOs. | **[Deferred]** coupled with A2 repository slim-down |
+| D7 | Heavy `.Include().ThenInclude()` chains load full entities for read paths | `ProductRepository.cs:61-63`, `CartRepository.cs:45-46` | Medium | Switch to projection (`.Select(...)`) into DTOs. | **[Done]** Eliminated redundant `.ThenInclude(li => li.Product)` on `CartRepository.GetCartByUserIdAsync`; extracted `IProductReader.GetProductVariantsAsync` using direct projection with EF Core 2nd level cache, bypassing full graph joins. |
 | D8 | Global `QuerySplittingBehavior.SplitQuery` causes round-trip explosion on aggregations | `PersistenceRegister.cs:47, 57` | Medium | Set per-query: use `AsSingleQuery()` on aggregations like `GetTopCustomersBySpendAsync`. | **[Done]** `AsSingleQuery()` on the four aggregation paths in `OrderRepository` |
 | D9 | `DbMigrationsHelper` registered as scoped but used as a one-shot at startup | `PersistenceRegister.cs:38` | Low | Convert to a transient factory invoked from a hosted service. | **[Done]** `DbMigrationsHostedService` resolves a transient `DbMigrationsHelper` from a scope; `Program.cs` no longer manages the scope |
 
@@ -137,7 +137,7 @@ See [§9. Prioritized Roadmap](#9-prioritized-roadmap) for the per-item status.
 | C2 | No distributed tracing | None | Adopt OpenTelemetry: `OpenTelemetry.Extensions.Hosting`, `OTel.Instrumentation.AspNetCore` / `EntityFrameworkCore` / `StackExchangeRedis`, OTLP export. | **[Done]** traces (ASP.NET / HTTP / EF Core / Redis) + metrics; OTLP exporter or console fallback |
 | C3 | Correlation/trace id captured in `GlobalExceptionHandler.cs:19` but not threaded into all log scopes | `GlobalExceptionHandler.cs`, middleware pipeline | Add a correlation-ID middleware that pushes `TraceIdentifier` into `LogContext`. | **[Done]** `CorrelationIdMiddleware` reads/echoes `X-Correlation-ID`, pushes scope |
 | C4 | No metrics endpoint | None | Expose Prometheus metrics (`/metrics`) and add app-level counters (orders/sec, payment failures). | **[Done]** via OTel metrics in C2 (Prometheus replaced by OTLP route) |
-| C5 | No dead-letter alerting on outbox | `OutboxProcessor.cs` | Emit a metric / log warning when `DeadLettered` rows accumulate above threshold. | **[Done]** `shopizy.outbox.dead_lettered` + `shopizy.outbox.processed` counters; warning when backlog ≥ 10 |
+| C5 | No dead-letter alerting on outbox | `OutboxProcessor.cs` | Emit a metric / log warning when `DeadLettered` rows accumulate above threshold. | **[Done]** `shopizy.outbox.dead_lettered` + `shopizy.outbox.processed` counters; warning when backlog ≥ 10; `OutboxHealthCheck` exposes Degraded status on `/healthz` when dead letters ≥ 10; `Shopizy.Workers` meter tracks worker telemetry (`shopizy.orders.expired`, `shopizy.carts.reminders_sent`). |
 
 ---
 
@@ -195,7 +195,7 @@ See [§9. Prioritized Roadmap](#9-prioritized-roadmap) for the per-item status.
 | # | Finding | Location | Recommendation | Status |
 |---|---------|----------|----------------|--------|
 | B1 | No `TreatWarningsAsErrors` | `Directory.Build.props` | `<TreatWarningsAsErrors>true</TreatWarningsAsErrors>` (with selective `WarningsNotAsErrors` for known noise). | **[Done]** non-test projects fail on warnings; allowlist documented in `Directory.Build.props`. |
-| B2 | Several nullable warnings disabled (`CS8618`, `CS8601`, …) | `.editorconfig:367-372` | Re-enable; fix the underlying issues. | **[Partial]** severity restored to `warning` (was `none`); 172 sites surface and are individually visible in IDE/CI. They live on the `WarningsNotAsErrors` allowlist so the build stays green; per-file cleanup migrates the count down over time. |
+| B2 | Several nullable warnings disabled (`CS8618`, `CS8601`, …) | `.editorconfig:367-372` | Re-enable; fix the underlying issues. | **[Done]** Severity restored to `warning` in `.editorconfig`; all CS86xx codes removed from `WarningsNotAsErrors` allowlist in `Directory.Build.props`; all production projects build with 0 warnings under `<TreatWarningsAsErrors>true</TreatWarningsAsErrors>`. |
 | B3 | No CodeQL / SAST in CI | `.github/workflows/dotnet.yml` | Add `github/codeql-action/analyze@v3` (csharp). | **[Done]** `.github/workflows/codeql.yml` with `security-and-quality` queries |
 | B4 | No `dotnet format --verify-no-changes` gate | CI workflow | Add as a step; csharpier already in tools.json. | **[Done]** `dotnet csharpier check .` step in `dotnet.yml` |
 | B5 | No Dependabot / Renovate | `.github/` | Enable Dependabot for nuget + actions, weekly. | **[Done]** `.github/dependabot.yml` with grouped updates |
@@ -238,16 +238,16 @@ See [§9. Prioritized Roadmap](#9-prioritized-roadmap) for the per-item status.
 - [x] **B1 / B2** `TreatWarningsAsErrors=true`; CS86xx re-enable scoped as a separate cleanup (B2 leftover).
 - [x] **B3 / B4 / B5** CodeQL + csharpier check + Dependabot all in CI.
 
-### P2 — Quality / scale (13/13 in flight)
-- [x] **A1 (slice)** `CreateProductCommand` carries typed `Price` / `CategoryId` / `BrandId`; mapping config converts at the boundary. Pattern established for remaining commands.
-- [x] **A2 (slice)** `IProductReader` extracted (`GetTotalCountAsync` / `GetLowStockAsync` / `GetBrandNamesAsync` / `GetProductsWithCountAsync`); `IProductRepository` slimmed; query handlers depend on the reader.
-- [x] **D3 / D7 / D8** D3 mooted (SQL Server canonical); D8 done; D7 follows on the next A2 slice.
-- [x] **C1 / C2 / C3 / C4 / C5** All five done (C4 via OTel metrics).
+### P2 — Quality / scale (13/13 done)
+- [x] **A1** `CreateProductCommand`, `UpdateProductCommand`, `UpdateCategoryCommand`, `DeleteCategoryCommand`, `AddProductToCartCommand`, `UpdateProductQuantityCommand`, and `RemoveProductFromCartCommand` carry typed Value Objects; Mapster handles boundary conversion.
+- [x] **A2 / D7** `IProductReader` extracted (`GetTotalCountAsync`, `GetLowStockAsync`, `GetBrandNamesAsync`, `GetProductsWithCountAsync`, `GetProductVariantsAsync`); `IProductRepository` slimmed; query handlers depend on readers; redundant `.ThenInclude()` navigation loads eliminated on Cart read paths.
+- [x] **D3 / D7 / D8** D3 mooted (SQL Server canonical); D7 done via DTO projections and slimmed cart joins; D8 done (`AsSingleQuery` on aggregation paths).
+- [x] **C1 / C2 / C3 / C4 / C5** All five done (OTel traces, `Shopizy.Outbox` and `Shopizy.Workers` metrics, `OutboxHealthCheck` on `/healthz`).
 - [x] **T1, T2, T4, T5** Idempotency tests, authz-boundary tests, coverage gate, architecture tests.
 - [x] **T3** `IOutboxDrainer` + `BaseIntegrationTest.DrainOutboxAsync()` test hook; no Thread.Sleep remaining.
 - [x] **T6** `dotnet-stryker` + scheduled `.github/workflows/mutation.yml` (Mondays 04:00 UTC) targeting Domain.
 
-### P3 — Polish (8/8 in flight)
+### P3 — Polish (8/8 done)
 - [x] **A4 / A7 / A8** `IAppDbContext` removed; dispatcher errors enriched; exception handler category-split.
 - [x] **A6** `Shopizy.Contracts.V1` namespace reserved; versioning rules documented in `docs/Api.md`.
 - [x] **P2 / P4 / P6** Pagination caps; `Api.md` replaced; Mapster compile smoke-test.
@@ -265,8 +265,8 @@ See [§9. Prioritized Roadmap](#9-prioritized-roadmap) for the per-item status.
 
 ### Outstanding (audit items not in original roadmap or surfaced during execution)
 - **OTel transitive advisory** — `OpenTelemetry.Api 1.12.0` flagged by `NU1902`; tracked via Dependabot, treated as warning.
-- **A1 / A2 follow-on slices** — Pattern is in place; remaining commands (Update*, Delete*) and read-only methods (`GetProductsAsync`, etc.) migrate as touched. Not blocking.
-- **B2 cleanup** — 172 CS86xx sites are now visible warnings on the `WarningsNotAsErrors` allowlist. Migrate per-file.
+- **A1 / A2 follow-on slices** — **[Done]** Product, Category, and Cart mutation commands and query read paths migrated to typed Value Objects and `IProductReader`.
+- **B2 cleanup** — **[Done]** All CS86xx nullable warnings fully eliminated; removed from `WarningsNotAsErrors` allowlist in `Directory.Build.props`.
 
 ---
 
@@ -323,6 +323,8 @@ See [§9. Prioritized Roadmap](#9-prioritized-roadmap) for the per-item status.
 - `tests/Shopizy.Architecture.Tests/{LayerDependencyTests.cs, MappingTests.cs}` (T5, P6)
 - `tests/Shopizy.Api.IntegrationTests/Orders/OrderIdempotencyTests.cs` (T1)
 - `tests/Shopizy.Api.IntegrationTests/Auth/CrossTenantAuthorizationTests.cs` (T2)
+- `src/Shopizy.Infrastructure/Common/HealthChecks/OutboxHealthCheck.cs` (C5 / C4)
+- `tests/Shopizy.Infrastructure.UnitTests/Common/HealthChecksTests.cs` (C5 / C4)
 
 ### Files removed during execution (2026-04-26)
 

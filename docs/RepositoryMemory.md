@@ -56,17 +56,18 @@ shopizy/
   - Dispatches domain event handlers **inside** the open transaction.
   - If any handler throws, the transaction rolls back completely (aggregates + outbox + handler side-effects).
   - Outbox rows are marked `ProcessedOn` immediately upon success.
-- **Background Backstop (`OutboxProcessor`):**
+- **Background Backstop (`OutboxProcessor`) & Health Check:**
   - Hosted background service running every 30 seconds.
   - Sweeps unprocessed rows older than 5 minutes to recover from rare crash-mid-commit scenarios.
   - Poison messages exceeding retry threshold route to `OutboxDeadLetters` and increment `shopizy.outbox.dead_lettered` OTel counters.
+  - `OutboxHealthCheck` registered under `/healthz`, surfacing `Degraded` status if dead-letter message backlog exceeds 10.
 - **Test Synchronizer (`IOutboxDrainer`):** Synchronously drains pending outbox messages in integration tests (`BaseIntegrationTest.DrainOutboxAsync()`).
 
 ### 2.3 Data Access, CQRS Readers & EF Core Architecture
 - **Database Engine:** Microsoft SQL Server 2022 (canonical provider).
-- **CQRS Read-Side Readers (`IProductReader`, `IOrderReader`):** Dedicated read-only query abstractions (`ProductReader`, `OrderReader`) encapsulate reporting, aggregations (`GetTotalRevenueAsync`, `GetTopProductsByRevenueAsync`), catalog criteria search queries (`GetProductsWithCountAsync`), and read models, keeping repositories focused on aggregate persistence.
+- **CQRS Read-Side Readers (`IProductReader`, `IOrderReader`):** Dedicated read-only query abstractions (`ProductReader`, `OrderReader`) encapsulate reporting, aggregations (`GetTotalRevenueAsync`, `GetTopProductsByRevenueAsync`), catalog criteria search queries (`GetProductsWithCountAsync`), variant read projections (`GetProductVariantsAsync`), and read models, keeping repositories focused on aggregate persistence and avoiding deep entity graph joins (`.Include().ThenInclude()`).
 - **Concurrency Tokens:** `RowVersion` (`byte[]`) shadow tokens on `Product`, `Cart`, `Order`, `User`. Unhandled write collisions raise `DbUpdateConcurrencyException`, caught and converted to HTTP 409 Conflict.
-- **Value Object Converters & Command Boundaries:** Strongly-typed IDs (`ProductId`, `OrderId`, `UserId`, etc.) and `Price` structs mapped via `HasConversion`. Commands (`CreateProductCommand`, `UpdateProductCommand`) carry domain Value Objects directly; Mapster converts contract DTO primitives at API boundary.
+- **Value Object Converters & Command Boundaries:** Strongly-typed IDs (`ProductId`, `OrderId`, `UserId`, `CategoryId`, `BrandId`, `CartItemId`, etc.) and `Price` structs mapped via `HasConversion`. Commands (`CreateProductCommand`, `UpdateProductCommand`, `UpdateCategoryCommand`, `DeleteCategoryCommand`, `AddProductToCartCommand`, `UpdateProductQuantityCommand`, `RemoveProductFromCartCommand`) carry domain Value Objects directly; Mapster converts contract DTO primitives at API boundary.
 - **Encapsulation:** Private backing fields (e.g. `_orderItems`, `_imageUrls`) enforce aggregate invariants.
 
 ### 2.4 Caching, Idempotency & Distributed State
@@ -152,9 +153,9 @@ All endpoints follow Minimal API pattern (`IEndpoint` implementations registered
 
 ## 6. Background Workers & Hosted Services
 
-- `OutboxProcessor`: Sweeps uncommitted/failed outbox events every 30s.
-- `AbandonedCartReminderWorker`: Scans inactive carts ($\ge 2$ hours) and dispatches recovery emails.
-- `PendingOrderExpirationWorker`: Cancels unpaid pending orders ($\ge 15$ mins) and restores inventory stock.
+- `OutboxProcessor`: Sweeps uncommitted/failed outbox events every 30s. Increments `shopizy.outbox.processed` and `shopizy.outbox.dead_lettered` counters. Monitored via `OutboxHealthCheck`.
+- `AbandonedCartReminderWorker`: Scans inactive carts ($\ge 2$ hours) and dispatches recovery emails. Increments `shopizy.carts.reminders_sent` counter.
+- `PendingOrderExpirationWorker`: Cancels unpaid pending orders ($\ge 15$ mins) and restores inventory stock. Increments `shopizy.orders.expired` counter.
 - `DbMigrationsHostedService`: Manages automatic EF Core migration execution at application startup.
 
 ---
