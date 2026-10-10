@@ -1,3 +1,4 @@
+using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.EntityFrameworkCore;
 using Shopizy.Application.Common.Interfaces.Persistence;
 using Shopizy.Domain.Categories;
@@ -36,7 +37,7 @@ public class CategoryRepository(AppDbContext dbContext) : ICategoryRepository
     /// <returns>A list of all categories.</returns>
     public async Task<IReadOnlyList<Category>> GetCategoriesAsync()
     {
-        var categoryList = await _dbContext.Categories.AsNoTracking().ToListAsync();
+        var categoryList = await _dbContext.Categories.AsNoTracking().Cacheable().ToListAsync();
         return categoryList;
     }
 

@@ -19,6 +19,9 @@
     <PackageReference Include="CloudinaryDotNet" />
     <PackageReference Include="Stripe.net" />
     <PackageReference Include="Ardalis.GuardClauses" />
+    <PackageReference Include="EFCoreSecondLevelCacheInterceptor" />
+    <PackageReference Include="EFCoreSecondLevelCacheInterceptor.StackExchange.Redis" />
+    <PackageReference Include="EFCoreSecondLevelCacheInterceptor.MemoryCache" />
   </ItemGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />

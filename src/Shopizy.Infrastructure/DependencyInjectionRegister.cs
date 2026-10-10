@@ -10,7 +10,8 @@ public static class DependencyInjectionRegister
 {
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
-        IConfiguration configuration
+        IConfiguration configuration,
+        Microsoft.Extensions.Hosting.IHostEnvironment? environment = null
     )
     {
         ArgumentNullException.ThrowIfNull(services);
@@ -36,7 +37,7 @@ public static class DependencyInjectionRegister
             .AddExternalServices(configuration)
             .AddAuthenticationInternal(configuration)
             .AddSecurity()
-            .AddPersistence(configuration)
+            .AddPersistence(configuration, environment)
             .AddMessaging();
     }
 

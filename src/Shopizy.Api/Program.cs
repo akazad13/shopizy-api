@@ -23,7 +23,7 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(optio
 builder
     .Services.AddPresentation()
     .AddApplication(builder.Configuration)
-    .AddInfrastructure(builder.Configuration)
+    .AddInfrastructure(builder.Configuration, builder.Environment)
     .AddTelemetry(builder.Configuration, builder.Environment)
     .AddEndpoints(typeof(Program).Assembly);
 

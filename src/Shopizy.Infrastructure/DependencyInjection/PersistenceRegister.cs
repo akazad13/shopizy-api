@@ -1,12 +1,15 @@
+using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Shopizy.Application.Common.Interfaces.Persistence;
 using Shopizy.Infrastructure.AuditLogs.Persistence;
 using Shopizy.Infrastructure.Brands.Persistence;
 using Shopizy.Infrastructure.Carts.Persistence;
 using Shopizy.Infrastructure.Categories.Persistence;
+using Shopizy.Infrastructure.Common.Caching;
 using Shopizy.Infrastructure.Common.HealthChecks;
 using Shopizy.Infrastructure.Common.Persistence;
 using Shopizy.Infrastructure.Common.Persistence.Interceptors;
@@ -25,6 +28,7 @@ using Shopizy.Infrastructure.Services;
 using Shopizy.Infrastructure.Users.Persistence;
 using Shopizy.Infrastructure.Wishlists.Persistence;
 using Shopizy.SharedKernel.Application.Interfaces.Persistence;
+using StackExchange.Redis;
 
 namespace Shopizy.Infrastructure.DependencyInjection;
 
@@ -32,7 +36,8 @@ public static class PersistenceRegister
 {
     public static IServiceCollection AddPersistence(
         this IServiceCollection services,
-        IConfiguration configuration
+        IConfiguration configuration,
+        IHostEnvironment? environment = null
     )
     {
         services
@@ -41,10 +46,67 @@ public static class PersistenceRegister
             .AddScoped<UpdateAuditableEntitiesInterceptor>()
             .AddSingleton<IPermissionLookup, PermissionLookup>();
 
+        var isTesting =
+            (
+                environment?.EnvironmentName.Equals("Testing", StringComparison.OrdinalIgnoreCase)
+                == true
+            )
+            || string.Equals(
+                configuration["ASPNETCORE_ENVIRONMENT"],
+                "Testing",
+                StringComparison.OrdinalIgnoreCase
+            )
+            || string.Equals(
+                Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+                "Testing",
+                StringComparison.OrdinalIgnoreCase
+            );
+
+        var redisSettings =
+            configuration.GetSection(RedisSettings.Section).Get<RedisSettings>()
+            ?? new RedisSettings();
+
+        var useRedis = !isTesting && !string.IsNullOrWhiteSpace(redisSettings.Endpoint);
+
+        services.AddLogging();
+        services.AddMemoryCache();
+        services.AddEFSecondLevelCache(options =>
+        {
+            if (!useRedis)
+            {
+                options.UseMemoryCacheProvider().UseCacheKeyPrefix("EF_");
+            }
+            else
+            {
+                var redisOptions = new ConfigurationOptions
+                {
+                    EndPoints = { { redisSettings.Endpoint, redisSettings.Port } },
+                    User = string.IsNullOrWhiteSpace(redisSettings.Username)
+                        ? null
+                        : redisSettings.Username,
+                    Password = string.IsNullOrWhiteSpace(redisSettings.Password)
+                        ? null
+                        : redisSettings.Password,
+                    AbortOnConnectFail = false,
+                    ConnectTimeout = 5000,
+                    SyncTimeout = 5000,
+                };
+
+                options
+                    .UseStackExchangeRedisCacheProvider(redisOptions, TimeSpan.FromMinutes(5))
+                    .UseCacheKeyPrefix("EF_")
+                    .UseDbCallsIfCachingProviderIsDown(TimeSpan.FromMinutes(1));
+            }
+        });
+
         services.AddDbContext<AppDbContext>(
             (sp, options) =>
             {
-                var interceptor = sp.GetRequiredService<UpdateAuditableEntitiesInterceptor>();
+                var auditableInterceptor =
+                    sp.GetRequiredService<UpdateAuditableEntitiesInterceptor>();
+                var secondLevelCacheInterceptor =
+                    sp.GetRequiredService<SecondLevelCacheInterceptor>();
+
                 options
                     .UseSqlServer(
                         configuration.GetConnectionString("DefaultConnection"),
@@ -58,7 +120,7 @@ public static class PersistenceRegister
                             o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                         }
                     )
-                    .AddInterceptors(interceptor)
+                    .AddInterceptors(auditableInterceptor, secondLevelCacheInterceptor)
                     .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
             }
         );

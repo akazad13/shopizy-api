@@ -45,7 +45,7 @@ public static class TelemetryRegister
                         o.Filter = ctx => ctx.Request.Path != "/healthz";
                     })
                     .AddHttpClientInstrumentation()
-                    .AddEntityFrameworkCoreInstrumentation(o => o.SetDbStatementForText = false)
+                    .AddEntityFrameworkCoreInstrumentation()
                     .AddRedisInstrumentation();
 
                 ConfigureExporter(tracing, otlpEndpoint, environment);

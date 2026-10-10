@@ -1,4 +1,5 @@
 using System.Threading.RateLimiting;
+using EFCoreSecondLevelCacheInterceptor;
 using ErrorOr;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.RateLimiting;
@@ -41,6 +42,7 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsy
                 config.AddInMemoryCollection(
                     new Dictionary<string, string?>
                     {
+                        ["ASPNETCORE_ENVIRONMENT"] = "Testing",
                         ["JwtSettings:Secret"] = "super-secret-key-that-is-at-least-32-chars-long",
                         ["JwtSettings:Issuer"] = "Shopizy",
                         ["JwtSettings:Audience"] = "Shopizy",
@@ -62,6 +64,8 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsy
                 (sp, options) =>
                 {
                     var interceptor = sp.GetRequiredService<UpdateAuditableEntitiesInterceptor>();
+                    var secondLevelCacheInterceptor =
+                        sp.GetRequiredService<SecondLevelCacheInterceptor>();
                     var connectionString = BuildConnectionString();
                     options
                         .UseSqlServer(
@@ -76,7 +80,7 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsy
                                 o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                             }
                         )
-                        .AddInterceptors(interceptor);
+                        .AddInterceptors(interceptor, secondLevelCacheInterceptor);
                 }
             );
 

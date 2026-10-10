@@ -1,3 +1,4 @@
+using EFCoreSecondLevelCacheInterceptor;
 using Microsoft.EntityFrameworkCore;
 using Shopizy.Application.Common.Interfaces.Persistence;
 using Shopizy.Domain.Brands;
@@ -17,7 +18,11 @@ public class BrandRepository(AppDbContext dbContext) : IBrandRepository
         _dbContext.Brands.FirstOrDefaultAsync(brand => brand.Name == name);
 
     public async Task<IReadOnlyList<Brand>> GetAsync() =>
-        await _dbContext.Brands.AsNoTracking().OrderBy(brand => brand.Name).ToListAsync();
+        await _dbContext
+            .Brands.AsNoTracking()
+            .OrderBy(brand => brand.Name)
+            .Cacheable()
+            .ToListAsync();
 
     public async Task AddAsync(Brand brand) => await _dbContext.Brands.AddAsync(brand);
 
