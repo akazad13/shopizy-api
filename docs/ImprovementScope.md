@@ -133,7 +133,7 @@ See [§9. Prioritized Roadmap](#9-prioritized-roadmap) for the per-item status.
 
 | # | Finding | Location | Recommendation | Status |
 |---|---------|----------|----------------|--------|
-| C1 | No automatic cache invalidation on writes | `CachingBehavior.cs` | Add an `IInvalidateCache` marker on commands; decorator removes/buster-tags affected keys. Or pub/sub via Redis channel. | **[Done]** `IInvalidateCache` + `CacheInvalidationCommandHandlerDecorator`; product update/delete wired |
+| C1 | No automatic cache invalidation on writes | `CachingBehavior.cs` | Add an `IInvalidateCache` marker on commands; decorator removes/buster-tags affected keys. Or pub/sub via Redis channel. | **[Done]** `IInvalidateCache` + `CacheInvalidationCommandHandlerDecorator`; centralized `CacheKeys`; two-tiered EF Core second-level cache (`EFCoreSecondLevelCacheInterceptor`) with Redis and in-memory fallback. |
 | C2 | No distributed tracing | None | Adopt OpenTelemetry: `OpenTelemetry.Extensions.Hosting`, `OTel.Instrumentation.AspNetCore` / `EntityFrameworkCore` / `StackExchangeRedis`, OTLP export. | **[Done]** traces (ASP.NET / HTTP / EF Core / Redis) + metrics; OTLP exporter or console fallback |
 | C3 | Correlation/trace id captured in `GlobalExceptionHandler.cs:19` but not threaded into all log scopes | `GlobalExceptionHandler.cs`, middleware pipeline | Add a correlation-ID middleware that pushes `TraceIdentifier` into `LogContext`. | **[Done]** `CorrelationIdMiddleware` reads/echoes `X-Correlation-ID`, pushes scope |
 | C4 | No metrics endpoint | None | Expose Prometheus metrics (`/metrics`) and add app-level counters (orders/sec, payment failures). | **[Done]** via OTel metrics in C2 (Prometheus replaced by OTLP route) |
@@ -240,7 +240,7 @@ See [§9. Prioritized Roadmap](#9-prioritized-roadmap) for the per-item status.
 
 ### P2 — Quality / scale (13/13 in flight)
 - [x] **A1 (slice)** `CreateProductCommand` carries typed `Price` / `CategoryId` / `BrandId`; mapping config converts at the boundary. Pattern established for remaining commands.
-- [x] **A2 (slice)** `IProductReader` extracted (`GetTotalCountAsync` / `GetLowStockAsync` / `GetBrandNamesAsync`); `IProductRepository` slimmed; query handlers depend on the reader.
+- [x] **A2 (slice)** `IProductReader` extracted (`GetTotalCountAsync` / `GetLowStockAsync` / `GetBrandNamesAsync` / `GetProductsWithCountAsync`); `IProductRepository` slimmed; query handlers depend on the reader.
 - [x] **D3 / D7 / D8** D3 mooted (SQL Server canonical); D8 done; D7 follows on the next A2 slice.
 - [x] **C1 / C2 / C3 / C4 / C5** All five done (C4 via OTel metrics).
 - [x] **T1, T2, T4, T5** Idempotency tests, authz-boundary tests, coverage gate, architecture tests.

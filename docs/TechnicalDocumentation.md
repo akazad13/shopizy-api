@@ -95,10 +95,23 @@ Shopizy utilizes a lightweight, handrolled mediator and dispatching pipeline (`S
 
 ## ⚡ 6. Caching, Idempotency & Distributed State
 
-### Redis Integration
-- **`ICacheHelper` (`RedisCacheHelper`):** Distributed caching for hot catalog reads and search results with configurable TTLs.
-- **`IIdempotencyStore` (`RedisIdempotencyStore`):** Prevents duplicate API executions on payment processing and order submissions.
-- **`IRefreshTokenStore` (`RedisRefreshTokenStore`):** Stores sliding refresh tokens with automatic revocation upon token rotation.
+### Two-Tiered Caching Architecture
+Shopizy employs a robust, two-tiered caching strategy combining pipeline-level cache-aside and ORM-level second-level caching:
+
+1. **CQRS Pipeline Caching (`CachingQueryHandlerDecorator`):**
+   - Intercepts requests implementing `ICachableRequest` and returns cached response DTOs via `ICacheHelper`.
+   - Commands implementing `IInvalidateCache` automatically evict affected keys via `CacheInvalidationCommandHandlerDecorator` post-commit.
+   - Centralized key patterns are defined in `CacheKeys` (`brands-all`, `products:brands`, `categories-tree`, `categories-all`, `product:{id}`, `product-variants:{id}`, `user-{id}`, `admin:dashboard-metrics`).
+
+2. **EF Core Second-Level Cache (`EFCoreSecondLevelCacheInterceptor`):**
+   - Caches compiled SQL query results tagged by entity/table for read-heavy queries marked with `.Cacheable()` (e.g. `BrandRepository`, `CategoryRepository`, `PromoCodeRepository`, `GiftCardRepository`, `PermissionRepository`, `ProductReader`, `ProductRepository`).
+   - Automatically invalidates all cached entity query results upon `SaveChangesAsync()`.
+   - Powered by Redis (`StackExchange.Redis`) with automatic fallback to `IMemoryCache` in test environments or when Redis is unconfigured, plus automatic failover to direct DB calls if Redis goes down (`UseDbCallsIfCachingProviderIsDown`).
+
+### Redis & In-Memory Fallback
+- **`ICacheHelper` (`RedisCacheHelper`):** Distributed caching for hot catalog reads and search results with configurable TTLs, backed by local `IMemoryCache` fallback when Redis is offline or unconfigured.
+- **`IIdempotencyStore` (`RedisIdempotencyStore`):** Prevents duplicate API executions on payment processing and order submissions (24h TTL, SHA-256 payload conflict detection).
+- **`IRefreshTokenStore` (`RedisRefreshTokenStore`):** Stores sliding refresh tokens with automatic revocation upon token rotation and per-user index tracking.
 
 ---
 

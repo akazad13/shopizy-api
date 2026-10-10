@@ -64,14 +64,17 @@ shopizy/
 
 ### 2.3 Data Access, CQRS Readers & EF Core Architecture
 - **Database Engine:** Microsoft SQL Server 2022 (canonical provider).
-- **CQRS Read-Side Readers (`IProductReader`, `IOrderReader`):** Dedicated read-only query abstractions (`ProductReader`, `OrderReader`) encapsulate reporting, aggregations (`GetTotalRevenueAsync`, `GetTopProductsByRevenueAsync`), and read models, keeping repositories focused on aggregate persistence.
+- **CQRS Read-Side Readers (`IProductReader`, `IOrderReader`):** Dedicated read-only query abstractions (`ProductReader`, `OrderReader`) encapsulate reporting, aggregations (`GetTotalRevenueAsync`, `GetTopProductsByRevenueAsync`), catalog criteria search queries (`GetProductsWithCountAsync`), and read models, keeping repositories focused on aggregate persistence.
 - **Concurrency Tokens:** `RowVersion` (`byte[]`) shadow tokens on `Product`, `Cart`, `Order`, `User`. Unhandled write collisions raise `DbUpdateConcurrencyException`, caught and converted to HTTP 409 Conflict.
 - **Value Object Converters & Command Boundaries:** Strongly-typed IDs (`ProductId`, `OrderId`, `UserId`, etc.) and `Price` structs mapped via `HasConversion`. Commands (`CreateProductCommand`, `UpdateProductCommand`) carry domain Value Objects directly; Mapster converts contract DTO primitives at API boundary.
 - **Encapsulation:** Private backing fields (e.g. `_orderItems`, `_imageUrls`) enforce aggregate invariants.
 
 ### 2.4 Caching, Idempotency & Distributed State
-- **Redis Services (`Shopizy.Infrastructure`):**
-  - `ICacheHelper` (`RedisCacheHelper`): Cache-aside with configurable TTLs.
+- **Two-Tiered Caching Architecture:**
+  - **CQRS Pipeline Cache (`CachingBehavior`):** Cache-aside DTO caching via `ICacheHelper` using centralized `CacheKeys` format. Handlers implementing `IInvalidateCache` auto-evict affected keys post-commit via `CacheInvalidationBehavior`.
+  - **EF Core Second-Level Cache (`EFCoreSecondLevelCacheInterceptor`):** Automatically caches compiled query results marked with `.Cacheable()` across repositories (`BrandRepository`, `CategoryRepository`, `PromoCodeRepository`, `GiftCardRepository`, `PermissionRepository`, `ProductReader`, `ProductRepository`) with Redis provider, in-memory fallback in tests/local, and automatic table-level invalidation on `SaveChangesAsync`.
+- **Redis & Distributed State (`Shopizy.Infrastructure`):**
+  - `ICacheHelper` (`RedisCacheHelper`): Cache-aside with configurable TTLs and local `IMemoryCache` fallback.
   - `IIdempotencyStore` (`RedisIdempotencyStore`): Stores request hashes and response payloads (24h TTL) for `X-Idempotency-Key` headers on order/payment endpoints.
   - `IRefreshTokenStore` (`RedisRefreshTokenStore`): Opaque sliding refresh tokens with rotation and per-user revocation indexes.
 
