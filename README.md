@@ -1,181 +1,191 @@
-# Shopizy - Online Store Management API
+<div align="center">
 
-[![.NET](https://github.com/akazad13/shopizy/actions/workflows/dotnet.yml/badge.svg)](https://github.com/akazad13/shopizy/actions/workflows/dotnet.yml)
-[![codecov](https://codecov.io/gh/akazad13/shopizy-api/branch/main/graph/badge.svg)](https://codecov.io/gh/akazad13/shopizy-api)
+# 🛍️ Shopizy API
 
-Shopizy is a robust and scalable Online Store Management API built with .NET 10, following the principles of Clean Architecture. It provides a comprehensive set of endpoints for managing products, categories, carts, orders, and users, designed to support modern e-commerce applications.
+### Scalable digital store management API built with .NET 10, Clean Architecture, and Domain-Driven Design (DDD)
 
-## 🚀 About The Project
+[![CI Build](https://img.shields.io/github/actions/workflow/status/akazad13/shopizy-api/dotnet.yml?branch=main&style=flat-square&logo=githubactions&logoColor=white)](https://github.com/akazad13/shopizy-api/actions)
+[![Codecov](https://img.shields.io/codecov/c/github/akazad13/shopizy-api?style=flat-square&logo=codecov&logoColor=white)](https://codecov.io/gh/akazad13/shopizy-api)
+[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![C#](https://img.shields.io/badge/C%23-14.0-239120?style=flat-square&logo=csharp&logoColor=white)](https://learn.microsoft.com/en-us/dotnet/csharp/)
+[![SQL Server](https://img.shields.io/badge/SQL_Server-2022-CC292B?style=flat-square&logo=microsoftsqlserver&logoColor=white)](https://www.microsoft.com/sql-server)
+[![Redis](https://img.shields.io/badge/Redis-Cache-DC382D?style=flat-square&logo=redis&logoColor=white)](https://redis.io/)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 
-Shopizy aims to provide a solid foundation for e-commerce platforms. It separates concerns into distinct layers (Domain, Application, Infrastructure, API) to ensure maintainability, testability, and scalability.
+[Overview](#-overview) •
+[Architecture](#-architecture) •
+[Tech Stack](#-tech-stack) •
+[Repository Layout](#-repository-layout) •
+[Quick Start](#-quick-start) •
+[Testing](#-testing) •
+[Documentation](#-documentation)
 
-Key features include:
--   **Product Catalog & Brand Management**: Hierarchical categories, brands, variants, barcode/SKU, and Cloudinary image galleries.
--   **Faceted Search & Typo Tolerance**: Multi-token search with Levenshtein fuzzy distance, synonym expansion, dynamic facet buckets (categories, brands, price tiers, ratings), and "Did You Mean?" suggestions.
--   **Shopping Cart & Recovery**: High-performance cart management with an automated background worker (`AbandonedCartReminderWorker`) for abandoned cart re-engagement.
--   **Order Lifecycle & Inventory Protection**: Resilient state machine (`Pending` -> `Processing` -> `Shipping` -> `Delivered`), atomic stock reservation, and automated 15-minute unpaid order expiration (`PendingOrderExpirationWorker`).
--   **Payments & Webhooks**: Stripe payment intent integration, idempotent webhook handling (`payment_intent.succeeded`, `payment_intent.payment_failed`), automatic refunds, and idempotency key protection (`X-Idempotency-Key`).
--   **Shipping Logistics & Live Tracking**: Multi-carrier rate estimation (USPS, UPS, FedEx, DHL), free-shipping thresholds, and package tracking checkpoints.
--   **Real-Time Operations**: SignalR WebSocket hubs for customer order status updates (`/hubs/orders`) and live merchant metrics (`/hubs/admin-dashboard`).
--   **Customer Engagement & Social Proof**: Verified-purchase product reviews, community upvotes, wishlists with automatic price-drop and back-in-stock alerts, loyalty points, and digital gift cards.
--   **Identity, RBAC & Security**: JWT authentication with sliding Redis refresh token rotation, granular permissions via cached `IPermissionLookup`, PBKDF2-HMACSHA512 password hashing, rate limiting, and security headers.
--   **Clean Architecture & Eventual Consistency**: Strict layer boundaries, custom mediator pipeline with Scrutor decorators, in-transaction domain event dispatching, and background outbox processing.
+</div>
 
-## 🛠️ Built With
+---
 
-*   [ASP.NET Core 10](https://dotnet.microsoft.com/en-us/apps/aspnet) - The web framework used (Minimal APIs).
-*   **Custom Messaging System** - Handrolled mediator implementation for Commands, Queries, and Domain Events (`IDispatcher`).
-*   [Scrutor](https://github.com/khellang/Scrutor) - Assembly scanning and decorator support for dependency injection pipelines.
-*   [Mapster](https://github.com/MapsterMapper/Mapster) - High-performance object-to-object mapper.
-*   [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) - Object-Relational Mapper (ORM) with migrations and optimistic concurrency (`RowVersion`).
-*   [Microsoft SQL Server](https://www.microsoft.com/sql-server) - Relational database engine (SQL Server 2022).
-*   [Redis](https://redis.io/) - In-memory data store for caching, sliding refresh tokens, and request idempotency.
-*   [SignalR](https://dotnet.microsoft.com/apps/aspnet/signalr) - Real-time two-way WebSocket hubs.
-*   [Stripe](https://stripe.com/) - Payment processing and webhook reconciliation.
-*   [Cloudinary](https://cloudinary.com/) - Cloud media storage and asset optimization.
-*   [Swagger / OpenAPI](https://swagger.io/) - API documentation and interactive explorer.
-*   [ErrorOr](https://github.com/amantinband/error-or) - Fluent discriminated unions for domain and application error handling.
-*   [xUnit](https://xunit.net/) - Unit and integration testing framework.
-*   [Shouldly](https://shouldly.io/) - Fluent assertion library with descriptive messages.
-*   [Moq](https://github.com/devlooped/moq) - Mocking library for unit testing.
-*   [Testcontainers](https://testcontainers.com/) - Ephemeral Microsoft SQL Server 2022 container instances in Docker for integration tests.
+## 📌 Overview
 
-## 🏁 Getting Started
+**Shopizy API** is a robust, production-grade e-commerce backend built with .NET 10, following the principles of Clean Architecture and Domain-Driven Design (DDD). It provides an extensive Minimal API surface governing catalog management, faceted search, session-backed carts, inventory protection, Stripe payments, multi-carrier shipping, SignalR live telemetry, and customer loyalty.
 
-Follow these steps to get a local copy up and running.
+### Key Highlights
+- 🏛️ **Clean Architecture & Custom CQRS**: Strict layer boundaries (Domain, Application, Infrastructure, Api) driven by a lightweight custom mediator (`IDispatcher`) and Scrutor pipeline decorators.
+- 🔍 **Faceted Search & Typo Tolerance**: Multi-token catalog search with Levenshtein fuzzy distance, synonym expansion, dynamic facet buckets, and "Did You Mean?" hints.
+- 🛒 **Cart & Inventory Protection**: Sliding Redis carts, abandoned cart recovery workers, and atomic stock reservation preventing overselling under high concurrency.
+- 💳 **Stripe Reconciliation & Idempotency**: Idempotent webhook handling, automated refunds, and standard `X-Idempotency-Key` headers on mutating requests.
+- 📡 **Real-Time WebSockets**: SignalR hubs powering instant customer order tracking (`/hubs/orders`) and live merchant dashboard metrics (`/hubs/admin-dashboard`).
+- 🧪 **1,164 Automated Tests**: High-density test suite covering unit tests, architecture tests (NetArchTest), and integration tests with Testcontainers.
+
+---
+
+## 🏛 Architecture
+
+```mermaid
+flowchart TD
+    subgraph Clients["Client Applications"]
+        Web["Customer Storefront SPA"]
+        Admin["Admin Management Dashboard"]
+    end
+
+    subgraph ApiLayer["Shopizy.Api (Minimal APIs & Hubs)"]
+        Endpoints["REST Endpoints (/api/v1.0/*)"]
+        Hubs["SignalR WebSocket Hubs"]
+        Middleware["Eventual Consistency & Auth Middleware"]
+    end
+
+    subgraph AppLayer["Shopizy.Application (Use Cases)"]
+        Dispatcher["Custom Dispatcher (CQRS)"]
+        Decorators["Scrutor Pipeline Decorators<br/>(Validation, UnitOfWork, Caching)"]
+    end
+
+    subgraph DomainLayer["Shopizy.Domain & SharedKernel"]
+        Aggregates["Aggregates (Order, Product, Cart, User)"]
+        Events["In-Transaction Domain Events"]
+    end
+
+    subgraph InfraLayer["Shopizy.Infrastructure"]
+        EF["EF Core 10 (SQL Server 2022)"]
+        RedisStore["Redis 7 (Cache, Sessions, Idempotency)"]
+        Outbox["Background Outbox Processor"]
+        StripeClient["Stripe Payments Gateway"]
+    end
+
+    Web --> Endpoints
+    Admin --> Endpoints
+    Web <--> Hubs
+    Admin <--> Hubs
+
+    Endpoints --> Dispatcher
+    Dispatcher --> Decorators
+    Decorators --> Aggregates
+    Aggregates -.-> Events
+    Decorators --> EF
+    Decorators --> RedisStore
+    Outbox --> StripeClient
+```
+
+> [!NOTE]
+> Detailed domain aggregates, outbox guarantees, and event dispatching workflows are fully documented in [docs/TechnicalDocumentation.md](docs/TechnicalDocumentation.md).
+
+---
+
+## 🛠 Tech Stack
+
+| Domain | Technologies |
+| :--- | :--- |
+| **Framework & Language** | .NET 10, ASP.NET Core Minimal APIs, C# 14 |
+| **Architecture Patterns** | Clean Architecture, DDD, CQRS, Transactional Outbox, Decorator Pattern |
+| **Persistence & Database** | Entity Framework Core 10, Microsoft SQL Server 2022 |
+| **Distributed Cache & State** | Redis 7 (Caching, sliding refresh tokens, idempotency keys) |
+| **Dependency Injection** | Scrutor (Assembly scanning and decorator registration) |
+| **Real-time WebSockets** | ASP.NET Core SignalR |
+| **External Integrations** | Stripe SDK (Payments & Webhooks), Cloudinary (Media optimization) |
+| **Testing** | xUnit, Shouldly, Moq, NetArchTest, Testcontainers (SQL Server) |
+
+---
+
+## 📂 Repository Layout
+
+```text
+├── src/
+│   ├── Shopizy.Api/             # Minimal API endpoints, middleware, SignalR hubs
+│   ├── Shopizy.Application/     # Commands, Queries, Handlers, FluentValidation rules
+│   ├── Shopizy.Domain/          # Aggregates, Entities, Value Objects, Domain Events
+│   ├── Shopizy.SharedKernel/    # Domain and application primitives (IDispatcher, ErrorOr)
+│   ├── Shopizy.Infrastructure/  # EF Core, SQL Server, Redis, Outbox background workers
+│   └── Shopizy.Contracts/       # Shared DTOs for HTTP request and response models
+├── tests/                       # Unit, integration (Testcontainers), and architecture tests
+├── docs/                        # PRD, Technical docs, Threat Model, and API references
+├── Bruno/                       # API collection for local testing and debugging
+└── docker-compose.yml           # Local SQL Server 2022, Redis 7, and Mailpit
+```
+
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
+- [.NET 10 SDK](https://dotnet.microsoft.com/)
+- [Docker Desktop](https://www.docker.com/)
 
-*   [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
-*   [Docker & Docker Compose](https://www.docker.com/) (recommended for local SQL Server 2022, Redis 7, and Mailpit) or local instances of:
-    *   [Microsoft SQL Server 2022](https://www.microsoft.com/sql-server)
-    *   [Redis 7](https://redis.io/download)
+### 1. Clone & Start Dependencies
+```bash
+git clone https://github.com/akazad13/shopizy.git
+cd shopizy
+docker compose up -d
+```
+Starts Microsoft SQL Server 2022, Redis 7, and Mailpit.
 
-### Installation
+### 2. Run Database Migrations
+```bash
+dotnet ef database update --project src/Shopizy.Infrastructure --startup-project src/Shopizy.Api
+```
 
-1.  **Clone the repository**
-    ```sh
-    git clone https://github.com/akazad13/shopizy.git
-    ```
-2.  **Navigate to the project directory**
-    ```sh
-    cd shopizy
-    ```
-3.  **Start dependencies via Docker Compose** *(Optional, recommended)*
-    ```sh
-    docker-compose up -d
-    ```
-    This spins up Microsoft SQL Server 2022, Redis 7, and Mailpit for email preview.
-4.  **Restore dependencies**
-    ```sh
-    dotnet restore
-    ```
-5.  **Configure Database**
-    Update the connection string in `src/Shopizy.Api/appsettings.json` (or `appsettings.Development.json`):
-    ```json
-    "ConnectionStrings": {
-      "DefaultConnection": "Server=localhost,1433;Database=ShopizyDb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;"
-    }
-    ```
-6.  **Run Migrations**
-    The application applies migrations automatically on startup via `DbMigrationsHostedService`, or you can apply them manually:
-    ```sh
-    dotnet ef database update --project src/Shopizy.Infrastructure --startup-project src/Shopizy.Api
-    ```
-7.  **Run the API**
-    ```sh
-    dotnet run --project src/Shopizy.Api
-    ```
+### 3. Run the API
+```bash
+dotnet run --project src/Shopizy.Api
+```
+- **Swagger UI**: `https://localhost:7172/swagger`
+- **Mailpit**: `http://localhost:8025`
 
-## 🔌 Usage
+---
 
-Once the API is running, you can explore the endpoints using Swagger UI or Bruno.
+## 🧪 Testing
 
-*   **Swagger UI**: `https://localhost:7172/swagger` (or `http://127.0.0.1:18080/swagger`)
-*   **Bruno Collection**: Manual testing collections located under `Bruno/Shopizy/`.
-
-### Key Endpoints
-
-*   `POST /api/v1.0/auth/register` & `POST /api/v1.0/auth/login`: Customer & Admin authentication.
-*   `POST /api/v1.0/products/faceted-search`: Multi-token search with typo tolerance and dynamic facets.
-*   `GET /api/v1.0/products`: Search and filter catalog products.
-*   `POST /api/v1.0/users/{userId}/cart/items`: Manage user shopping cart items.
-*   `POST /api/v1.0/users/{userId}/orders`: Place an order (requires `X-Idempotency-Key`).
-*   `POST /api/v1.0/shipping/estimate-rates`: Live carrier rate quotes (USPS, UPS, FedEx, DHL).
-*   `POST /api/v1.0/webhooks/stripe`: Stripe payment status webhook reconciliation.
-*   `PATCH /api/v1.0/admin/users/{userId}/role`: Administrator role and permission assignment.
-*   `/hubs/orders` & `/hubs/admin-dashboard`: Real-time WebSocket channels.
-
-## 📚 Documentation
-
-For detailed guides and architecture specifications, please refer to:
-
-*   **[Product Requirements Document (PRD)](docs/ProductRequirementsDocument.md)**: Product vision, user personas, functional epics, critical business invariants, and phased engineering roadmap.
-*   **[Repository Memory & Architecture Reference](docs/RepositoryMemory.md)**: High-density map of domain aggregates, messaging pipelines, security, and developer quick reference.
-*   **[Feature Documentation](docs/FeatureDocumentation.md)**: End-to-end guide of all platform features, workflows, and business logic.
-*   **[Technical Documentation](docs/TechnicalDocumentation.md)**: Architectural patterns, DDD design, CQRS messaging, caching, and infrastructure references.
-*   **[API Documentation](docs/Api.md)**: Details on API endpoints, OpenAPI/Swagger specifications, and contract versioning.
-*   **[Domain Models](docs/Domain.md)**: In-depth explanation of domain aggregates, entities, and value objects.
-*   **[Eventual Consistency & Outbox](docs/EventualConsistency.md)**: In-transaction domain event dispatching and outbox worker policies.
-*   **[Frontend Handoff Guide](docs/FrontendHandoffDoc.md)**: TypeScript interfaces, SignalR integration, and endpoint specifications for frontend developers.
-*   **[Project Structure Reference](docs/ProjectStructure.md)**: Detailed project file structure and layer dependency rules.
-*   **[Threat Model & Security Review](docs/ThreatModel.md)**: STRIDE analysis of identity, storage, and API surface.
-*   **[Improvement Scope & Roadmap](docs/ImprovementScope.md)**: Full-solution architectural audit and completed roadmap.
-
-## 🏗️ Architecture
-
-The solution follows **Clean Architecture** and **Domain-Driven Design (DDD)** principles:
-
-*   **Shopizy.Domain**: Contains enterprise logic and types (Aggregates, Entities, Value Objects, Enums, Domain Events). No external dependencies.
-*   **Shopizy.SharedKernel**: Contains shared domain and application primitives (`Entity`, `AggregateRoot`, `ValueObject`, `IDispatcher`, `IUnitOfWork`, `ErrorOr`).
-*   **Shopizy.Application**: Contains business logic and use cases. Implements a custom CQRS pattern with Commands and Queries.
-    *   **Custom Dispatcher**: A custom `IDispatcher` resolves and executes handlers using dependency injection.
-    *   **Decorator Pattern**: Uses Scrutor to apply cross-cutting concerns like Validation, Unit of Work, and Caching via decorators, avoiding library-heavy pipeline behaviors.
-*   **Shopizy.Infrastructure**: Implements interfaces defined in Application (Data access, External services, Redis, SignalR, Outbox Processor). Depends on Application.
-    *   **Database Engine**: Configured for Microsoft SQL Server 2022 using EF Core 10 migrations.
-    *   **Distributed State**: Redis-backed caching (`ICacheHelper`), sliding refresh tokens (`IRefreshTokenStore`), and idempotency store (`IIdempotencyStore`).
-*   **Shopizy.Api**: The entry point (Minimal APIs, Middleware, SignalR Hubs). Depends on Application and Infrastructure.
-    *   **Eventual Consistency**: Uses `EventualConsistencyMiddleware` to dispatch Domain Events inside transactions.
-*   **Shopizy.Contracts**: Shared Data Transfer Objects (DTOs) for HTTP request and response models.
-
-## 🧪 Running Tests
-
-To run the automated tests, execute the following command in the root directory:
-
-```sh
+```bash
+# Run all 1,164 automated tests
 dotnet test
 ```
 
-The solution includes **1,164 automated tests**:
--   **Unit Tests**: Logic verification for Domain, Application, Contracts, and Infrastructure layers.
--   **Architecture Tests**: Enforces layer boundaries and dependency rules using NetArchTest.
--   **Integration Tests**: End-to-end API and Database verification using **Testcontainers** (Microsoft SQL Server 2022).
+| Test Suite | Focus | Framework |
+| :--- | :--- | :--- |
+| **Unit Tests** | Domain invariants, business logic, handlers | xUnit + Shouldly |
+| **Architecture Tests** | Layer boundaries and dependency isolation | NetArchTest |
+| **Integration Tests** | Real database & endpoint execution | Testcontainers (SQL Server 2022) |
 
-## 🤝 Contributing
+---
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+## 📚 Documentation
 
-To enable the repo hook in this clone, run:
+| Document | Focus |
+| :--- | :--- |
+| 📋 [docs/ProductRequirementsDocument.md](docs/ProductRequirementsDocument.md) | Vision, user personas, epics, and business invariants |
+| 🏛️ [docs/TechnicalDocumentation.md](docs/TechnicalDocumentation.md) | Clean Architecture, DDD, CQRS, and caching strategies |
+| 🔌 [docs/Api.md](docs/Api.md) | API endpoints, contracts, and versioning details |
+| 🗄️ [docs/Domain.md](docs/Domain.md) | Domain aggregates, entities, and value objects |
+| 🔄 [docs/EventualConsistency.md](docs/EventualConsistency.md) | In-transaction event dispatching and outbox policies |
+| 🛡️ [docs/ThreatModel.md](docs/ThreatModel.md) | STRIDE security analysis and mitigations |
 
-```sh
-git config core.hooksPath .githooks
-```
+---
 
-1.  Fork the Project
-2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4.  Push to the Branch (`git push origin feature/AmazingFeature`)
-5.  Open a Pull Request
+## 👤 Author
+
+**Md. Abul Kalam**
+- GitHub: [@akazad13](https://github.com/akazad13)
+- LinkedIn: [Md. Abul Kalam](https://linkedin.com/in/akazad13)
+
+---
 
 ## 📄 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
-
-## ✍️ Authors
-
-*   **Md Abul Kalam** - *Initial work* - [akazad13](https://github.com/akazad13)
-
-## 🙏 Acknowledgments
-
-*   Clean Architecture templates and resources.
-*   Open source libraries used in this project.
+This project is licensed under the [MIT License](LICENSE).
