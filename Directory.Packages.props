@@ -55,7 +55,7 @@
     <PackageVersion Include="Scrutor" Version="7.0.0" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="StackExchange.Redis" Version="3.4.5" />
-    <PackageVersion Include="Stripe.net" Version="52.4.2" />
+    <PackageVersion Include="Stripe.net" Version="53.0.0" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="10.3.0" />
     <PackageVersion Include="Swashbuckle.AspNetCore.Annotations" Version="10.3.0" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.23.0" />
