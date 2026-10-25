@@ -178,6 +178,12 @@ dotnet test
 
 ---
 
+## 🤖 AI-Driven Development & Contributing
+
+Autonomous coding agents (Antigravity, Cursor, Claude Code, GitHub Copilot) operating in this repository must consult [AGENTS.md](AGENTS.md) for Clean Architecture layer invariants, custom CQRS dispatcher patterns, and zero-error test verification standards (`1,164` tests).
+
+---
+
 ## 👤 Author
 
 **Md. Abul Kalam**
