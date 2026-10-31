@@ -3,12 +3,12 @@
     <PackageVersion Include="Ardalis.GuardClauses" Version="5.0.0" />
     <PackageVersion Include="Asp.Versioning.Http" Version="10.2.3" />
     <PackageVersion Include="CloudinaryDotNet" Version="1.29.3" />
-    <PackageVersion Include="EFCoreSecondLevelCacheInterceptor" Version="5.5.2" />
+    <PackageVersion Include="EFCoreSecondLevelCacheInterceptor" Version="5.6.0" />
     <PackageVersion
       Include="EFCoreSecondLevelCacheInterceptor.StackExchange.Redis"
       Version="5.5.2"
     />
-    <PackageVersion Include="EFCoreSecondLevelCacheInterceptor.MemoryCache" Version="5.5.2" />
+    <PackageVersion Include="EFCoreSecondLevelCacheInterceptor.MemoryCache" Version="5.6.0" />
     <PackageVersion Include="ErrorOr" Version="2.1.1" />
     <PackageVersion Include="FluentValidation" Version="12.2.0" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.2.0" />
