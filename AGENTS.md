@@ -34,6 +34,8 @@ This document provides mandatory guidance for autonomous AI coding agents (Antig
    - Stock deduction must use atomic database operations or row-level locking to prevent overselling.
 4. **No Secrets in Tracked Code**:
    - Database connection strings, Stripe API keys, and JWT secrets must be loaded from user-secrets or environment variables.
+5. **Stripe.net v53+ Convention (ADR-0001)**:
+   - When creating Stripe `PaymentIntentCreateOptions`, use `AllowedPaymentMethodTypes` instead of obsolete `PaymentMethodTypes`.
 
 ---
 
