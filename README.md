@@ -13,7 +13,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 
 [Overview](#-overview) •
-[Architecture](#-architecture) •
+[Architecture & Decision Records](#-architecture--decision-records) •
 [Tech Stack](#-tech-stack) •
 [Repository Layout](#-repository-layout) •
 [Quick Start](#-quick-start) •
@@ -38,7 +38,7 @@
 
 ---
 
-## 🏛 Architecture
+## 🏛 Architecture & Decision Records
 
 ```mermaid
 flowchart TD
@@ -86,6 +86,9 @@ flowchart TD
 
 > [!NOTE]
 > Detailed domain aggregates, outbox guarantees, and event dispatching workflows are fully documented in [docs/TechnicalDocumentation.md](docs/TechnicalDocumentation.md).
+
+> [!TIP]
+> **Architecture Decision Records (ADRs):** Significant technical decisions, package migrations, and architectural invariants are formally recorded in [docs/adr/README.md](docs/adr/README.md).
 
 ---
 
@@ -169,6 +172,7 @@ dotnet test
 
 | Document | Focus |
 | :--- | :--- |
+| 📜 [docs/adr/README.md](docs/adr/README.md) | Architecture Decision Records (ADRs) and architectural invariants index |
 | 📋 [docs/ProductRequirementsDocument.md](docs/ProductRequirementsDocument.md) | Vision, user personas, epics, and business invariants |
 | 🏛️ [docs/TechnicalDocumentation.md](docs/TechnicalDocumentation.md) | Clean Architecture, DDD, CQRS, and caching strategies |
 | 🔌 [docs/Api.md](docs/Api.md) | API endpoints, contracts, and versioning details |
