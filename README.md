@@ -17,7 +17,7 @@
 [Tech Stack](#-tech-stack) •
 [Repository Layout](#-repository-layout) •
 [Quick Start](#-quick-start) •
-[Testing](#-testing) •
+[Testing Paradigm](#-testing-paradigm) •
 [Documentation](#-documentation)
 
 </div>
@@ -34,7 +34,7 @@
 - 🛒 **Cart & Inventory Protection**: Sliding Redis carts, abandoned cart recovery workers, and atomic stock reservation preventing overselling under high concurrency.
 - 💳 **Stripe Reconciliation & Idempotency**: Idempotent webhook handling, automated refunds, and standard `X-Idempotency-Key` headers on mutating requests.
 - 📡 **Real-Time WebSockets**: SignalR hubs powering instant customer order tracking (`/hubs/orders`) and live merchant dashboard metrics (`/hubs/admin-dashboard`).
-- 🧪 **1,164 Automated Tests**: High-density test suite covering unit tests, architecture tests (NetArchTest), and integration tests with Testcontainers.
+- 🧪 **1,164 Automated Tests & Fitness Gates**: High-density test pyramid covering fast unit tests, NetArchTest architectural boundaries, and Testcontainers integration tests.
 
 ---
 
@@ -103,7 +103,7 @@ flowchart TD
 | **Dependency Injection** | Scrutor (Assembly scanning and decorator registration) |
 | **Real-time WebSockets** | ASP.NET Core SignalR |
 | **External Integrations** | Stripe SDK (Payments & Webhooks), Cloudinary (Media optimization) |
-| **Testing** | xUnit, Shouldly, Moq, NetArchTest, Testcontainers (SQL Server) |
+| **Testing & Fitness** | xUnit, Shouldly, NSubstitute, NetArchTest, Testcontainers (SQL Server 2022) |
 
 ---
 
@@ -153,18 +153,42 @@ dotnet run --project src/Shopizy.Api
 
 ---
 
-## 🧪 Testing
+## 🧪 Testing Paradigm
 
+Shopizy strictly adheres to a formalized Testing Paradigm codified in [ADR-0002](docs/adr/0002-testing-paradigm-and-agentic-verification.md). Testing is engineered for millisecond feedback loops, state verification, refactoring freedom, and architectural governance.
+
+### The Test Pyramid
+
+| Tier | Share | Scope & Projects | Framework | Execution Speed |
+| :--- | :--- | :--- | :--- | :--- |
+| **Unit Tests** | **~85%** | Pure domain aggregates, CQRS command/query handlers, validation rules (`Domain.UnitTests`, `Application.UnitTests`, `Contracts.UnitTests`, `Infrastructure.UnitTests`) | xUnit + Shouldly + NSubstitute | Milliseconds (~1–4s per suite) |
+| **Architecture Tests** | **~10%** | Clean Architecture layer dependency isolation and Mapster mapping compilation (`Architecture.Tests`) | NetArchTest.Rules | ~2 seconds |
+| **Integration Tests** | **~5%** | Real SQL Server transactions, concurrency conflicts, outbox verification, full HTTP API journeys (`Api.IntegrationTests`) | Testcontainers + WebApplicationFactory | Medium (~30–90s) |
+
+### Invariants & Best Practices
+- **State Over Interaction Verification**: Tests assert on outputs, state mutations, and domain events—never on internal method invocation counts or mock sequences.
+- **DAMP Test Design**: Descriptive and Meaningful Phrases over DRY abstractions; every test tells a self-contained story with clear Arrange-Act-Assert blocks.
+- **Prove-It Bug Reproduction Pattern**: All bug fixes must begin with a failing reproduction test (RED) before writing fix code (GREEN).
+- **Zero Moq / Zero AutoMapper**: In-memory test doubles use NSubstitute exclusively; object mappings use Mapster or explicit code.
+
+### Test Execution Commands
 ```bash
-# Run all 1,164 automated tests
-dotnet test
-```
+# Fast inner loop: Run single test or class
+dotnet test tests/Shopizy.Domain.UnitTests --filter "FullyQualifiedName~OrderTests"
 
-| Test Suite | Focus | Framework |
-| :--- | :--- | :--- |
-| **Unit Tests** | Domain invariants, business logic, handlers | xUnit + Shouldly |
-| **Architecture Tests** | Layer boundaries and dependency isolation | NetArchTest |
-| **Integration Tests** | Real database & endpoint execution | Testcontainers (SQL Server 2022) |
+# Fast sub-suite: Run domain or application unit tests
+dotnet test tests/Shopizy.Domain.UnitTests
+dotnet test tests/Shopizy.Application.UnitTests
+
+# Architectural fitness gate: Ensure zero layer leaks
+dotnet test tests/Shopizy.Architecture.Tests
+
+# Pre-completion gate: Run all unit and architecture tests (fast, no Docker)
+dotnet test Shopizy.sln --filter "FullyQualifiedName!~IntegrationTests"
+
+# Full solution test suite (including Testcontainers integration tests)
+dotnet test Shopizy.sln
+```
 
 ---
 
@@ -173,6 +197,7 @@ dotnet test
 | Document | Focus |
 | :--- | :--- |
 | 📜 [docs/adr/README.md](docs/adr/README.md) | Architecture Decision Records (ADRs) and architectural invariants index |
+| 🧪 [docs/adr/0002-testing-paradigm-and-agentic-verification.md](docs/adr/0002-testing-paradigm-and-agentic-verification.md) | Testing paradigm, test pyramid, invariants, and agentic loops |
 | 📋 [docs/ProductRequirementsDocument.md](docs/ProductRequirementsDocument.md) | Vision, user personas, epics, and business invariants |
 | 🏛️ [docs/TechnicalDocumentation.md](docs/TechnicalDocumentation.md) | Clean Architecture, DDD, CQRS, and caching strategies |
 | 🔌 [docs/Api.md](docs/Api.md) | API endpoints, contracts, and versioning details |
@@ -184,7 +209,7 @@ dotnet test
 
 ## 🤖 AI-Driven Development & Contributing
 
-Autonomous coding agents (Antigravity, Cursor, Claude Code, GitHub Copilot) operating in this repository must consult [AGENTS.md](AGENTS.md) for Clean Architecture layer invariants, custom CQRS dispatcher patterns, and zero-error test verification standards (`1,164` tests).
+Autonomous coding agents (Antigravity, Cursor, Claude Code, GitHub Copilot) operating in this repository must consult [AGENTS.md](AGENTS.md) and [ADR-0002](docs/adr/0002-testing-paradigm-and-agentic-verification.md) for Clean Architecture layer invariants, custom CQRS dispatcher patterns, fast agentic test loops, and zero-error verification standards (`1,164` tests).
 
 ---
 
