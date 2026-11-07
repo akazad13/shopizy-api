@@ -89,7 +89,7 @@ public class StripeService(
             Currency = request.Currency,
             // ConfirmationMethod = "manual",  // if Confirm = false, then this will determine how a payment will be confirmed (From frontend/backend)
             Confirm = request.CapturePayment,
-            PaymentMethodTypes = request.PaymentMethodTypes?.ToList(),
+            AllowedPaymentMethodTypes = request.PaymentMethodTypes?.ToList(),
             Metadata = request.Metadata,
             PaymentMethod = request.PaymentMethodId,
         };
