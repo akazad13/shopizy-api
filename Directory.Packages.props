@@ -38,13 +38,13 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.15" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.15" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.15" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.Abstractions" Version="10.0.15" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Abstractions" Version="11.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.15" />
     <PackageVersion
       Include="Microsoft.Extensions.DependencyInjection.Abstractions"
       Version="10.0.15"
     />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.15" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="11.0.0" />
     <PackageVersion
       Include="Microsoft.Extensions.Options.ConfigurationExtensions"
       Version="10.0.15"
